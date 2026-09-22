@@ -15,6 +15,9 @@ node_modules/
 web/dist/
 web/.vite/
 web/coverage/
+web/*.tsbuildinfo
+web/*.d.ts
+web/*.js
 
 # ML artifacts
 models/*.joblib
