@@ -30,6 +30,7 @@ The full design, rationale, alternatives, and phased build plan are in the
 - [`uv`](https://docs.astral.sh/uv/) (manages Python 3.12 automatically)
 - Node.js 20+ and npm (the web dashboard uses **Vite+**; it installs locally
   via npm, no global CLI needed)
+- pnpm (the `ui/` component library uses pnpm catalogs; `corepack enable`)
 - Docker + Docker Compose (for the containerized stack)
 - `make` (optional, for the shortcut targets)
 
@@ -86,6 +87,9 @@ http://localhost:5173.
 | `make api` | FastAPI with autoreload on http://localhost:8000 |
 | `make web` | Vite+ dev server (`vp dev`) on http://localhost:5173 |
 | `make dev` | Both at once |
+| `make ui-install` | Install the component library dependencies (pnpm) |
+| `make storybook` | Storybook for the component library on http://localhost:6006 |
+| `make storybook-build` | Build the static Storybook |
 | `./scripts/run-api.sh` | Same as `make api` (respects `PORT`) |
 
 ### Docker
@@ -98,6 +102,21 @@ http://localhost:5173.
 
 The containerized stack exposes the API on `:8000`, the dashboard on `:8080`,
 PostgreSQL on `:5432`, and MLflow on `:5000`.
+
+## Component library and Storybook
+
+`ui/` is a shadcn/ui design system (Base UI + Tailwind v4) with a Storybook
+story for every component. Edit components there and preview them live.
+
+```bash
+make ui-install        # pnpm install in ui/
+make storybook         # Storybook on http://localhost:6006
+make storybook-build   # static site in ui/storybook-static
+```
+
+Storybook includes autodocs, an accessibility panel, and light/dark theme
+switching. See [`ui/README.md`](ui/README.md) for how to consume the library
+from the dashboard.
 
 ## API endpoints
 
@@ -121,6 +140,7 @@ return `503` with a clear message until `make train` has been run.
 analytics/  config, schema, data IO, model catalog, train, tune, evaluate, explain
 api/        FastAPI app, routes, schemas, model store
 eval/       SUS, effect sizes, longitudinal T0/T1/T2 protocol
+ui/         shadcn/ui component library + Storybook (design system)
 web/        React + TypeScript dashboard on Vite+ (placeholder UI)
 data/       raw and processed datasets (DVC-tracked)
 models/     serialized pipelines and metadata sidecars
@@ -137,6 +157,7 @@ notebooks/  exploratory analysis
 - **Tracking:** MLflow, DVC
 - **Service:** FastAPI, Pydantic, uvicorn, gunicorn
 - **Frontend:** React, Vite+ (Vite 8 + Rolldown + Oxc), TypeScript, Chart.js, TanStack Query
+- **Design system:** shadcn/ui (Base UI + Tailwind v4) with Storybook
 - **Evaluation:** scikit-learn metrics, pingouin, scipy (see the GPL-3 note in the spec)
 
 ## Documentation
@@ -148,6 +169,7 @@ notebooks/  exploratory analysis
 | `api/README.md` | Service configuration and endpoints |
 | `eval/README.md` | Evaluation protocol |
 | `web/README.md` | Dashboard structure, Vite+ toolchain, UI-kit swap |
+| `ui/README.md` | Component library and Storybook |
 
 ## Data
 

@@ -237,9 +237,11 @@ faster than the previous esbuild-plus-Rollup stack and remove tool drift by
 keeping configuration in one `vite.config.ts`. Chart.js is explicitly named in
 the paper and is more than adequate for a 480-row dataset. TanStack Query
 centralises fetching, caching, and loading states so the placeholder UI can be
-replaced by the production UI kit without touching data logic. The UI kit
-itself is a placeholder by agreement; only the chart wrapper and API contract
-are fixed.
+replaced by the production UI kit without touching data logic. The design
+system is delivered as a `shadcn/ui` component library (Base UI + Tailwind v4)
+under `ui/`, with a `Storybook` story for every component so the UI can be
+edited and reviewed visually; only the chart wrapper and API contract are
+fixed.
 
 *Alternatives considered:* `Recharts` (the more idiomatic React default and
 the migration target if Chart.js is ever outgrown); `Nivo` (best animation and

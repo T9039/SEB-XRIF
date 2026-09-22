@@ -18,6 +18,9 @@ web/coverage/
 web/*.tsbuildinfo
 web/*.d.ts
 web/*.js
+ui/dist/
+ui/storybook-static/
+ui/*.tsbuildinfo
 
 # ML artifacts
 models/*.joblib

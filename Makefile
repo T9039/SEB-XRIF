@@ -3,7 +3,8 @@
 SHELL := /bin/bash
 
 .PHONY: help bootstrap sync lint format type test api web dev train prepare \
-        docker-up docker-down docker-logs figures clean
+        docker-up docker-down docker-logs figures clean \
+        ui-install storybook storybook-build
 
 help:
 > @echo "SEB-XRIF targets:"
@@ -18,6 +19,9 @@ help:
 > @echo "  api          run FastAPI on :8000"
 > @echo "  web          run Vite dev server on :5173"
 > @echo "  dev          run api and web together"
+> @echo "  ui-install   install the ui component library (pnpm)"
+> @echo "  storybook    run Storybook for the ui library on :6006"
+> @echo "  storybook-build  build the static Storybook"
 > @echo "  docker-up    build and start the full stack"
 > @echo "  docker-down  stop the stack"
 > @echo "  figures      regenerate the paper figures"
@@ -55,6 +59,15 @@ web:
 
 dev:
 > @./scripts/dev.sh
+
+ui-install:
+> cd ui && pnpm install
+
+storybook:
+> @./scripts/storybook.sh $(ARGS)
+
+storybook-build:
+> cd ui && pnpm build-storybook
 
 docker-up:
 > @./scripts/docker-up.sh
