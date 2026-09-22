@@ -1,0 +1,47 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: uv run python -m analytics.data --out data/processed/learners.parquet
+    deps:
+    - path: analytics/data.py
+      hash: md5
+      md5: b326cf3bebb322ec345226c19dfd0d9d
+      size: 2816
+    - path: analytics/schema.py
+      hash: md5
+      md5: 91937d2996ec17a067d3c7229369964d
+      size: 1294
+    - path: data/raw/xAPI-Edu-Data.csv
+      hash: md5
+      md5: 24b17c0a18b445c6f18eb28c95540d77
+      size: 37545
+    outs:
+    - path: data/processed/learners.parquet
+      hash: md5
+      md5: 231a8c62deaf6035584daf9870b04857
+      size: 14884
+  train:
+    cmd: uv run python -m analytics.train --models random_forest --no-mlflow
+    deps:
+    - path: analytics
+      hash: md5
+      md5: 31c580b31f27af0ddabcddad11d385b0.dir
+      size: 74468
+      nfiles: 22
+    - path: data/raw/xAPI-Edu-Data.csv
+      hash: md5
+      md5: 24b17c0a18b445c6f18eb28c95540d77
+      size: 37545
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: 6e2bcb88ceeca96cf74366d5404f5de9
+      size: 1745930
+    - path: models/model.meta.json
+      hash: md5
+      md5: 3afcdb0233cdecd8671f74d7fc401b5f
+      size: 5646
+    - path: models/shap.json
+      hash: md5
+      md5: b7cb50345bab322f91dfcf94ef593ea7
+      size: 3792

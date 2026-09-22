@@ -20,6 +20,7 @@ web/coverage/
 models/*.joblib
 models/*.pkl
 models/*.onnx
+models/*.json
 mlruns/
 mlartifacts/
 *.onnx

@@ -1,6 +1,26 @@
 # SEB-XRIF reproducible pipeline.
 #
-# Stages are populated in build-plan phase 6. `dvc repro` regenerates the
-# processed data, the trained model, and the reported metrics from a clean
-# checkout.
-stages: {}
+# Run `uv run dvc repro` to regenerate the processed data and the promoted
+# model from a clean checkout. See the technical specification, section 9.
+
+stages:
+  prepare:
+    cmd: uv run python -m analytics.data --out data/processed/learners.parquet
+    deps:
+      - data/raw/xAPI-Edu-Data.csv
+      - analytics/data.py
+      - analytics/schema.py
+    outs:
+      - data/processed/learners.parquet
+
+  train:
+    cmd: uv run python -m analytics.train --models random_forest --no-mlflow
+    deps:
+      - analytics
+      - data/raw/xAPI-Edu-Data.csv
+    outs:
+      - models/model.joblib
+      - models/shap.json
+    metrics:
+      - models/model.meta.json:
+          cache: false

@@ -4,9 +4,10 @@ Ten items rated 1-5. Odd-numbered items are positively worded, even-numbered
 items negatively worded. Each item contributes 0-4 points; the total is
 multiplied by 2.5 to give a score out of 100.
 """
+
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 
 def sus_score(responses: Sequence[int]) -> float:

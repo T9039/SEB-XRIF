@@ -1,0 +1,68 @@
+"""Configuration loading for the analytics layer.
+
+Reads ``analytics/config.yaml`` once and exposes a frozen ``Settings`` object.
+All paths in the config are resolved relative to the repository root so the
+pipeline is location independent.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+PACKAGE_DIR = Path(__file__).resolve().parent
+REPO_ROOT = PACKAGE_DIR.parent
+CONFIG_PATH = PACKAGE_DIR / "config.yaml"
+
+
+@dataclass(frozen=True)
+class Settings:
+    """Typed view over the analytics configuration."""
+
+    seed: int
+    test_size: float
+    cv_folds: int
+    target: str
+    class_labels: list[str]
+    categorical: list[str]
+    behavioural: list[str]
+    random_forest: dict[str, Any]
+    paths: dict[str, str]
+    repo_root: Path
+
+    def resolve(self, key: str) -> Path:
+        """Resolve a configured path relative to the repository root."""
+        return (self.repo_root / self.paths[key]).resolve()
+
+    @property
+    def raw_path(self) -> Path:
+        return self.resolve("raw")
+
+    @property
+    def processed_path(self) -> Path:
+        return self.resolve("processed")
+
+    @property
+    def model_path(self) -> Path:
+        return self.resolve("model")
+
+    @property
+    def metadata_path(self) -> Path:
+        return self.resolve("metadata")
+
+    @property
+    def feature_columns(self) -> list[str]:
+        return [*self.categorical, *self.behavioural]
+
+
+@lru_cache(maxsize=1)
+def get_settings(config_path: Path | None = None) -> Settings:
+    """Load and cache the analytics settings."""
+    path = Path(config_path) if config_path else CONFIG_PATH
+    with path.open(encoding="utf-8") as handle:
+        raw = yaml.safe_load(handle)
+    return Settings(repo_root=REPO_ROOT, **raw)

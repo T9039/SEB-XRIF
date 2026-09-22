@@ -4,10 +4,13 @@ Validates the 16 predictors and the three-class target before any modelling
 happens. The dataset is published pre-cleaned, so this schema asserts that
 property rather than assuming it.
 """
+
 from __future__ import annotations
 
-import pandera as pa
-from pandera import Check, Column, DataFrameSchema
+try:  # pandera >= 0.21 exposes the pandas backend explicitly
+    from pandera.pandas import Check, Column, DataFrameSchema
+except ImportError:  # pragma: no cover - fallback for older pandera
+    from pandera import Check, Column, DataFrameSchema
 
 CATEGORICAL = [
     "gender",

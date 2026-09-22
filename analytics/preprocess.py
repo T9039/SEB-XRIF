@@ -5,6 +5,7 @@ one for scale-sensitive estimators (SVM, KNN, MLP). Both are intended to be
 composed inside a single scikit-learn `Pipeline` so preprocessing travels with
 the serialized model.
 """
+
 from __future__ import annotations
 
 from sklearn.compose import ColumnTransformer

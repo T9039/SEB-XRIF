@@ -1,32 +1,75 @@
-.PHONY: help sync lint format type test api web figures clean
+# SEB-XRIF developer commands.
+.RECIPEPREFIX = >
+SHELL := /bin/bash
 
-help:  ## Show available targets
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
+.PHONY: help bootstrap sync lint format type test api web dev train prepare \
+        docker-up docker-down docker-logs figures clean
 
-sync:  ## Create or refresh the uv-managed environment
-	uv sync
+help:
+> @echo "SEB-XRIF targets:"
+> @echo "  bootstrap    install Python + web dependencies, hooks, and .env"
+> @echo "  sync         refresh the uv-managed Python environment"
+> @echo "  lint         ruff + mypy (+ web typecheck)"
+> @echo "  format       ruff format the Python tree"
+> @echo "  type         mypy static checks"
+> @echo "  test         pytest with coverage"
+> @echo "  prepare      validate and snapshot the dataset"
+> @echo "  train        train models (ARGS='--all')"
+> @echo "  api          run FastAPI on :8000"
+> @echo "  web          run Vite dev server on :5173"
+> @echo "  dev          run api and web together"
+> @echo "  docker-up    build and start the full stack"
+> @echo "  docker-down  stop the stack"
+> @echo "  figures      regenerate the paper figures"
+> @echo "  clean        remove caches and build artifacts"
 
-lint:  ## Lint the source tree
-	uv run ruff check .
+bootstrap:
+> @./scripts/bootstrap.sh
 
-format:  ## Format the source tree
-	uv run ruff format .
+sync:
+> uv sync
 
-type:  ## Run static type checks
-	uv run mypy analytics api eval
+lint:
+> @./scripts/lint.sh
 
-test:  ## Run the test suite
-	uv run pytest --cov=analytics --cov=api --cov=eval
+format:
+> uv run ruff format .
 
-api:  ## Run the FastAPI service with reload
-	uv run uvicorn api.main:app --reload
+type:
+> uv run mypy analytics api eval
 
-figures:  ## Regenerate the paper figures
-	cd docs/figures && uv run python src/make_fig1_methods.py && \
-		uv run python src/make_fig_lit_methods.py && \
-		uv run python src/sebxrif_figs.py
+test:
+> @./scripts/test.sh
 
-clean:  ## Remove caches and build artifacts
-	find . -type d -name __pycache__ -prune -exec rm -rf {} +
-	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage
+prepare:
+> uv run python -m analytics.data
+
+train:
+> @./scripts/train.sh $(ARGS)
+
+api:
+> @./scripts/run-api.sh
+
+web:
+> @./scripts/run-web.sh
+
+dev:
+> @./scripts/dev.sh
+
+docker-up:
+> @./scripts/docker-up.sh
+
+docker-down:
+> @./scripts/docker-down.sh
+
+docker-logs:
+> docker compose logs -f
+
+figures:
+> cd docs/figures && uv run python src/make_fig1_methods.py \
+>   && uv run python src/make_fig_lit_methods.py \
+>   && uv run python src/sebxrif_figs.py
+
+clean:
+> find . -type d -name __pycache__ -prune -exec rm -rf {} +
+> rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage

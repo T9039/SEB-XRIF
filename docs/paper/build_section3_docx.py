@@ -16,11 +16,13 @@ Style: Times New Roman, justified body text, numbered headings,
 captioned figures and tables, IEEE-numbered references. All facts
 verified against the xAPI-Edu-Data.csv download and the SLR.
 """
+
 import csv
 import os
+
 from docx import Document
-from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Inches, Pt
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(BASE))
@@ -34,164 +36,127 @@ OUT = os.path.join(BASE, "team 3 (final).docx")
 # in *...*.
 REFERENCES = [
     "J. A. Cahya and S. Hartono, \"Development of Preinanku' VR game "
-    "for Javanese language learning using the ADDIE model,\" *J. Educ. "
+    'for Javanese language learning using the ADDIE model," *J. Educ. '
     "Technol. Innov.*, vol. 12, no. 1, pp. 45-56, Jan. 2025.",
-
-    "P. Mongkoljaturong, A. Smith, and B. Jones, \"Evaluation of "
-    "speech-to-text processing speed in AI-driven mock interviews,\" "
+    'P. Mongkoljaturong, A. Smith, and B. Jones, "Evaluation of '
+    'speech-to-text processing speed in AI-driven mock interviews," '
     "*in Proc. Int. Conf. Adv. Learn. Technol. (ICALT)*, 2025, "
     "pp. 112-119.",
-
-    "D. Ai, Y. Chen, and X. Zhang, \"Virtual reality integration in "
+    'D. Ai, Y. Chen, and X. Zhang, "Virtual reality integration in '
     "higher education: Evaluation of learner retention and "
-    "generalizability,\" *Comput. and Educ.*, vol. 208, p. 104920, "
+    'generalizability," *Comput. and Educ.*, vol. 208, p. 104920, '
     "Mar. 2024.",
-
-    "M. Gie\u00dfer, K. Weber, and H. M\u00fcller, \"Immersive VR training in "
+    'M. Gie\u00dfer, K. Weber, and H. M\u00fcller, "Immersive VR training in '
     "medical education: A comparative study on practical skill "
-    "acquisition,\" *BMC Med. Educ.*, vol. 24, no. 1, Art. no. 88, "
+    'acquisition," *BMC Med. Educ.*, vol. 24, no. 1, Art. no. 88, '
     "Feb. 2024.",
-
-    "A. Al-Sudani, M. K. Hassan, and S. R. Ali, \"BodySwaps simulation "
+    'A. Al-Sudani, M. K. Hassan, and S. R. Ali, "BodySwaps simulation '
     "using BERT/DistilBERT sentiment analysis for communication "
-    "training,\" *IEEE Trans. Learn. Technol.*, vol. 18, pp. 215-226, "
+    'training," *IEEE Trans. Learn. Technol.*, vol. 18, pp. 215-226, '
     "2025.",
-
-    "Y.-C. Chu, C.-C. Lin, K.-L. Fu, and H.-R. Chen, \"Interactive "
-    "augmented reality in STEM learning environments,\" *Comput. Hum. "
+    'Y.-C. Chu, C.-C. Lin, K.-L. Fu, and H.-R. Chen, "Interactive '
+    'augmented reality in STEM learning environments," *Comput. Hum. '
     "Behav.*, vol. 150, Art. no. 107980, Jan. 2024.",
-
-    "S. Leonori, M. Paschero, and A. Rizzi, \"Virtual laboratories for "
-    "engineering education: A systematic review,\" *IEEE Rev. Biomed. "
+    'S. Leonori, M. Paschero, and A. Rizzi, "Virtual laboratories for '
+    'engineering education: A systematic review," *IEEE Rev. Biomed. '
     "Eng.*, vol. 17, pp. 101-114, 2024.",
-
-    "J. Zhang, \"Multi-institutional scale evaluation of VR nursing "
-    "procedural training across Chinese universities,\" *Int. J. Nurs. "
+    'J. Zhang, "Multi-institutional scale evaluation of VR nursing '
+    'procedural training across Chinese universities," *Int. J. Nurs. '
     "Stud.*, vol. 142, Art. no. 104480, June 2023.",
-
     "E. R. Smith, R. Koldenhoven, J. W. Farrell III, S. Aslan, "
-    "M. D. Resendiz, Y. Li, T. Liu, and D. Valles, \"AR handwashing "
-    "training for children with ASD using HoloLens 2,\" *IEEE Trans. "
+    'M. D. Resendiz, Y. Li, T. Liu, and D. Valles, "AR handwashing '
+    'training for children with ASD using HoloLens 2," *IEEE Trans. '
     "Vis. Comput. Graph.*, vol. 30, no. 5, pp. 2410-2420, May 2024.",
-
-    "R. Toledano, C. Giordano, E. Pozzebon, and J. Manzon, \"3D "
+    'R. Toledano, C. Giordano, E. Pozzebon, and J. Manzon, "3D '
     "pathology models developed with Unity and Blender for medical "
-    "education,\" *Anat. Sci. Educ.*, vol. 18, no. 2, pp. 189-201, "
+    'education," *Anat. Sci. Educ.*, vol. 18, no. 2, pp. 189-201, '
     "Feb. 2025.",
-
     "S. Litchaweerat, P. Khenda, W. Intayoad, Y. Tongpaeng, and "
-    "P. Putjorn, \"Interactive science and technology VR laboratory "
-    "simulations,\" *J. Sci. Educ. Technol.*, vol. 33, no. 3, "
+    'P. Putjorn, "Interactive science and technology VR laboratory '
+    'simulations," *J. Sci. Educ. Technol.*, vol. 33, no. 3, '
     "pp. 310-322, June 2024.",
-
-    "P. Ordu\u00f1a, P. Amarante, and L. Rodriguez-Gil, \"Remote hands-on "
-    "hardware labs for digital engineering education,\" *IEEE Trans. "
+    'P. Ordu\u00f1a, P. Amarante, and L. Rodriguez-Gil, "Remote hands-on '
+    'hardware labs for digital engineering education," *IEEE Trans. '
     "Educ.*, vol. 66, no. 4, pp. 380-389, Aug. 2023.",
-
     "M. F. Rahman, J. Akbardin, A. Y. Permana, K. Wijaya, I. Susanti, "
-    "and S. Handayani, \"Spatial learning and architectural "
-    "visualization using extended reality,\" *Educ. Inf. Technol.*, "
+    'and S. Handayani, "Spatial learning and architectural '
+    'visualization using extended reality," *Educ. Inf. Technol.*, '
     "vol. 29, no. 2, pp. 1845-1862, Feb. 2024.",
-
     "L. D'Souza, R. Kumar, and S. Nair, \"Evaluating multi-user "
-    "immersive virtual reality for collaborative problem-solving,\" "
+    'immersive virtual reality for collaborative problem-solving," '
     "*Comput. and Educ. XR*, vol. 3, Art. no. 100045, 2025.",
-
-    "L. J. Jacobsen, M. Nielsen, and K. Hansen, \"Evaluating "
-    "pre-service teachers via VR microteaching feedback transcripts,\" "
+    'L. J. Jacobsen, M. Nielsen, and K. Hansen, "Evaluating '
+    'pre-service teachers via VR microteaching feedback transcripts," '
     "*Teach. Teach. Educ.*, vol. 138, Art. no. 104412, Feb. 2026.",
-
-    "X. Huang, Y. Wang, and Z. Liu, \"Usability evaluation of virtual "
-    "museum exhibits using SUS and UEQ metrics,\" *Int. J. "
+    'X. Huang, Y. Wang, and Z. Liu, "Usability evaluation of virtual '
+    'museum exhibits using SUS and UEQ metrics," *Int. J. '
     "Hum.-Comput. Stud.*, vol. 193, Art. no. 103210, Jan. 2025.",
-
-    "S. Sunardi, A. Abdullah, and A. Setiawan, \"Hybrid assessment "
-    "frameworks for extended reality in vocational learning,\" *J. "
+    'S. Sunardi, A. Abdullah, and A. Setiawan, "Hybrid assessment '
+    'frameworks for extended reality in vocational learning," *J. '
     "Vocat. Educ. Train.*, vol. 77, no. 1, pp. 88-105, 2025.",
-
-    "S. S. Marandi and F. S. Kashanifar, \"Addressing sample size "
-    "constraints in educational technology interventions,\" *Educ. Res. "
+    'S. S. Marandi and F. S. Kashanifar, "Addressing sample size '
+    'constraints in educational technology interventions," *Educ. Res. '
     "Rev.*, vol. 42, Art. no. 100580, Nov. 2024.",
-
     "W. D. W. Gonzales, S. P. Geng, D. S. Jiandong, and A. "
-    "Nurgissayeva, \"Comparative analysis of user engagement in "
-    "concrete vs. abstract XR simulations,\" *Interact. Learn. "
+    'Nurgissayeva, "Comparative analysis of user engagement in '
+    'concrete vs. abstract XR simulations," *Interact. Learn. '
     "Environ.*, vol. 33, no. 1, pp. 115-129, 2025.",
-
-    "A. Vaze, A. Morris, and I. Clarke, \"Impact of speech recognition "
-    "errors and dialect variability in conversational VR,\" *Speech "
+    'A. Vaze, A. Morris, and I. Clarke, "Impact of speech recognition '
+    'errors and dialect variability in conversational VR," *Speech '
     "Commun.*, vol. 158, Art. no. 103020, Mar. 2024.",
-
-    "T. L. Nieto and D. L. Gonz\u00e1lez-Ba\u00f1ales, \"Pedagogical frameworks "
-    "for integrating mixed reality in higher education,\" *Innov. Educ. "
+    'T. L. Nieto and D. L. Gonz\u00e1lez-Ba\u00f1ales, "Pedagogical frameworks '
+    'for integrating mixed reality in higher education," *Innov. Educ. '
     "Teach. Int.*, vol. 61, no. 4, pp. 512-526, 2024.",
-
-    "R.-C. Chang and H.-C. Hsu, \"Measuring practical exam performance "
-    "gains in VR-based vocational training,\" *Comput. and Educ.*, "
+    'R.-C. Chang and H.-C. Hsu, "Measuring practical exam performance '
+    'gains in VR-based vocational training," *Comput. and Educ.*, '
     "vol. 198, Art. no. 104760, June 2023.",
-
-    "S. Dickinson and M. K. McIntosh, \"Experiential learning and "
-    "risk-free mistake management in virtual simulation,\" *Med. "
+    'S. Dickinson and M. K. McIntosh, "Experiential learning and '
+    'risk-free mistake management in virtual simulation," *Med. '
     "Teach.*, vol. 47, no. 3, pp. 340-351, 2025.",
-
     "J.-H. Wang, M. Liyanawatta, C.-Y. Lee, Y.-L. Huang, S.-H. Yang, "
-    "and G.-D. Chen, \"Embodied learning dynamics in 3D interactive "
-    "environments,\" *IEEE Access*, vol. 11, pp. 88200-88212, 2023.",
-
-    "Y. Xing, Y. Xiao, X. Wang, Y. Liang, and G. Feng, \"VR moot court "
-    "simulations for law students combining UCD and PBL,\" *Comput. "
+    'and G.-D. Chen, "Embodied learning dynamics in 3D interactive '
+    'environments," *IEEE Access*, vol. 11, pp. 88200-88212, 2023.',
+    'Y. Xing, Y. Xiao, X. Wang, Y. Liang, and G. Feng, "VR moot court '
+    'simulations for law students combining UCD and PBL," *Comput. '
     "and Educ.*, vol. 210, Art. no. 104950, Feb. 2025.",
-
-    "L. Patra, M. Kumari, and R. Gopalapillai, \"Synthesizing empirical "
-    "evidence in immersive educational technology,\" *Rev. Educ. Res.*, "
+    'L. Patra, M. Kumari, and R. Gopalapillai, "Synthesizing empirical '
+    'evidence in immersive educational technology," *Rev. Educ. Res.*, '
     "vol. 94, no. 2, pp. 210-235, Apr. 2024.",
-
-    "L. Xia, X. Li, Y. Qin, D. Li, and L. Fan, \"Scalable spatial "
-    "computing frameworks for institutional hybrid learning,\" *Comput. "
+    'L. Xia, X. Li, Y. Qin, D. Li, and L. Fan, "Scalable spatial '
+    'computing frameworks for institutional hybrid learning," *Comput. '
     "Graph.*, vol. 118, Art. no. 103850, Feb. 2024.",
-
     "J. Kim, K. Wang, M. Dorneich, E. Winer, L. Brown, and "
-    "G. Whitehurst, \"Long-term evaluation of immersive VR training "
-    "retention,\" *Int. J. Hum.-Comput. Interact.*, vol. 40, no. 8, "
+    'G. Whitehurst, "Long-term evaluation of immersive VR training '
+    'retention," *Int. J. Hum.-Comput. Interact.*, vol. 40, no. 8, '
     "pp. 1950-1965, 2024.",
-
-    "A. R. Hevner, S. T. March, J. Park, and S. Ram, \"Design science "
-    "in information systems research,\" *MIS Quarterly*, vol. 28, "
+    'A. R. Hevner, S. T. March, J. Park, and S. Ram, "Design science '
+    'in information systems research," *MIS Quarterly*, vol. 28, '
     "no. 1, pp. 75-105, 2004.",
-
     "K. Peffers, T. Tuunanen, M. A. Rothenberger, and S. Chatterjee, "
-    "\"A design science research methodology for information systems "
-    "research,\" *Journal of Management Information Systems*, vol. 24, "
+    '"A design science research methodology for information systems '
+    'research," *Journal of Management Information Systems*, vol. 24, '
     "no. 3, pp. 45-77, 2007.",
-
-    "E. Abu Amrieh, T. Hamtini, and I. Aljarah, \"Preprocessing and "
+    'E. Abu Amrieh, T. Hamtini, and I. Aljarah, "Preprocessing and '
     "analyzing educational data set using X-API for improving student's "
-    "performance,\" *in Proc. Int. Conf. Appl. Electr. Eng. Comput. "
+    'performance," *in Proc. Int. Conf. Appl. Electr. Eng. Comput. '
     "Technol. (AEECT)*, Amman, Jordan, 2015.",
-
-    "L. Breiman, \"Random forests,\" *Machine Learning*, vol. 45, "
-    "no. 1, pp. 5-32, 2001.",
-
-    "E. Abu Amrieh, T. Hamtini, and I. Aljarah, \"Mining educational "
+    'L. Breiman, "Random forests," *Machine Learning*, vol. 45, no. 1, pp. 5-32, 2001.',
+    'E. Abu Amrieh, T. Hamtini, and I. Aljarah, "Mining educational '
     "data to predict student's academic performance using ensemble "
-    "methods,\" *International Journal of Database Theory and "
+    'methods," *International Journal of Database Theory and '
     "Application*, vol. 9, no. 8, pp. 119-136, 2016.",
-
     "J. Brooke, \"SUS: A 'quick and dirty' usability scale,\" in "
     "*Usability Evaluation in Industry*, P. W. Jordan, B. Thomas, "
     "B. A. Weerdmeester, and I. L. McClelland, Eds. London, U.K.: "
     "Taylor and Francis, 1996, pp. 189-194.",
-
     "J. Cohen, *Statistical Power Analysis for the Behavioral "
     "Sciences*, 2nd ed. Hillsdale, NJ, USA: Lawrence Erlbaum "
     "Associates, 1988.",
-
     "E. Abu Amrieh, T. Hamtini, and I. Aljarah, \"Students' academic "
-    "performance dataset (xAPI-Edu-Data),\" *Kaggle*, 2016. [Online]. "
+    'performance dataset (xAPI-Edu-Data)," *Kaggle*, 2016. [Online]. '
     "Available: https://www.kaggle.com/datasets/aljarah/xAPI-Edu-Data",
-
-    "M. J. Page et al., \"The PRISMA 2020 statement: An updated "
-    "guideline for reporting systematic reviews,\" *BMJ*, vol. 372, "
+    'M. J. Page et al., "The PRISMA 2020 statement: An updated '
+    'guideline for reporting systematic reviews," *BMJ*, vol. 372, '
     "Art. no. n71, 2021.",
 ]
 
@@ -223,12 +188,9 @@ PROPOSED = [
 
 OBJECTIVES = [
     "Identify structural barriers to theoretical knowledge transfer.",
-    "Define a standard XR architecture for longitudinal "
-    "multi-institutional use.",
-    "Build a dashboard prototype that visualizes engagement and predicts "
-    "performance.",
-    "Assess usability and effectiveness using System Usability Scale and "
-    "Cohen d.",
+    "Define a standard XR architecture for longitudinal multi-institutional use.",
+    "Build a dashboard prototype that visualizes engagement and predicts performance.",
+    "Assess usability and effectiveness using System Usability Scale and Cohen d.",
 ]
 
 DATA_GATHERING = [
@@ -240,7 +202,6 @@ DATA_GATHERING = [
     "Counts are 127 Low, 211 Medium, and 142 High. The authors published "
     "it preprocessed, a completeness check found no missing entries, "
     "and Table 1 samples the records.",
-
     "A public dataset addresses the single-cohort median of 30 and "
     "supports reproduction and extension. The records are primary and "
     "secondary school level and therefore prototype the analytics layer "
@@ -253,7 +214,6 @@ DESIGN = [
     "tiers, as Fig. 2 shows. Preprocessing applies one-hot encoding to "
     "categorical variables and retains behavioral counts, as tree models "
     "do not require scaling.",
-
     "Tool selection follows the literature review theoretical evaluation, "
     "which ranked Random Forest strongest [32]. The ensemble resists "
     "noise and overfitting and ranks feature importance, expected to "
@@ -272,7 +232,6 @@ EVALUATION = [
     "reality training [28]. Effectiveness uses Cohen d [35] with "
     "thresholds 0.2, 0.5, and 0.8 against 0.936 for immersive practical "
     "training [22].",
-
     "Results are compared against these baselines, and a Durban "
     "University of Technology pilot with one-semester follow-up supplies "
     "the missing longitudinal retention measure.",
@@ -393,27 +352,33 @@ TECHDESC_INTRO = [
 
 TECHDESC_TABLE = [
     ("Technology", "Capability, national value, and study use"),
-    ("Virtual reality simulation",
-     "Brings safe practice without real world consequences. Practical "
-     "gains exceed 30 percent with engagement near 92 percent [22], "
-     "[1], [25]. Value is hands on training at scale, as shown by "
-     "5,000 nursing students across 50 universities [8]. The study "
-     "uses VR as the instructional method for procedural skills, not "
-     "for abstract theory where it remains weak."),
-    ("Random Forest with language feedback",
-     "An ensemble of decision trees that tolerates noisy education "
-     "data and ranks the behaviors that drive results [32]. Expected "
-     "accuracy is 75 to 83 percent on the xAPI benchmark [33], while "
-     "DistilBERT scores feedback sentiment at 91.7 percent F1 [5]. "
-     "Value is early warning for support, not gatekeeping. The study "
-     "uses it to predict Low, Medium, or High tiers with explanations."),
-    ("xAPI logging with dashboard",
-     "Experience API gives every institution the same standard event "
-     "record [31], [36]. A Flask, React, and Chart.js dashboard shows "
-     "trends, tiers, and importance to instructors. Value is "
-     "comparability: any adopter reports accuracy with ten fold "
-     "validation, usability against 76.6 [34], [28], and learning "
-     "effect with Cohen d [35], [22], plus one semester follow up."),
+    (
+        "Virtual reality simulation",
+        "Brings safe practice without real world consequences. Practical "
+        "gains exceed 30 percent with engagement near 92 percent [22], "
+        "[1], [25]. Value is hands on training at scale, as shown by "
+        "5,000 nursing students across 50 universities [8]. The study "
+        "uses VR as the instructional method for procedural skills, not "
+        "for abstract theory where it remains weak.",
+    ),
+    (
+        "Random Forest with language feedback",
+        "An ensemble of decision trees that tolerates noisy education "
+        "data and ranks the behaviors that drive results [32]. Expected "
+        "accuracy is 75 to 83 percent on the xAPI benchmark [33], while "
+        "DistilBERT scores feedback sentiment at 91.7 percent F1 [5]. "
+        "Value is early warning for support, not gatekeeping. The study "
+        "uses it to predict Low, Medium, or High tiers with explanations.",
+    ),
+    (
+        "xAPI logging with dashboard",
+        "Experience API gives every institution the same standard event "
+        "record [31], [36]. A Flask, React, and Chart.js dashboard shows "
+        "trends, tiers, and importance to instructors. Value is "
+        "comparability: any adopter reports accuracy with ten fold "
+        "validation, usability against 76.6 [34], [28], and learning "
+        "effect with Cohen d [35], [22], plus one semester follow up.",
+    ),
 ]
 
 TECHDESC_CLOSE = [
@@ -426,8 +391,10 @@ TECHDESC_CLOSE = [
 ]
 
 TABLE_COLS = [
-    ("gender", "Gender"), ("StageID", "Stage"),
-    ("Topic", "Topic"), ("raisedhands", "Raised hands"),
+    ("gender", "Gender"),
+    ("StageID", "Stage"),
+    ("Topic", "Topic"),
+    ("raisedhands", "Raised hands"),
     ("VisITedResources", "Visited resources"),
     ("Class", "Class"),
 ]
@@ -532,48 +499,72 @@ def build():
 
     title = doc.add_paragraph()
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_font(title.add_run("Enhancing Digital Education Using VR "
-                           "Technology"), size=14, bold=True)
+    set_font(
+        title.add_run("Enhancing Digital Education Using VR Technology"),
+        size=14,
+        bold=True,
+    )
 
     subtitle = doc.add_paragraph()
     subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_font(subtitle.add_run("Section 3: Research Methodology and "
-                              "Proposed Solution plus Literature Review "
-                              "and Technology Description"),
-             size=12)
+    set_font(
+        subtitle.add_run(
+            "Section 3: Research Methodology and "
+            "Proposed Solution plus Literature Review "
+            "and Technology Description"
+        ),
+        size=12,
+    )
 
     note = doc.add_paragraph()
     note.alignment = WD_ALIGN_PARAGRAPH.CENTER
     note.paragraph_format.space_after = Pt(12)
-    set_font(note.add_run("Draft prepared by Team 3 for mentor review"),
-             size=10, italic=True)
+    set_font(
+        note.add_run("Draft prepared by Team 3 for mentor review"), size=10, italic=True
+    )
 
-    heading(doc, "3. Research Methodology and Proposed Solution", size=14,
-            space_before=4)
+    heading(
+        doc, "3. Research Methodology and Proposed Solution", size=14, space_before=4
+    )
     for para in INTRO:
         body(doc, para)
 
-    add_figure(doc, os.path.join(FIG_DIR, "fig3_dsrm.png"), "Fig. 1.",
-               "DSRM phases as applied in this study.")
+    add_figure(
+        doc,
+        os.path.join(FIG_DIR, "fig3_dsrm.png"),
+        "Fig. 1.",
+        "DSRM phases as applied in this study.",
+    )
 
     heading(doc, "3.1 Proposed Solution", size=12)
     body(doc, PROPOSED[0])
-    body(doc, "The framework pursues four objectives: (1) " +
-         OBJECTIVES[0] + " (2) " + OBJECTIVES[1] + " (3) " +
-         OBJECTIVES[2] + " (4) " + OBJECTIVES[3])
+    body(
+        doc,
+        "The framework pursues four objectives: (1) "
+        + OBJECTIVES[0]
+        + " (2) "
+        + OBJECTIVES[1]
+        + " (3) "
+        + OBJECTIVES[2]
+        + " (4) "
+        + OBJECTIVES[3],
+    )
 
     heading(doc, "3.2 Data Gathering", size=12)
     body(doc, DATA_GATHERING[0])
-    caption(doc, "Table 1:",
-            "Sample from the xAPI Educational Mining Dataset.")
+    caption(doc, "Table 1:", "Sample from the xAPI Educational Mining Dataset.")
     add_sample_table(doc)
     body(doc, DATA_GATHERING[1])
 
     heading(doc, "3.3 Design and Development", size=12)
     for para in DESIGN:
         body(doc, para)
-    add_figure(doc, os.path.join(FIG_DIR, "fig3_pipeline.png"), "Fig. 2.",
-               "The SEB-XRIF design and development pipeline.")
+    add_figure(
+        doc,
+        os.path.join(FIG_DIR, "fig3_pipeline.png"),
+        "Fig. 2.",
+        "The SEB-XRIF design and development pipeline.",
+    )
 
     heading(doc, "3.4 Evaluation Criteria", size=12)
     for para in EVALUATION:
@@ -585,8 +576,12 @@ def build():
 
     heading(doc, "2.1 Existing Approaches", size=12)
     body(doc, LIT_21A[0])
-    add_figure(doc, os.path.join(FIG_DIR, "fig_lit_methods.png"), "Fig. 3.",
-               "Immersive methods across the 28 reviewed studies.")
+    add_figure(
+        doc,
+        os.path.join(FIG_DIR, "fig_lit_methods.png"),
+        "Fig. 3.",
+        "Immersive methods across the 28 reviewed studies.",
+    )
     body(doc, LIT_21B[0])
 
     heading(doc, "2.2 Theoretical Evaluation and Synthesis", size=12)
@@ -595,8 +590,7 @@ def build():
     add_small_table(doc, METRICS_TABLE)
     body(doc, LIT_22B[0])
 
-    heading(doc, "2.3 Theoretical Evaluation of Intelligent Models",
-            size=12)
+    heading(doc, "2.3 Theoretical Evaluation of Intelligent Models", size=12)
     body(doc, LIT_23A[0])
     caption(doc, "Table 3:", "Usable model evidence.")
     add_small_table(doc, ML_TABLE)

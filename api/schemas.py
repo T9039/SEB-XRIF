@@ -5,6 +5,7 @@ Mining Dataset. Feature order is pinned in the model metadata; the API builds
 the input vector from these named fields so column reordering cannot silently
 corrupt predictions.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
@@ -12,6 +13,7 @@ from pydantic import BaseModel, Field
 
 class HealthResponse(BaseModel):
     status: str
+    model_loaded: bool
     model_version: str
 
 

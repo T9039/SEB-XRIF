@@ -14,64 +14,138 @@ pipeline with the same seed and configuration, and reports the same evaluation
 metrics. The Random Forest and the dashboard are the first instantiation of the
 framework, not the framework itself.
 
-The four layers:
-
-| Layer | Purpose | Status |
+| Layer | Purpose | Module |
 | --- | --- | --- |
-| Data | xAPI-schema learning data, validated and versioned | Phase 1 |
-| Analytics | Predict Low/Medium/High tier from logged behaviour; rank drivers | Phase 3–6 |
-| Service | FastAPI prediction and metrics endpoints | Phase 7 |
-| Visualization | Dashboard over the API (placeholder UI) | Phase 8 |
-| Evaluation | Accuracy/F1/CV, SUS, Cohen's d, T0/T1/T2 protocol | Phase 9 |
+| Data | Validated, versioned xAPI-schema data | `analytics/data.py`, `analytics/schema.py` |
+| Analytics | Predict Low/Medium/High tier; rank drivers | `analytics/` |
+| Service | Prediction and analytics REST API | `api/` |
+| Visualization | Dashboard over the API (placeholder UI) | `web/` |
+| Evaluation | Accuracy/F1/CV, SUS, Cohen's d, T0/T1/T2 | `eval/` |
 
-## Status
+The full design, rationale, alternatives, and phased build plan are in the
+[technical specification](docs/SEB-XRIF_Technical_Specification.pdf).
 
-Phase 0 — scaffold. The full specification and phased build plan live in
-[`docs/SEB-XRIF_Technical_Specification.pdf`](docs/SEB-XRIF_Technical_Specification.pdf)
-(source: `docs/SEB-XRIF_Technical_Specification.typ`).
+## Prerequisites
+
+- [`uv`](https://docs.astral.sh/uv/) (manages Python 3.12 automatically)
+- Node.js 20+ and npm (for the web dashboard)
+- Docker + Docker Compose (for the containerized stack)
+- `make` (optional, for the shortcut targets)
 
 ## Quickstart
 
-Requires [`uv`](https://docs.astral.sh/uv/) and Python 3.12 (managed by `uv`).
-
 ```bash
-uv sync                 # create the environment and install dependencies
-uv run pytest           # run the test suite
-uv run uvicorn api.main:app --reload   # start the API
+# 1. Install Python deps, web deps, git hooks, and .env
+./scripts/bootstrap.sh
+# or: make bootstrap
+
+# 2. Validate the dataset and snapshot it to parquet
+make prepare
+
+# 3. Train the proposed Random Forest (writes models/model.joblib)
+make train
+
+# 4. Run the API and the dashboard
+make dev            # api on :8000, web on :5173
 ```
+
+Open the API docs at http://localhost:8000/docs and the dashboard at
+http://localhost:5173.
+
+## Command reference
+
+### Environment and quality
+
+| Command | What it does |
+| --- | --- |
+| `make bootstrap` | Install Python + web dependencies, pre-commit hooks, and `.env` |
+| `make sync` | Refresh the uv-managed Python environment |
+| `make lint` | ruff check, ruff format --check, mypy, web typecheck |
+| `make format` | Reformat the Python tree with ruff |
+| `make type` | mypy over `analytics`, `api`, `eval` |
+| `make test` | pytest with coverage |
+| `make clean` | Remove caches and build artifacts |
+
+### Data and models
+
+| Command | What it does |
+| --- | --- |
+| `make prepare` | Validate the raw CSV and write `data/processed/learners.parquet` |
+| `make train` | Train the Random Forest and export artifact + metadata + SHAP |
+| `make train ARGS='--all'` | Train the full comparison matrix |
+| `make train ARGS='--models svc knn'` | Train specific models |
+| `make train ARGS='--tune'` | Tune before fitting |
+| `uv run python -m analytics.train --list` | List every available model |
+| `uv run dvc repro` | Reproduce data + model from a clean checkout |
+
+### Services
+
+| Command | What it does |
+| --- | --- |
+| `make api` | FastAPI with autoreload on http://localhost:8000 |
+| `make web` | Vite dev server on http://localhost:5173 |
+| `make dev` | Both at once |
+| `./scripts/run-api.sh` | Same as `make api` (respects `PORT`) |
+
+### Docker
+
+| Command | What it does |
+| --- | --- |
+| `make docker-up` | Build and start api, web, postgres, and mlflow |
+| `make docker-down` | Stop the stack |
+| `make docker-logs` | Tail the stack logs |
+
+The containerized stack exposes the API on `:8000`, the dashboard on `:8080`,
+PostgreSQL on `:5432`, and MLflow on `:5000`.
+
+## API endpoints
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/` | Service banner and endpoint list |
+| `GET` | `/health` | Liveness and model-loaded status |
+| `GET` | `/docs` | OpenAPI (Swagger) documentation |
+| `POST` | `/predict` | Predict a tier for one learner |
+| `POST` | `/predict/batch` | Vectorized tier prediction |
+| `GET` | `/metrics` | Active model metrics (503 until trained) |
+| `GET` | `/importance` | Native + SHAP importance (503 until trained) |
+| `GET` | `/trends` | Class counts and behaviour by tier |
+
+The service starts even without a trained model; prediction and metrics routes
+return `503` with a clear message until `make train` has been run.
 
 ## Repository layout
 
 ```
-data/       raw and processed datasets (DVC-tracked)
-analytics/  schema, preprocessing, training, tuning, evaluation, explanations
-models/     serialized pipelines and metadata sidecars
-api/        FastAPI service and Pydantic schemas
-web/        React + Vite dashboard (placeholder UI)
+analytics/  config, schema, data IO, model catalog, train, tune, evaluate, explain
+api/        FastAPI app, routes, schemas, model store
 eval/       SUS, effect sizes, longitudinal T0/T1/T2 protocol
+web/        React + Vite + TypeScript dashboard (placeholder UI)
+data/       raw and processed datasets (DVC-tracked)
+models/     serialized pipelines and metadata sidecars
 docs/       technical specification, paper tooling, generated figures
-tests/      Python tests
+scripts/    bootstrap and run helpers
+tests/      Python test suite
 notebooks/  exploratory analysis
 ```
 
-## Stack
+## Documentation
 
-- **Data:** pandas, pandera, SQLAlchemy, DVC
-- **Analytics:** scikit-learn, XGBoost, LightGBM, CatBoost, Optuna, SHAP
-- **Tracking:** MLflow, DVC
-- **Service:** FastAPI, Pydantic, uvicorn, gunicorn
-- **Frontend:** React, Vite, TypeScript, Chart.js, TanStack Query
-- **Evaluation:** scikit-learn metrics, pingouin, scipy (see GPL-3 note in spec)
-
-Full rationale, alternatives, and version pins are in the technical
-specification, Appendices A and B.
+| Document | Description |
+| --- | --- |
+| `docs/SEB-XRIF_Technical_Specification.pdf` | Stack, rationale, alternatives, build plan |
+| `analytics/README.md` | Model catalog and training pipeline |
+| `api/README.md` | Service configuration and endpoints |
+| `eval/README.md` | Evaluation protocol |
+| `web/README.md` | Dashboard structure and UI-kit swap |
 
 ## Data
 
 `data/raw/xAPI-Edu-Data.csv` — the xAPI Educational Mining Dataset (Kalboard
-360), 480 records, CC BY-SA 4.0. See the specification for provenance.
+360), 480 records, 127 Low / 211 Medium / 142 High, CC BY-SA 4.0.
 
 ## License
 
 Code is released under the MIT License (see [`LICENSE`](LICENSE)). The bundled
-dataset retains its CC BY-SA 4.0 license.
+dataset retains its CC BY-SA 4.0 license. Note that `pingouin` is GPL-3.0; a
+`scipy` fallback is provided in `eval/effect_size.py` for redistribution.
