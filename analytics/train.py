@@ -14,6 +14,7 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 import platform
 import subprocess
@@ -122,16 +123,33 @@ def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
 
 
 def _log_mlflow(
-    result: dict[str, Any], metadata: dict[str, Any], settings: Settings
-) -> None:
-    """Best-effort MLflow logging; silently skips if unavailable."""
+    result: dict[str, Any],
+    metadata: dict[str, Any],
+    settings: Settings,
+    *,
+    register: bool = True,
+    tracking_uri: str | None = None,
+    experiment: str | None = None,
+) -> str | None:
+    """Log the run to MLflow and register the model; best effort.
+
+    Returns the MLflow run id when logging succeeds, otherwise ``None``.
+    """
     try:
         import mlflow
         import mlflow.sklearn
 
-        mlflow.set_tracking_uri("file:./mlruns")
-        mlflow.set_experiment("seb-xrif")
-        with mlflow.start_run(run_name=result["model"]):
+        mlflow.set_tracking_uri(tracking_uri or settings.tracking_uri())
+        mlflow.set_experiment(experiment or settings.mlflow_experiment)
+        with mlflow.start_run(run_name=result["model"]) as run:
+            mlflow.set_tags(
+                {
+                    "git_commit": str(metadata.get("git_commit")),
+                    "model_version": str(metadata.get("model_version")),
+                    "n_train": str(result["n_train"]),
+                    "n_test": str(result["n_test"]),
+                }
+            )
             mlflow.log_params(
                 {
                     "model": result["model"],
@@ -148,9 +166,26 @@ def _log_mlflow(
                 }
             )
             mlflow.log_dict(metadata, "metadata.json")
-            mlflow.sklearn.log_model(result["pipeline"], "model")
+            log_kwargs: dict[str, Any] = {}
+            if (
+                "skops_trusted_types"
+                in inspect.signature(mlflow.sklearn.log_model).parameters
+            ):
+                # MLflow 3 serialises with skops and requires explicit trust
+                # for scikit-learn internals such as the tree node store.
+                log_kwargs["skops_trusted_types"] = ["sklearn.tree._tree.Tree"]
+            mlflow.sklearn.log_model(
+                result["pipeline"],
+                name="model",
+                registered_model_name=(
+                    settings.mlflow_registered_model if register else None
+                ),
+                **log_kwargs,
+            )
+            return str(run.info.run_id)
     except Exception as exc:  # noqa: BLE001
         print(f"[mlflow] skipped: {exc}")
+        return None
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -165,6 +200,13 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--tune", action="store_true", help="Tune before fitting.")
     parser.add_argument("--list", action="store_true", help="List available models.")
     parser.add_argument("--no-mlflow", action="store_true", help="Skip MLflow logging.")
+    parser.add_argument("--tracking-uri", default=None, help="MLflow tracking URI.")
+    parser.add_argument("--experiment", default=None, help="MLflow experiment name.")
+    parser.add_argument(
+        "--no-register",
+        action="store_true",
+        help="Log the run but do not register the model.",
+    )
     args = parser.parse_args(argv)
 
     if args.list:
@@ -196,7 +238,16 @@ def main(argv: list[str] | None = None) -> None:
     )
 
     if not args.no_mlflow:
-        _log_mlflow(promoted, metadata, settings)
+        run_id = _log_mlflow(
+            promoted,
+            metadata,
+            settings,
+            register=not args.no_register,
+            tracking_uri=args.tracking_uri,
+            experiment=args.experiment,
+        )
+        if run_id:
+            print(f"MLflow run -> {run_id}")
 
     print(f"Promoted '{promoted['model']}' -> {settings.model_path}")
     print(f"Metadata -> {settings.metadata_path}")

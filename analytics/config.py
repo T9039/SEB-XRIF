@@ -34,6 +34,15 @@ class Settings:
     paths: dict[str, str]
     repo_root: Path
     n_jobs: int = 1
+    mlflow_tracking_uri: str = "sqlite:///mlflow.db"
+    mlflow_experiment: str = "seb-xrif"
+    mlflow_registered_model: str = "seb-xrif-random-forest"
+
+    def tracking_uri(self) -> str:
+        """Return the MLflow tracking URI, preferring the environment."""
+        import os
+
+        return os.environ.get("MLFLOW_TRACKING_URI", self.mlflow_tracking_uri)
 
     def resolve(self, key: str) -> Path:
         """Resolve a configured path relative to the repository root."""

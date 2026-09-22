@@ -10,6 +10,13 @@ n_jobs: 1
 target: Class
 class_labels: [L, M, H]
 
+# MLflow tracking. Override the URI with the MLFLOW_TRACKING_URI env var
+# (docker-compose points it at the mlflow service). MLflow 3 retired the
+# filesystem backend, so the local default is SQLite.
+mlflow_tracking_uri: sqlite:///mlflow.db
+mlflow_experiment: seb-xrif
+mlflow_registered_model: seb-xrif-random-forest
+
 categorical:
   - gender
   - NationalITy

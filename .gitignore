@@ -29,6 +29,7 @@ models/*.onnx
 models/*.json
 mlruns/
 mlartifacts/
+mlflow.db
 catboost_info/
 *.onnx
 

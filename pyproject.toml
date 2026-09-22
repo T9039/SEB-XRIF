@@ -29,7 +29,7 @@ dependencies = [
     "matplotlib>=3.9",
     "seaborn>=0.13",
     # tracking and versioning
-    "mlflow>=2.17",
+    "mlflow>=3.0",
     # service layer
     "fastapi>=0.115",
     "uvicorn[standard]>=0.32",
