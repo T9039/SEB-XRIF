@@ -17,6 +17,9 @@ mlflow_tracking_uri: sqlite:///mlflow.db
 mlflow_experiment: seb-xrif
 mlflow_registered_model: seb-xrif-random-forest
 
+# Application database (override with the DATABASE_URL env var).
+database_url: sqlite:///sebxrif.db
+
 categorical:
   - gender
   - NationalITy

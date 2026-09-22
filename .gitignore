@@ -53,3 +53,7 @@ docs/paper/*.docx
 Thumbs.db
 .idea/
 .vscode/
+
+# Local database
+sebxrif.db
+sebxrif.db-journal

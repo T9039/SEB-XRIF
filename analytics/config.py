@@ -37,6 +37,13 @@ class Settings:
     mlflow_tracking_uri: str = "sqlite:///mlflow.db"
     mlflow_experiment: str = "seb-xrif"
     mlflow_registered_model: str = "seb-xrif-random-forest"
+    database_url: str = "sqlite:///sebxrif.db"
+
+    def resolve_database_url(self) -> str:
+        """Return the application database URL, preferring the environment."""
+        import os
+
+        return os.environ.get("DATABASE_URL", self.database_url)
 
     def tracking_uri(self) -> str:
         """Return the MLflow tracking URI, preferring the environment."""

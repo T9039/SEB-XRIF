@@ -3,7 +3,8 @@
 SHELL := /bin/bash
 
 .PHONY: help bootstrap sync lint format type test api web dev train prepare \
-        matrix tune paper mlflow docker-up docker-down docker-logs figures clean \
+        matrix tune paper mlflow db-upgrade db-init \
+        docker-up docker-down docker-logs figures clean \
         ui-install storybook storybook-build
 
 help:
@@ -19,6 +20,8 @@ help:
 > @echo "  matrix       run the full 16-model comparison matrix (single-threaded)"
 > @echo "  tune         tune the top models with Optuna (ARGS='--trials 20')"
 > @echo "  mlflow       open the MLflow UI on :5000"
+> @echo "  db-upgrade   apply database migrations (alembic upgrade head)"
+> @echo "  db-init      create tables directly (development convenience)"
 > @echo "  paper        build the paper PDF (Markdown -> Typst)"
 > @echo "  api          run FastAPI on :8000"
 > @echo "  web          run Vite dev server on :5173"
@@ -64,6 +67,12 @@ tune:
 
 mlflow:
 > uv run mlflow ui --host 0.0.0.0 --port 5000
+
+db-upgrade:
+> uv run alembic upgrade head
+
+db-init:
+> uv run python -m analytics.db init
 
 paper:
 > @./paper/build.sh
