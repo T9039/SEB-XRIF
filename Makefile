@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 
 .PHONY: help bootstrap sync lint format type test api web dev train prepare \
-        matrix paper docker-up docker-down docker-logs figures clean \
+        matrix tune paper docker-up docker-down docker-logs figures clean \
         ui-install storybook storybook-build
 
 help:
@@ -17,6 +17,7 @@ help:
 > @echo "  prepare      validate and snapshot the dataset"
 > @echo "  train        train models (ARGS='--all')"
 > @echo "  matrix       run the full 16-model comparison matrix (single-threaded)"
+> @echo "  tune         tune the top models with Optuna (ARGS='--trials 20')"
 > @echo "  paper        build the paper PDF (Markdown -> Typst)"
 > @echo "  api          run FastAPI on :8000"
 > @echo "  web          run Vite dev server on :5173"
@@ -55,6 +56,10 @@ train:
 
 matrix:
 > @./scripts/matrix.sh $(ARGS)
+
+tune:
+> OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+>   uv run python -m analytics.tune $(ARGS)
 
 paper:
 > @./paper/build.sh
