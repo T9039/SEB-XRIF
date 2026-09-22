@@ -1,14 +1,16 @@
 # Web dashboard (placeholder)
 
-React + Vite + TypeScript client for the SEB-XRIF API. This is a **placeholder
-UI**: the production design system replaces the markup and CSS, but never the
-data layer.
+React + TypeScript client for the SEB-XRIF API, built and managed with
+**Vite+** (`vp`) — VoidZero's unified toolchain: Vite 8 + Rolldown (Rust
+bundler) + Oxc/Oxlint/Oxfmt (Rust lint/format) + Vitest. This is a
+**placeholder UI**: the production design system replaces the markup and CSS,
+but never the data layer.
 
 ## Run
 
 ```bash
 # from the repository root
-make web                 # Vite dev server on http://localhost:5173
+make web                 # Vite+ dev server on http://localhost:5173
 make dev                 # API + dashboard together
 ```
 
@@ -17,13 +19,32 @@ The dev server proxies `/api` to the FastAPI service on `:8000`
 
 ## Scripts
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Vite dev server |
-| `npm run build` | Type-check and build the static bundle |
-| `npm run preview` | Serve the built bundle |
-| `npm run typecheck` | TypeScript only |
-| `npm run test` | Vitest |
+| Command            | Purpose                                     |
+| ------------------ | ------------------------------------------- |
+| `npm run dev`      | `vp dev` — dev server with HMR              |
+| `npm run build`    | `tsc --noEmit` then `vp build` (Rolldown)   |
+| `npm run preview`  | `vp preview` — serve the production bundle  |
+| `npm run lint`     | `vp check` — oxfmt + oxlint + type check    |
+| `npm run lint:fix` | `vp check --fix` — auto-format and auto-fix |
+| `npm run test`     | `vp test run` — Vitest 4                    |
+
+The `vp` binary resolves from the local `vite-plus` dependency
+(`node_modules/.bin/vp`), so no global install is required. Installing
+`vite-plus` globally adds the standalone `vp` command.
+
+## Toolchain
+
+`vp toolchain` prints the resolved versions. Currently:
+
+- Vite 8.3.0 (bundled in `@voidzero-dev/vite-plus-core`)
+- Rolldown 1.2.9 (Rust bundler) with Oxc 0.150.0
+- Vitest 4.1.11
+- Oxlint 1.83.0, oxlint-tsgolint 7.0, Oxfmt 0.68.0
+- tsdown 0.23.0 and Vite Task
+
+The `vite` package in `package.json` is aliased to
+`@voidzero-dev/vite-plus-core` via `overrides`, and `vitest` is pinned to the
+version the toolchain ships, so the whole stack uses one tested set of tools.
 
 ## Structure
 

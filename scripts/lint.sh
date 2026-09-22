@@ -15,6 +15,6 @@ echo "==> mypy"
 uv run mypy analytics api eval
 
 if [ -d web/node_modules ]; then
-  echo "==> web typecheck"
-  (cd web && npm run typecheck)
+  echo "==> web check (Vite+: oxfmt + oxlint + typecheck)"
+  (cd web && npm run lint)
 fi

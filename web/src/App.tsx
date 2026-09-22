@@ -17,9 +17,7 @@ export default function App() {
       <header className="header">
         <div>
           <h1>SEB-XRIF Dashboard</h1>
-          <p className="muted">
-            Scalable, Evidence-Based XR Integration Framework
-          </p>
+          <p className="muted">Scalable, Evidence-Based XR Integration Framework</p>
         </div>
         <HealthBadge />
       </header>

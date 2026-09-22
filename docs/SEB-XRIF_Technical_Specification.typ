@@ -135,7 +135,7 @@ layer is implemented as reusable scoring modules.
                   |
         +---------v---------------------------------------------+
         |  VISUALIZATION LAYER                                  |
-        |  React + Vite + TypeScript (placeholder UI)           |
+        |  React + Vite+ / Rolldown / Oxc (placeholder UI)      |
         |  Chart.js panels  |  TanStack Query data layer        |
         +-------------------------------------------------------+
 
@@ -225,16 +225,21 @@ serving, out of scope).
 
 == Visualization layer
 
-*Selected:* `React` + `Vite` + `TypeScript`, `Chart.js` via
-`react-chartjs-2`, `TanStack Query` + `axios` for server state, and a
-placeholder UI built on `Tailwind CSS` + `shadcn/ui`.
+*Selected:* `React` + `Vite+` (Vite 8 with the Rolldown bundler and Oxc
+tooling) + `TypeScript`, `Chart.js` via `react-chartjs-2`, `TanStack Query` +
+`axios` for server state, and a placeholder UI.
 
-*Why.* React with Vite gives a fast, typed frontend that the team can scaffold
-immediately. Chart.js is explicitly named in the paper and is more than
-adequate for a 480-row dataset. TanStack Query centralises fetching, caching,
-and loading states so the placeholder UI can be replaced by the production UI
-kit without touching data logic. The UI kit itself is a placeholder by
-agreement; only the chart wrapper and API contract are fixed.
+*Why.* Vite+ is VoidZero's unified toolchain: a single `vp` command covers the
+dev server, the production build (Rolldown, written in Rust), formatting and
+linting (Oxfmt and Oxlint, Rust), type checking, tests (Vitest), and task
+running. The Rust components make builds and checks an order of magnitude
+faster than the previous esbuild-plus-Rollup stack and remove tool drift by
+keeping configuration in one `vite.config.ts`. Chart.js is explicitly named in
+the paper and is more than adequate for a 480-row dataset. TanStack Query
+centralises fetching, caching, and loading states so the placeholder UI can be
+replaced by the production UI kit without touching data logic. The UI kit
+itself is a placeholder by agreement; only the chart wrapper and API contract
+are fixed.
 
 *Alternatives considered:* `Recharts` (the more idiomatic React default and
 the migration target if Chart.js is ever outgrown); `Nivo` (best animation and
@@ -509,7 +514,7 @@ VR_Education_framework/
     main.py               # FastAPI app + startup model load
     schemas.py            # Pydantic request/response models
     routes/               # predict, metrics, importance, trends
-  web/                    # Vite + React + TypeScript placeholder UI
+  web/                    # Vite+ / React / TypeScript placeholder UI
     src/charts/           # single Chart wrapper over chart.js
     src/api/              # TanStack Query hooks
   eval/
@@ -553,7 +558,7 @@ pass/fail exit gate. Phases 0--6 deliver the paper's technical claims; phases
   [5. Interpretability], [Native importance; SHAP global and local; LIME cross-check; export payloads], [Top drivers plausible and stable; explanation artifact produced],
   [6. Tracking and reproducibility], [MLflow server; nested runs for tuning; model registry; `dvc.yaml` stages], [`dvc repro` reproduces recorded metrics from a clean checkout],
   [7. FastAPI service], [App, Pydantic schemas, all endpoints, joblib load-once, structlog; serving-parity test], [All endpoints pass tests; parity test within tolerance; `/docs` renders],
-  [8. Dashboard], [Vite + React + TS scaffold; Chart wrapper; TanStack Query hooks; tier, trend, importance, metrics panels], [All panels populated from live API; placeholder UI swap does not touch data logic],
+  [8. Dashboard], [Vite+ / React / TS scaffold; Chart wrapper; TanStack Query hooks; tier, trend, importance, metrics panels], [All panels populated from live API; placeholder UI swap does not touch data logic],
   [9. Evaluation harness], [SUS scorer; Cohen's d via pingouin with scipy fallback; T0/T1/T2 schemas and report templates], [Scorer unit tests pass against known SUS vectors; d matches hand calculation],
   [10. Hardening and documentation], [Docker Compose; CI workflow; coverage thresholds; README and runbooks; paper stack corrected to FastAPI], [One-command bring-up works; CI green; docs reviewed],
   [11. Pilot integration (future)], [Point loader at DUT xAPI data; optional `lrsql`; run T0/T1; schedule T2], [T0/T1 reported; T2 scheduled, not fabricated],
@@ -642,7 +647,10 @@ frozen schema, split, and metrics established in earlier phases.
   columns: (auto, auto, auto, 1fr),
   table.header([*Package*], [*Pin*], [*License*], [*Role*]),
   [`react` / `react-dom`], [18.x], [MIT], [UI runtime],
-  [`vite`], [6.x], [MIT], [Build tool and dev server],
+  [`vite-plus` / `vp`], [0.3+], [MIT], [Unified toolchain CLI],
+  [`@voidzero-dev/vite-plus-core`], [8.x], [MIT], [Vite 8 dev server and build],
+  [`rolldown`], [1.x], [MIT], [Rust bundler],
+  [`oxlint` / `oxfmt`], [1.x / 0.6x], [MIT], [Rust lint and format],
   [`typescript`], [5.x], [Apache-2.0], [Typed frontend],
   [`chart.js`], [4.x], [MIT], [Charts],
   [`react-chartjs-2`], [5.x], [MIT], [React wrapper for Chart.js],
@@ -650,7 +658,7 @@ frozen schema, split, and metrics established in earlier phases.
   [`axios`], [1.x], [MIT], [HTTP client],
   [`tailwindcss`], [3.x], [MIT], [Placeholder styling],
   [`shadcn/ui`], [latest], [MIT], [Placeholder components],
-  [`vitest`], [2.x], [MIT], [Frontend unit tests],
+  [`vitest`], [4.1], [MIT], [Frontend unit tests],
   [`@testing-library/react`], [16.x], [MIT], [Component tests],
 )
 
@@ -677,5 +685,6 @@ the reason.
   [Tracking], [`dvclive`, `DVC Studio`, `Weights & Biases`], [dvclive kept optional; hosted tools rejected for cost and data sovereignty],
   [Observability], [`Prometheus` + `Grafana`], [Deferred --- note Grafana is AGPL-3.0],
   [Effect size], [`scipy` manual, `statsmodels`], [Kept as fallback; `pingouin` selected despite GPL-3 for completeness],
+  [Frontend tooling], [`Vite 6` + `Rollup` + `esbuild`, `Vitest 2`], [Replaced by Vite+ (Vite 8 / Rolldown / Oxc) for speed and a single toolchain],
   [CI], [`GitHub Actions`], [Planned once a remote is configured],
 )

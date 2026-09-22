@@ -28,7 +28,8 @@ The full design, rationale, alternatives, and phased build plan are in the
 ## Prerequisites
 
 - [`uv`](https://docs.astral.sh/uv/) (manages Python 3.12 automatically)
-- Node.js 20+ and npm (for the web dashboard)
+- Node.js 20+ and npm (the web dashboard uses **Vite+**; it installs locally
+  via npm, no global CLI needed)
 - Docker + Docker Compose (for the containerized stack)
 - `make` (optional, for the shortcut targets)
 
@@ -60,7 +61,7 @@ http://localhost:5173.
 | --- | --- |
 | `make bootstrap` | Install Python + web dependencies, pre-commit hooks, and `.env` |
 | `make sync` | Refresh the uv-managed Python environment |
-| `make lint` | ruff check, ruff format --check, mypy, web typecheck |
+| `make lint` | ruff check, ruff format --check, mypy, web check (Vite+: oxfmt + oxlint + tsc) |
 | `make format` | Reformat the Python tree with ruff |
 | `make type` | mypy over `analytics`, `api`, `eval` |
 | `make test` | pytest with coverage |
@@ -83,7 +84,7 @@ http://localhost:5173.
 | Command | What it does |
 | --- | --- |
 | `make api` | FastAPI with autoreload on http://localhost:8000 |
-| `make web` | Vite dev server on http://localhost:5173 |
+| `make web` | Vite+ dev server (`vp dev`) on http://localhost:5173 |
 | `make dev` | Both at once |
 | `./scripts/run-api.sh` | Same as `make api` (respects `PORT`) |
 
@@ -120,7 +121,7 @@ return `503` with a clear message until `make train` has been run.
 analytics/  config, schema, data IO, model catalog, train, tune, evaluate, explain
 api/        FastAPI app, routes, schemas, model store
 eval/       SUS, effect sizes, longitudinal T0/T1/T2 protocol
-web/        React + Vite + TypeScript dashboard (placeholder UI)
+web/        React + TypeScript dashboard on Vite+ (placeholder UI)
 data/       raw and processed datasets (DVC-tracked)
 models/     serialized pipelines and metadata sidecars
 docs/       technical specification, paper tooling, generated figures
@@ -128,6 +129,15 @@ scripts/    bootstrap and run helpers
 tests/      Python test suite
 notebooks/  exploratory analysis
 ```
+
+## Stack
+
+- **Data:** pandas, pandera, SQLAlchemy, DVC
+- **Analytics:** scikit-learn, XGBoost, LightGBM, CatBoost, Optuna, SHAP
+- **Tracking:** MLflow, DVC
+- **Service:** FastAPI, Pydantic, uvicorn, gunicorn
+- **Frontend:** React, Vite+ (Vite 8 + Rolldown + Oxc), TypeScript, Chart.js, TanStack Query
+- **Evaluation:** scikit-learn metrics, pingouin, scipy (see the GPL-3 note in the spec)
 
 ## Documentation
 
@@ -137,7 +147,7 @@ notebooks/  exploratory analysis
 | `analytics/README.md` | Model catalog and training pipeline |
 | `api/README.md` | Service configuration and endpoints |
 | `eval/README.md` | Evaluation protocol |
-| `web/README.md` | Dashboard structure and UI-kit swap |
+| `web/README.md` | Dashboard structure, Vite+ toolchain, UI-kit swap |
 
 ## Data
 

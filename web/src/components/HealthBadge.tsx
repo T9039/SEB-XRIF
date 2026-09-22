@@ -11,13 +11,7 @@ export function HealthBadge() {
         ? `model: ${data.model_version}`
         : "no model trained";
 
-  const tone = isLoading
-    ? "neutral"
-    : isError
-      ? "error"
-      : data?.model_loaded
-        ? "ok"
-        : "warn";
+  const tone = isLoading ? "neutral" : isError ? "error" : data?.model_loaded ? "ok" : "warn";
 
   return <span className={`badge badge-${tone}`}>{label}</span>;
 }
