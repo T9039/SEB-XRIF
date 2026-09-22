@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / frontend
+node_modules/
+web/dist/
+web/.vite/
+web/coverage/
+
+# ML artifacts
+models/*.joblib
+models/*.pkl
+models/*.onnx
+mlruns/
+mlartifacts/
+*.onnx
+
+# DVC
+.dvc/cache/
+.dvc/tmp/
+*.dvc.bak
+/data/processed/*
+!/data/processed/.gitkeep
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Generated paper output
+docs/paper/*.docx
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

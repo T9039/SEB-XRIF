@@ -1,0 +1,37 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://sebxrif:sebxrif@db:5432/sebxrif
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    depends_on:
+      - db
+      - mlflow
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: sebxrif
+      POSTGRES_PASSWORD: sebxrif
+      POSTGRES_DB: sebxrif
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:///mlflow.db
+      --default-artifact-root /mlartifacts
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlartifacts:/mlartifacts
+
+volumes:
+  pgdata:
+  mlartifacts:

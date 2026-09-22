@@ -1,0 +1,6 @@
+# SEB-XRIF reproducible pipeline.
+#
+# Stages are populated in build-plan phase 6. `dvc repro` regenerates the
+# processed data, the trained model, and the reported metrics from a clean
+# checkout.
+stages: {}
