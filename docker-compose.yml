@@ -20,7 +20,8 @@ services:
 
   web:
     build:
-      context: ./web
+      context: .
+      dockerfile: web/Dockerfile
       args:
         VITE_API_URL: /api
     ports:

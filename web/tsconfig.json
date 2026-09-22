@@ -15,6 +15,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@humanity-erp/ui": ["../ui/src/index.ts"]
+    },
     "types": ["vite/client", "vitest/globals"]
   },
   "include": ["src"]

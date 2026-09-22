@@ -1,3 +1,4 @@
+import { Card, CardContent, CardHeader, CardTitle, Skeleton } from "@humanity-erp/ui";
 import { useMetrics } from "../api/hooks";
 
 function format(value: unknown): string {
@@ -10,28 +11,43 @@ function format(value: unknown): string {
 export function MetricCards() {
   const { data, isLoading, isError } = useMetrics();
 
-  if (isLoading) return <p className="muted">Loading metrics…</p>;
-  if (isError || !data) {
-    return <p className="muted">No metrics yet — train a model to populate this panel.</p>;
+  if (isError) {
+    return (
+      <Card>
+        <CardContent className="pt-(--card-spacing) text-sm text-muted-foreground">
+          No metrics yet — train a model to populate this panel.
+        </CardContent>
+      </Card>
+    );
   }
 
-  const metrics = data.metrics as Record<string, unknown>;
-  const cv = metrics.cv as { mean?: number; std?: number } | undefined;
+  const metrics = (data?.metrics ?? {}) as Record<string, unknown>;
+  const cv = metrics.cv as { mean?: number } | undefined;
 
   const cards = [
     { label: "Accuracy", value: format(metrics.accuracy) },
     { label: "Macro F1", value: format(metrics.f1_macro) },
     { label: "CV macro F1", value: format(cv?.mean) },
-    { label: "Model", value: String(data.model ?? "—") },
+    { label: "Model", value: data?.model ?? "—" },
   ];
 
   return (
-    <div className="cards">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {cards.map((card) => (
-        <div className="card" key={card.label}>
-          <span className="card-label">{card.label}</span>
-          <span className="card-value">{card.value}</span>
-        </div>
+        <Card key={card.label} size="sm">
+          <CardHeader>
+            <CardTitle className="text-xs tracking-wide text-muted-foreground uppercase">
+              {card.label}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-7 w-20" />
+            ) : (
+              <span className="font-heading text-2xl font-semibold">{card.value}</span>
+            )}
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

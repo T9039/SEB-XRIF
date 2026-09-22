@@ -1,14 +1,18 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig, lazyPlugins } from "vite-plus";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
+import { fileURLToPath } from "node:url";
+
+// Consume the design system from source so edits in ui/ hot-reload here.
+const uiSource = fileURLToPath(new URL("../ui/src/index.ts", import.meta.url));
 
 export default defineConfig({
-  fmt: {},
-  lint: {
-    jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
-    rules: { "vite-plus/prefer-vite-plus-imports": "error" },
-    options: { typeAware: true, typeCheck: true },
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@humanity-erp/ui": uiSource,
+    },
   },
-  plugins: lazyPlugins(() => [react()]),
   server: {
     port: 5173,
     proxy: {

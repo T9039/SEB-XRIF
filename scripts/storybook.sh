@@ -11,8 +11,8 @@ if ! command -v pnpm >/dev/null 2>&1; then
 fi
 
 if [ ! -d node_modules ]; then
-  echo "==> Installing ui dependencies with pnpm"
-  pnpm install
+  echo "==> Installing workspace dependencies with pnpm"
+  (cd "$ROOT" && pnpm install)
 fi
 
 exec pnpm storybook "$@"

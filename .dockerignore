@@ -12,8 +12,10 @@ mlartifacts
 data/processed
 models/*.joblib
 models/*.pkl
-web/node_modules
+**/node_modules
 web/dist
+ui/dist
+ui/storybook-static
 docs/**/*.pdf
 SLR_reference_papers
 .env

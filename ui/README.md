@@ -59,17 +59,19 @@ src/
 
 ## Consuming from the dashboard
 
-The dashboard in `../web` currently ships a placeholder UI. To use these
-components instead, build the library and add it as a dependency:
+`web/` is a sibling workspace package and consumes these components directly
+from source, so edits here hot-reload in the dashboard. The wiring is:
 
-```bash
-pnpm build                       # produces dist/index.mjs + dist/index.d.ts
-cd ../web && npm install ../ui   # or add "@humanity-erp/ui": "file:../ui"
-```
+- `web/vite.config.ts` aliases `@humanity-erp/ui` to `ui/src/index.ts`.
+- `web/tsconfig.json` mirrors the alias in `paths`.
+- `web/src/index.css` imports `../../ui/src/index.css` and scans `web/src`.
 
-Then import the stylesheet once and use the components:
+The dashboard uses `Card`, `Badge`, `Alert`, `Skeleton`, `ChartContainer`
+(Recharts), and `ThemeProvider` from this library. Import them by name:
 
 ```tsx
-import "@humanity-erp/ui/index.css";
-import { Button, Card } from "@humanity-erp/ui";
+import { Button, Card, CardContent, Badge } from "@humanity-erp/ui";
 ```
+
+If you later prefer the prebuilt package, run `pnpm build` here and import the
+`dist` output; the `vp pack` build manages `package.json` exports.

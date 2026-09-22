@@ -1,5 +1,6 @@
 packages:
-  - "."
+  - "web"
+  - "ui"
 
 allowBuilds:
   esbuild: true
@@ -33,3 +34,4 @@ catalog:
 
 minimumReleaseAgeExclude:
   - react-resizable-panels@4.13.2
+  - jsdom@30.1.1

@@ -1,0 +1,11 @@
+{
+  "name": "seb-xrif",
+  "private": true,
+  "packageManager": "pnpm@12.5.1",
+  "scripts": {
+    "dev:web": "pnpm --filter seb-xrif-web dev",
+    "build:web": "pnpm --filter seb-xrif-web build",
+    "build:ui": "pnpm --filter @humanity-erp/ui build",
+    "storybook": "pnpm --filter @humanity-erp/ui storybook"
+  }
+}

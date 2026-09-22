@@ -136,7 +136,7 @@ layer is implemented as reusable scoring modules.
         +---------v---------------------------------------------+
         |  VISUALIZATION LAYER                                  |
         |  React + Vite+ / Rolldown / Oxc (placeholder UI)      |
-        |  Chart.js panels  |  TanStack Query data layer        |
+        |  ui charts (Recharts) |  TanStack Query data          |
         +-------------------------------------------------------+
 
         Cross-cutting: DVC (data/model versioning), MLflow (runs +
@@ -226,16 +226,18 @@ serving, out of scope).
 == Visualization layer
 
 *Selected:* `React` + `Vite+` (Vite 8 with the Rolldown bundler and Oxc
-tooling) + `TypeScript`, `Chart.js` via `react-chartjs-2`, `TanStack Query` +
-`axios` for server state, and a placeholder UI.
+tooling) + `TypeScript`, the `ui` design-system chart component (Recharts),
+`TanStack Query` + `axios` for server state, and the `ui` component library for
+presentation.
 
 *Why.* Vite+ is VoidZero's unified toolchain: a single `vp` command covers the
 dev server, the production build (Rolldown, written in Rust), formatting and
 linting (Oxfmt and Oxlint, Rust), type checking, tests (Vitest), and task
 running. The Rust components make builds and checks an order of magnitude
 faster than the previous esbuild-plus-Rollup stack and remove tool drift by
-keeping configuration in one `vite.config.ts`. Chart.js is explicitly named in
-the paper and is more than adequate for a 480-row dataset. TanStack Query
+keeping configuration in one `vite.config.ts`. Charts use the design system's
+chart component (Recharts), which is more than adequate for a 480-row dataset.
+TanStack Query
 centralises fetching, caching, and loading states so the placeholder UI can be
 replaced by the production UI kit without touching data logic. The design
 system is delivered as a `shadcn/ui` component library (Base UI + Tailwind v4)
@@ -243,8 +245,8 @@ under `ui/`, with a `Storybook` story for every component so the UI can be
 edited and reviewed visually; only the chart wrapper and API contract are
 fixed.
 
-*Alternatives considered:* `Recharts` (the more idiomatic React default and
-the migration target if Chart.js is ever outgrown); `Nivo` (best animation and
+*Alternatives considered:* `Chart.js` via `react-chartjs-2` (the original paper
+choice; superseded by the design system's Recharts chart); `Nivo` (best animation and
 accessibility, but heavier and React-Server-Component incompatible); `Apache
 ECharts` (the scalability choice for dense dashboards); `visx` (best for
 bespoke D3 visualisations); `Next.js` (unnecessary SSR for an internal
@@ -469,8 +471,8 @@ scikit-learn version used for training is the version used for loading.
 
 The dashboard is a thin client over the API. Views planned: performance-tier
 distribution, behavioural trend charts, feature-importance and SHAP panel, and
-model metric cards. Chart.js is wrapped in a single `Chart` component so the
-library can be swapped for Recharts or ECharts behind one interface. TanStack
+model metric cards. Charts use the `ui` `ChartContainer` wrapper over Recharts,
+so the library can be swapped behind one interface. TanStack
 Query owns all fetching, caching, and retry logic; mock JSON fixtures underpin
 development so the placeholder UI is fully functional before the production UI
 kit is dropped in. The UI kit itself is explicitly out of scope here and
@@ -517,7 +519,7 @@ VR_Education_framework/
     schemas.py            # Pydantic request/response models
     routes/               # predict, metrics, importance, trends
   web/                    # Vite+ / React / TypeScript placeholder UI
-    src/charts/           # single Chart wrapper over chart.js
+    components/           # ui Card/Badge/Chart panels over the API hooks
     src/api/              # TanStack Query hooks
   eval/
     sus.py                # ten-item SUS scorer
@@ -560,7 +562,7 @@ pass/fail exit gate. Phases 0--6 deliver the paper's technical claims; phases
   [5. Interpretability], [Native importance; SHAP global and local; LIME cross-check; export payloads], [Top drivers plausible and stable; explanation artifact produced],
   [6. Tracking and reproducibility], [MLflow server; nested runs for tuning; model registry; `dvc.yaml` stages], [`dvc repro` reproduces recorded metrics from a clean checkout],
   [7. FastAPI service], [App, Pydantic schemas, all endpoints, joblib load-once, structlog; serving-parity test], [All endpoints pass tests; parity test within tolerance; `/docs` renders],
-  [8. Dashboard], [Vite+ / React / TS scaffold; Chart wrapper; TanStack Query hooks; tier, trend, importance, metrics panels], [All panels populated from live API; placeholder UI swap does not touch data logic],
+  [8. Dashboard], [Vite+ / React / TS scaffold built on the ui components; ui Card/Badge/Chart panels; TanStack Query hooks], [All panels populated from live API; design system shared with the ui Storybook],
   [9. Evaluation harness], [SUS scorer; Cohen's d via pingouin with scipy fallback; T0/T1/T2 schemas and report templates], [Scorer unit tests pass against known SUS vectors; d matches hand calculation],
   [10. Hardening and documentation], [Docker Compose; CI workflow; coverage thresholds; README and runbooks; paper stack corrected to FastAPI], [One-command bring-up works; CI green; docs reviewed],
   [11. Pilot integration (future)], [Point loader at DUT xAPI data; optional `lrsql`; run T0/T1; schedule T2], [T0/T1 reported; T2 scheduled, not fabricated],
@@ -654,8 +656,7 @@ frozen schema, split, and metrics established in earlier phases.
   [`rolldown`], [1.x], [MIT], [Rust bundler],
   [`oxlint` / `oxfmt`], [1.x / 0.6x], [MIT], [Rust lint and format],
   [`typescript`], [5.x], [Apache-2.0], [Typed frontend],
-  [`chart.js`], [4.x], [MIT], [Charts],
-  [`react-chartjs-2`], [5.x], [MIT], [React wrapper for Chart.js],
+  [`recharts`], [3.x], [MIT], [Charts via the ui chart component],
   [`@tanstack/react-query`], [5.x], [MIT], [Server state and caching],
   [`axios`], [1.x], [MIT], [HTTP client],
   [`tailwindcss`], [3.x], [MIT], [Placeholder styling],
@@ -681,7 +682,7 @@ the reason.
   [Tuning], [`Hyperopt`, `scikit-optimize`, `GridSearchCV`], [Mostly rejected --- Optuna more sample-efficient; GridSearchCV retained for RF only],
   [Serialization], [`pickle`, `onnxruntime` + `skl2onnx`], [pickle rejected as primary (security, efficiency); ONNX kept as optional export],
   [Backend], [`Flask`, `Django REST`, `BentoML`, `KServe`, `Ray Serve`], [Rejected --- FastAPI chosen per Decision 1],
-  [Charts], [`Recharts`, `Nivo`, `ECharts`, `visx`], [Rejected for now --- Chart.js matches the paper; Recharts is the migration path],
+  [Charts], [`Chart.js` (original paper), `Nivo`, `ECharts`, `visx`], [Recharts selected via the ui design-system chart; others rejected or superseded],
   [App framework], [`Next.js`], [Rejected --- SSR unnecessary for an internal dashboard],
   [Dashboard platforms], [`Streamlit`, `Plotly Dash`], [Rejected --- cannot host the custom UI kit; would collapse layers],
   [Tracking], [`dvclive`, `DVC Studio`, `Weights & Biases`], [dvclive kept optional; hosted tools rejected for cost and data sovereignty],

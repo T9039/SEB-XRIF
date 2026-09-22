@@ -1,12 +1,32 @@
-import { BarChart } from "../charts/Chart";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@humanity-erp/ui";
 import { useImportance } from "../api/hooks";
+import { PanelMessage, PanelSkeleton } from "./panel-states";
+
+const config = {
+  value: { label: "Importance", color: "#4472C4" },
+} satisfies ChartConfig;
 
 export function ImportancePanel() {
   const { data, isLoading, isError } = useImportance();
 
-  if (isLoading) return <p className="muted">Loading feature importance…</p>;
+  if (isLoading) return <PanelSkeleton title="Top behavioural drivers" />;
   if (isError || !data) {
-    return <p className="muted">No importance payload — train a model first.</p>;
+    return (
+      <PanelMessage
+        title="Top behavioural drivers"
+        message="No importance payload — train a model first."
+      />
+    );
   }
 
   const scores =
@@ -14,26 +34,35 @@ export function ImportancePanel() {
       ? data.shap.mean_abs_shap
       : (data.native?.importance ?? {});
 
-  const entries = Object.entries(scores).slice(0, 10);
+  const entries = Object.entries(scores)
+    .slice(0, 10)
+    .map(([name, value]) => ({ feature: name.replace(/^(cat|num)__/, ""), value }));
 
   if (entries.length === 0) {
-    return <p className="muted">Importance payload is empty.</p>;
+    return <PanelMessage title="Top behavioural drivers" message="Importance payload is empty." />;
   }
 
   return (
-    <div className="panel">
-      <h3>Top behavioural drivers</h3>
-      <BarChart
-        data={{
-          labels: entries.map(([name]) => name.replace(/^(cat|num)__/, "")),
-          datasets: [{ label: "importance", data: entries.map(([, v]) => v) }],
-        }}
-        options={{
-          indexAxis: "y" as const,
-          plugins: { legend: { display: false } },
-          scales: { x: { beginAtZero: true } },
-        }}
-      />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Top behavioural drivers</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={config} className="h-72 w-full">
+          <BarChart data={entries} layout="vertical" margin={{ left: 8, right: 8 }}>
+            <XAxis type="number" hide />
+            <YAxis
+              type="category"
+              dataKey="feature"
+              tickLine={false}
+              axisLine={false}
+              width={150}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Bar dataKey="value" fill="var(--color-value)" radius={4} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }

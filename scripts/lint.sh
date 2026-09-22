@@ -16,5 +16,5 @@ uv run mypy analytics api eval
 
 if [ -d web/node_modules ]; then
   echo "==> web check (Vite+: oxfmt + oxlint + typecheck)"
-  (cd web && npm run lint)
+  (cd web && pnpm run lint)
 fi

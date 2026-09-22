@@ -15,6 +15,6 @@ echo "==> Starting API on http://localhost:8000"
 uv run uvicorn api.main:app --reload --port 8000 &
 
 echo "==> Starting web dev server on http://localhost:5173"
-(cd "$ROOT/web" && npm run dev) &
+(cd "$ROOT/web" && pnpm run dev) &
 
 wait
