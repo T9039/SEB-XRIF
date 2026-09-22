@@ -50,9 +50,9 @@ def train_model(
     x_train, x_test, y_train, y_test = split(features, target, settings)
 
     if with_tuning:
-        tune(name, x_train, y_train, seed=settings.seed)
+        tune(name, x_train, y_train, seed=settings.seed, n_jobs=settings.n_jobs)
 
-    pipeline = build_pipeline(name, settings.seed)
+    pipeline = build_pipeline(name, settings.seed, settings.n_jobs)
     pipeline.fit(x_train, y_train)
 
     estimator = pipeline.named_steps["clf"]
@@ -63,11 +63,12 @@ def train_model(
         y_test, pipeline.predict(x_test), proba, labels=settings.class_labels
     )
     metrics["cv"] = cross_validate_model(
-        build_pipeline(name, settings.seed),
+        build_pipeline(name, settings.seed, settings.n_jobs),
         features,
         target,
         folds=settings.cv_folds,
         seed=settings.seed,
+        n_jobs=settings.n_jobs,
     )
     return {
         "model": name,

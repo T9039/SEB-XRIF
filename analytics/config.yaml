@@ -4,6 +4,9 @@
 seed: 42
 test_size: 0.2
 cv_folds: 10
+# Parallelism: 1 keeps the matrix single-threaded and avoids nested worker
+# pools. Raise only if you know the estimators do not nest (see build_pipeline).
+n_jobs: 1
 target: Class
 class_labels: [L, M, H]
 
@@ -38,3 +41,4 @@ paths:
   processed: data/processed/learners.parquet
   model: models/model.joblib
   metadata: models/model.meta.json
+  reports: reports

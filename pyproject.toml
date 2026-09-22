@@ -53,6 +53,7 @@ dev = [
     "pre-commit>=4.0",
     "dvc>=3.55",
     "jupyterlab>=4.3",
+    "types-PyYAML>=6.0",
 ]
 
 [tool.uv]

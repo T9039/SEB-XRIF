@@ -52,8 +52,10 @@ def classification_metrics(
         proba = np.asarray(y_proba)
         try:
             if proba.ndim == 2 and proba.shape[1] > 2:
+                # Columns follow the estimator's sorted classes_, which matches
+                # np.unique(y_true); do not pass a differently ordered label list.
                 metrics["roc_auc_ovr"] = float(
-                    roc_auc_score(true, proba, multi_class="ovr", labels=label_list)
+                    roc_auc_score(true, proba, multi_class="ovr")
                 )
             elif proba.ndim == 2 and proba.shape[1] == 2:
                 metrics["roc_auc"] = float(roc_auc_score(true, proba[:, 1]))
@@ -70,10 +72,13 @@ def cross_validate_model(
     folds: int = 10,
     seed: int = 42,
     scoring: str = "f1_macro",
+    n_jobs: int = 1,
 ) -> dict[str, Any]:
     """Return per-fold scores and their mean/std under stratified k-fold CV."""
     cv = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
-    scores = cross_val_score(model, features, target, cv=cv, scoring=scoring, n_jobs=-1)
+    scores = cross_val_score(
+        model, features, target, cv=cv, scoring=scoring, n_jobs=n_jobs
+    )
     return {
         "metric": scoring,
         "folds": folds,

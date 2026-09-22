@@ -33,6 +33,7 @@ class Settings:
     random_forest: dict[str, Any]
     paths: dict[str, str]
     repo_root: Path
+    n_jobs: int = 1
 
     def resolve(self, key: str) -> Path:
         """Resolve a configured path relative to the repository root."""
@@ -53,6 +54,10 @@ class Settings:
     @property
     def metadata_path(self) -> Path:
         return self.resolve("metadata")
+
+    @property
+    def reports_dir(self) -> Path:
+        return self.resolve("reports")
 
     @property
     def feature_columns(self) -> list[str]:

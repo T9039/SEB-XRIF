@@ -18,7 +18,11 @@ def build_tree_preprocessor() -> ColumnTransformer:
     """One-hot encode categoricals; pass behavioural counts through unscaled."""
     return ColumnTransformer(
         [
-            ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
+            (
+                "cat",
+                OneHotEncoder(handle_unknown="ignore", sparse_output=False),
+                CATEGORICAL,
+            ),
             ("num", "passthrough", BEHAVIOURAL),
         ]
     )
@@ -28,7 +32,11 @@ def build_scaled_preprocessor() -> ColumnTransformer:
     """One-hot encode categoricals and standardise behavioural counts."""
     return ColumnTransformer(
         [
-            ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
+            (
+                "cat",
+                OneHotEncoder(handle_unknown="ignore", sparse_output=False),
+                CATEGORICAL,
+            ),
             ("num", StandardScaler(), BEHAVIOURAL),
         ]
     )

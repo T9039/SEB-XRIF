@@ -26,6 +26,7 @@ def tune_random_forest(
     n_trials: int = 50,
     folds: int = 5,
     seed: int = 42,
+    n_jobs: int = 1,
 ) -> dict[str, Any]:
     """Tune the Random Forest with Optuna and return the best parameters."""
     import optuna
@@ -48,13 +49,21 @@ def tune_random_forest(
                 (
                     "clf",
                     RandomForestClassifier(
-                        class_weight="balanced", random_state=seed, n_jobs=-1, **params
+                        class_weight="balanced",
+                        random_state=seed,
+                        n_jobs=n_jobs,
+                        **params,
                     ),
                 ),
             ]
         )
         scores = cross_val_score(
-            model, features, target, cv=_cv(folds, seed), scoring="f1_macro", n_jobs=-1
+            model,
+            features,
+            target,
+            cv=_cv(folds, seed),
+            scoring="f1_macro",
+            n_jobs=n_jobs,
         )
         return float(scores.mean())
 
@@ -74,7 +83,7 @@ def tune_grid_random_forest(
     target,
     folds: int = 5,
     seed: int = 42,
-    n_jobs: int = -1,
+    n_jobs: int = 1,
 ) -> dict[str, Any]:
     """Exhaustive grid search for the Random Forest configuration."""
     model = Pipeline(
@@ -107,10 +116,19 @@ def tune_grid_random_forest(
     }
 
 
-def tune(model_name: str, features, target, n_trials: int = 50, seed: int = 42):
+def tune(
+    model_name: str,
+    features,
+    target,
+    n_trials: int = 50,
+    seed: int = 42,
+    n_jobs: int = 1,
+):
     """Dispatch tuning by model name. Extend as search spaces are added."""
     if model_name == "random_forest":
-        return tune_random_forest(features, target, n_trials=n_trials, seed=seed)
+        return tune_random_forest(
+            features, target, n_trials=n_trials, seed=seed, n_jobs=n_jobs
+        )
     raise NotImplementedError(
         f"Tuning for '{model_name}' is not implemented; "
         "add a search space in analytics/tune.py."

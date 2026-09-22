@@ -29,6 +29,7 @@ models/*.onnx
 models/*.json
 mlruns/
 mlartifacts/
+catboost_info/
 *.onnx
 
 # DVC
