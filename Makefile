@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 
 .PHONY: help bootstrap sync lint format type test api web dev train prepare \
-        matrix docker-up docker-down docker-logs figures clean \
+        matrix paper docker-up docker-down docker-logs figures clean \
         ui-install storybook storybook-build
 
 help:
@@ -17,6 +17,7 @@ help:
 > @echo "  prepare      validate and snapshot the dataset"
 > @echo "  train        train models (ARGS='--all')"
 > @echo "  matrix       run the full 16-model comparison matrix (single-threaded)"
+> @echo "  paper        build the paper PDF (Markdown -> Typst)"
 > @echo "  api          run FastAPI on :8000"
 > @echo "  web          run Vite dev server on :5173"
 > @echo "  dev          run api and web together"
@@ -54,6 +55,9 @@ train:
 
 matrix:
 > @./scripts/matrix.sh $(ARGS)
+
+paper:
+> @./paper/build.sh
 
 api:
 > @./scripts/run-api.sh
