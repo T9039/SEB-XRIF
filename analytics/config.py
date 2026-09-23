@@ -38,6 +38,7 @@ class Settings:
     mlflow_experiment: str = "seb-xrif"
     mlflow_registered_model: str = "seb-xrif-random-forest"
     database_url: str = "sqlite:///sebxrif.db"
+    data_source: str = "csv"
     lrs_endpoint: str = "http://localhost:8081/xapi"
     lrs_key: str = "seb-xrif-lrs"
     lrs_secret: str = "seb-xrif-secret"

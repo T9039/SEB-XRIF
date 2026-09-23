@@ -19,6 +19,7 @@ from contextlib import contextmanager
 from datetime import UTC, datetime
 from typing import Any
 
+import pandas as pd
 from sqlalchemy import (
     JSON,
     DateTime,
@@ -201,6 +202,41 @@ LEARNER_FIELDS = (
     "discussion",
     "target_class",
 )
+
+#: Feature-frame column -> application database attribute. Used to move data
+#: between the xAPI/CSV layer and Postgres in both directions.
+FRAME_TO_DB = {
+    "gender": "gender",
+    "NationalITy": "nationality",
+    "PlaceofBirth": "place_of_birth",
+    "StageID": "stage_id",
+    "GradeID": "grade_id",
+    "SectionID": "section_id",
+    "Topic": "topic",
+    "Semester": "semester",
+    "Relation": "relation",
+    "ParentAnsweringSurvey": "parent_answering_survey",
+    "ParentschoolSatisfaction": "parent_school_satisfaction",
+    "StudentAbsenceDays": "student_absence_days",
+    "raisedhands": "raisedhands",
+    "VisITedResources": "visited_resources",
+    "AnnouncementsView": "announcements_view",
+    "Discussion": "discussion",
+    "Class": "target_class",
+}
+
+
+def learners_frame(engine: Engine) -> pd.DataFrame:
+    """Return the learners table as a feature frame (CSV column names)."""
+    with session_scope(engine) as session:
+        learners = session.scalars(select(Learner)).all()
+    records: list[dict[str, Any]] = []
+    for learner in learners:
+        record: dict[str, Any] = {"external_id": learner.external_id}
+        for frame_column, attribute in FRAME_TO_DB.items():
+            record[frame_column] = getattr(learner, attribute)
+        records.append(record)
+    return pd.DataFrame(records, columns=list(FRAME_TO_DB))
 
 
 def upsert_learner(session: Session, data: dict[str, Any]) -> Learner:

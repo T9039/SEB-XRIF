@@ -37,6 +37,35 @@ def load_validated(
     return validate(load_raw(path, settings))
 
 
+def read_learners(
+    settings: Settings | None = None, prefer_db: bool = True
+) -> tuple[pd.DataFrame, str]:
+    """Return a validated feature frame and its source.
+
+    Prefers the application database when it holds learners, and falls back to
+    the bundled CSV. The returned source is ``"postgres"`` or ``"csv"``.
+    """
+    settings = settings or get_settings()
+    if prefer_db:
+        try:
+            from .db import get_engine, learners_frame
+
+            frame = learners_frame(get_engine())
+            if not frame.empty:
+                return validate(frame), "postgres"
+        except Exception:  # noqa: BLE001 - fall back to the CSV seed
+            pass
+    return validate(load_raw(settings=settings)), "csv"
+
+
+def load_source(settings: Settings | None = None) -> tuple[pd.DataFrame, str]:
+    """Return the configured training source (``settings.data_source``)."""
+    settings = settings or get_settings()
+    if settings.data_source == "db":
+        return read_learners(settings, prefer_db=True)
+    return validate(load_raw(settings=settings)), "csv"
+
+
 def features_and_target(
     df: pd.DataFrame, settings: Settings | None = None
 ) -> tuple[pd.DataFrame, pd.Series]:

@@ -20,6 +20,10 @@ mlflow_registered_model: seb-xrif-random-forest
 # Application database (override with the DATABASE_URL env var).
 database_url: sqlite:///sebxrif.db
 
+# Training data source: 'csv' (the bundled seed) or 'db' (Postgres, with a
+# CSV fallback when the database is empty).
+data_source: csv
+
 # Learning Record Store (lrsql in docker-compose maps to host :8081).
 lrs_endpoint: http://localhost:8081/xapi
 lrs_key: seb-xrif-lrs

@@ -27,7 +27,7 @@ import pandas as pd
 
 from .config import get_settings
 from .data import load_raw
-from .db import get_engine, session_scope, upsert_learner
+from .db import FRAME_TO_DB, get_engine, session_scope, upsert_learner
 from .schema import BEHAVIOURAL, CATEGORICAL
 
 BASE = "http://seb-xrif.dut.ac.za"
@@ -42,27 +42,6 @@ VERB_COMPLETED = "http://adlnet.gov/expapi/verbs/completed"
 DEMOGRAPHIC_COLUMNS = tuple(CATEGORICAL)
 
 FEATURE_COLUMNS = [*CATEGORICAL, *BEHAVIOURAL, "Class"]
-
-#: xAPI reconstruction -> application database column names.
-FRAME_TO_DB = {
-    "gender": "gender",
-    "NationalITy": "nationality",
-    "PlaceofBirth": "place_of_birth",
-    "StageID": "stage_id",
-    "GradeID": "grade_id",
-    "SectionID": "section_id",
-    "Topic": "topic",
-    "Semester": "semester",
-    "Relation": "relation",
-    "ParentAnsweringSurvey": "parent_answering_survey",
-    "ParentschoolSatisfaction": "parent_school_satisfaction",
-    "StudentAbsenceDays": "student_absence_days",
-    "raisedhands": "raisedhands",
-    "VisITedResources": "visited_resources",
-    "AnnouncementsView": "announcements_view",
-    "Discussion": "discussion",
-    "Class": "target_class",
-}
 
 
 def learner_id(index: int) -> str:
@@ -301,7 +280,7 @@ def main(argv: list[str] | None = None) -> None:
         print(f"Posted {posted} statements to {client.endpoint}")
         return
 
-    statements = client.get_statements(limit=args.limit or 100)
+    statements = client.get_statements(limit=args.limit or 10000)
     frame = frame_from_statements(statements)
     print(f"Reconstructed {len(frame)} learner rows from {len(statements)} statements")
     print(frame.head().to_string())

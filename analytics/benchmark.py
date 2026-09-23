@@ -21,7 +21,7 @@ from typing import Any
 import pandas as pd
 
 from .config import Settings, get_settings
-from .data import features_and_target, load_validated, split
+from .data import features_and_target, load_source, split
 from .evaluate import classification_metrics, cross_validate_model
 from .models import build_pipeline, model_catalog
 
@@ -106,7 +106,7 @@ def run_benchmark(
     folds = folds or settings.cv_folds
     names = list(models) if models else model_catalog()
 
-    frame = load_validated(settings=settings)
+    frame = load_source(settings=settings)[0]
     features, target = features_and_target(frame, settings)
 
     rows: list[dict[str, Any]] = []

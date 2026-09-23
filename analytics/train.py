@@ -25,7 +25,7 @@ import joblib
 from sklearn import __version__ as sklearn_version
 
 from .config import Settings, get_settings
-from .data import class_distribution, features_and_target, load_validated, split
+from .data import class_distribution, features_and_target, load_source, split
 from .evaluate import classification_metrics, cross_validate_model
 from .explain import feature_importance, shap_payload
 from .models import build_pipeline, model_catalog
@@ -46,7 +46,7 @@ def train_model(
 ) -> dict[str, Any]:
     """Train one model and return its pipeline and held-out metrics."""
     settings = settings or get_settings()
-    df = load_validated(settings=settings)
+    df = load_source(settings=settings)[0]
     features, target = features_and_target(df, settings)
     x_train, x_test, y_train, y_test = split(features, target, settings)
 
@@ -231,7 +231,7 @@ def main(argv: list[str] | None = None) -> None:
 
     shap_data = shap_payload(
         promoted["pipeline"],
-        load_validated(settings=settings)[settings.feature_columns],
+        load_source(settings=settings)[0][settings.feature_columns],
     )
     settings.metadata_path.with_name("shap.json").write_text(
         json.dumps(shap_data, indent=2), encoding="utf-8"

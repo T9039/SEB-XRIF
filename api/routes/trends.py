@@ -1,15 +1,15 @@
 """Behavioural trend route for dashboard charts.
 
-Aggregates the raw learner table directly, so trends are available even before
-a model has been trained.
+Reads the application database when it holds learners, and falls back to the
+bundled CSV seed otherwise. The response reports which source was used.
 """
 
 from __future__ import annotations
 
-import pandas as pd
 from fastapi import APIRouter, HTTPException
 
-from ..config import get_api_settings
+from analytics.config import get_settings as get_analytics_settings
+from analytics.data import read_learners
 
 router = APIRouter(tags=["analytics"])
 
@@ -18,29 +18,30 @@ _BEHAVIOURAL = ["raisedhands", "VisITedResources", "AnnouncementsView", "Discuss
 
 @router.get("/trends")
 def trends() -> dict:
-    """Return class counts and mean behaviour per tier."""
-    settings = get_api_settings()
-    if not settings.raw_data_path.exists():
-        raise HTTPException(status_code=503, detail="Raw dataset not found.")
+    """Return class counts and mean behaviour per tier, with the data source."""
+    settings = get_analytics_settings()
+    try:
+        frame, source = read_learners(settings, prefer_db=True)
+    except Exception as exc:  # noqa: BLE001 - report as unavailable
+        raise HTTPException(status_code=503, detail=f"Data unavailable: {exc}") from exc
 
-    df = pd.read_csv(settings.raw_data_path)
     target = settings.target
-
     class_counts = {
-        str(label): int(count) for label, count in df[target].value_counts().items()
+        str(label): int(count) for label, count in frame[target].value_counts().items()
     }
     behaviour_by_class = (
-        df.groupby(target)[_BEHAVIOURAL].mean().round(2).to_dict(orient="index")
+        frame.groupby(target)[_BEHAVIOURAL].mean().round(2).to_dict(orient="index")
     )
     by_topic = (
-        df.groupby(["Topic", target])
+        frame.groupby(["Topic", target])
         .size()
         .unstack(fill_value=0)
         .to_dict(orient="index")
     )
 
     return {
-        "total_records": int(len(df)),
+        "data_source": source,
+        "total_records": int(len(frame)),
         "class_counts": class_counts,
         "behaviour_by_class": {
             str(label): {k: float(v) for k, v in values.items()}

@@ -2,11 +2,20 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
+import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def _empty_database(tmp_path: Path, monkeypatch):
+    """Force the CSV fallback so trends are deterministic in tests."""
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'empty.db'}")
 
 
 def test_health_reports_status():
@@ -28,6 +37,7 @@ def test_trends_aggregates_raw_data():
     assert response.status_code == 200
     body = response.json()
     assert body["total_records"] == 480
+    assert body["data_source"] == "csv"
     assert set(body["class_counts"]) == {"L", "M", "H"}
 
 
