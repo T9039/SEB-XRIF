@@ -20,6 +20,11 @@ mlflow_registered_model: seb-xrif-random-forest
 # Application database (override with the DATABASE_URL env var).
 database_url: sqlite:///sebxrif.db
 
+# Learning Record Store (lrsql in docker-compose maps to host :8081).
+lrs_endpoint: http://localhost:8081/xapi
+lrs_key: seb-xrif-lrs
+lrs_secret: seb-xrif-secret
+
 categorical:
   - gender
   - NationalITy
