@@ -28,6 +28,11 @@ class ApiSettings(BaseSettings):
     shap_path: Path = REPO_ROOT / "models" / "shap.json"
     raw_data_path: Path = REPO_ROOT / "data" / "raw" / "xAPI-Edu-Data.csv"
 
+    # Model source: "local" (joblib artifact) or "registry" (MLflow registry).
+    model_source: str = "local"
+    registered_model: str = "seb-xrif-random-forest"
+    mlflow_tracking_uri: str = "sqlite:///mlflow.db"
+
     target: str = "Class"
     class_labels: list[str] = Field(default_factory=lambda: ["L", "M", "H"])
 

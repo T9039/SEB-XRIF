@@ -1,8 +1,9 @@
 """Artifact loading and inference for the API.
 
-The promoted pipeline and its metadata are loaded once at startup. If no
-artifact exists yet, the service still starts and reports a degraded state;
-prediction routes return HTTP 503 until a model is trained.
+Loads the promoted pipeline and metadata once at startup, either from the local
+joblib artifact or the MLflow model registry (``model_source``). If no model
+exists the service still starts and reports a degraded state; prediction routes
+return HTTP 503 until a model is available.
 """
 
 from __future__ import annotations
@@ -13,7 +14,10 @@ from typing import Any
 import joblib
 import pandas as pd
 
-from .config import get_api_settings
+from .config import ApiSettings, get_api_settings
+from .logging import get_logger
+
+logger = get_logger("api.model_store")
 
 
 class ModelStore:
@@ -25,9 +29,15 @@ class ModelStore:
         self.shap: dict[str, Any] = {}
 
     def load(self) -> ModelStore:
+        """Load the pipeline and sidecars from the configured source."""
         settings = get_api_settings()
-        if settings.model_path.exists():
+
+        if settings.model_source == "registry":
+            self._load_from_registry(settings)
+        if self.pipeline is None and settings.model_path.exists():
             self.pipeline = joblib.load(settings.model_path)
+            logger.info("model_loaded", source="local", path=str(settings.model_path))
+
         if settings.metadata_path.exists():
             self.metadata = json.loads(
                 settings.metadata_path.read_text(encoding="utf-8")
@@ -35,6 +45,18 @@ class ModelStore:
         if settings.shap_path.exists():
             self.shap = json.loads(settings.shap_path.read_text(encoding="utf-8"))
         return self
+
+    def _load_from_registry(self, settings: ApiSettings) -> None:
+        """Best-effort load of the latest registered model version."""
+        try:
+            import mlflow
+
+            mlflow.set_tracking_uri(settings.mlflow_tracking_uri)
+            uri = f"models:/{settings.registered_model}/latest"
+            self.pipeline = mlflow.sklearn.load_model(uri)
+            logger.info("model_loaded", source="registry", uri=uri)
+        except Exception as exc:  # noqa: BLE001 - fall back to the local artifact
+            logger.warning("registry_load_failed", error=str(exc))
 
     @property
     def ready(self) -> bool:

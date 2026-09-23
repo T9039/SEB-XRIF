@@ -8,8 +8,28 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
+from api.model_store import get_store
 
 client = TestClient(app)
+
+PAYLOAD = {
+    "gender": "M",
+    "NationalITy": "KW",
+    "PlaceofBirth": "KuwaIT",
+    "StageID": "lowerlevel",
+    "GradeID": "G-04",
+    "SectionID": "A",
+    "Topic": "IT",
+    "Semester": "F",
+    "Relation": "Father",
+    "ParentAnsweringSurvey": "Yes",
+    "ParentschoolSatisfaction": "Good",
+    "StudentAbsenceDays": "Under-7",
+    "raisedhands": 15,
+    "VisITedResources": 16,
+    "AnnouncementsView": 2,
+    "Discussion": 20,
+}
 
 
 @pytest.fixture(autouse=True)
@@ -68,3 +88,17 @@ def test_predict_returns_503_without_model():
     }
     response = client.post("/predict", json=payload)
     assert response.status_code in {200, 503}
+
+
+def test_error_envelope_on_missing_model():
+    store = get_store()
+    original = store.pipeline
+    store.pipeline = None
+    try:
+        response = client.post("/predict", json=PAYLOAD)
+        assert response.status_code == 503
+        body = response.json()
+        assert "error" in body
+        assert "message" in body["error"]
+    finally:
+        store.pipeline = original
