@@ -85,6 +85,6 @@ def test_learners_uses_postgres_when_seeded(tmp_path: Path, monkeypatch):
     response = client.get("/learners", params={"topic": "Math"})
     assert response.status_code == 200
     body = response.json()
-    assert body["data_source"] == "postgres"
+    assert body["data_source"] == "database"
     assert body["total"] == 1
     assert body["rows"][0]["Topic"] == "Math"

@@ -23,6 +23,7 @@ help:
 > @echo "  db-upgrade   apply database migrations (alembic upgrade head)"
 > @echo "  db-init      create tables directly (development convenience)"
 > @echo "  paper        build the paper PDF (Markdown -> Typst)"
+> @echo "  eval-report  build the SUS/Cohen's d/T0-T2 report (ARGS='--input pilot.json')"
 > @echo "  api          run FastAPI on :8000"
 > @echo "  web          run Vite dev server on :5173"
 > @echo "  dev          run api and web together"
@@ -76,6 +77,9 @@ db-init:
 
 paper:
 > @./paper/build.sh
+
+eval-report:
+> uv run python -m eval.report $(ARGS)
 
 api:
 > @./scripts/run-api.sh

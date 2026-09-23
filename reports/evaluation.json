@@ -1,0 +1,37 @@
+{
+  "benchmarks": {
+    "sus": 76.6,
+    "cohens_d": 0.936,
+    "thresholds": {
+      "small": 0.2,
+      "medium": 0.5,
+      "large": 0.8
+    }
+  },
+  "usability": {
+    "n": 4,
+    "scores": [
+      87.5,
+      90.0,
+      65.0,
+      87.5
+    ],
+    "mean": 82.5,
+    "benchmark": 76.6,
+    "meets_benchmark": true
+  },
+  "learning": {
+    "n": 8,
+    "mean_t0": 43.125,
+    "mean_t1": 70.625,
+    "gain_immediate": 27.5,
+    "d_immediate": 7.570150054910178,
+    "mean_t2": 63.25,
+    "gain_delayed": 20.125,
+    "d_delayed": 4.631159242976444,
+    "decay_t2_t1": -7.375,
+    "d_decay": -1.9162309172618113,
+    "retention_ratio": 0.7318181818181818,
+    "meets_immediate_benchmark": true
+  }
+}

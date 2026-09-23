@@ -63,7 +63,7 @@ def test_read_learners_uses_postgres_when_populated(monkeypatch, tmp_path: Path)
     monkeypatch.setenv("DATABASE_URL", url)
 
     frame, source = read_learners(prefer_db=True)
-    assert source == "postgres"
+    assert source == "database"
     assert len(frame) == 3
 
 
@@ -76,6 +76,6 @@ def test_api_trends_reports_postgres_source(monkeypatch, tmp_path: Path):
     response = client.get("/trends")
     assert response.status_code == 200
     body = response.json()
-    assert body["data_source"] == "postgres"
+    assert body["data_source"] == "database"
     assert body["total_records"] == 5
     assert counts(get_engine(url))["learners"] == 5

@@ -43,7 +43,7 @@ def read_learners(
     """Return a validated feature frame and its source.
 
     Prefers the application database when it holds learners, and falls back to
-    the bundled CSV. The returned source is ``"postgres"`` or ``"csv"``.
+    the bundled CSV. The returned source is ``"database"`` or ``"csv"``.
     """
     settings = settings or get_settings()
     if prefer_db:
@@ -52,7 +52,7 @@ def read_learners(
 
             frame = learners_frame(get_engine())
             if not frame.empty:
-                return validate(frame), "postgres"
+                return validate(frame), "database"
         except Exception:  # noqa: BLE001 - fall back to the CSV seed
             pass
     return validate(load_raw(settings=settings)), "csv"

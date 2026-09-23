@@ -239,6 +239,24 @@ def learners_frame(engine: Engine) -> pd.DataFrame:
     return pd.DataFrame(records, columns=list(FRAME_TO_DB))
 
 
+def evaluations_frame(engine: Engine) -> pd.DataFrame:
+    """Return the evaluations table as a tidy frame."""
+    with session_scope(engine) as session:
+        evaluations = session.scalars(select(Evaluation)).all()
+    return pd.DataFrame(
+        [
+            {
+                "learner_id": item.learner_id,
+                "time_point": item.time_point,
+                "measure": item.measure,
+                "value": item.value,
+            }
+            for item in evaluations
+        ],
+        columns=["learner_id", "time_point", "measure", "value"],
+    )
+
+
 def upsert_learner(session: Session, data: dict[str, Any]) -> Learner:
     """Insert or update a learner keyed by ``external_id``."""
     learner = session.scalar(
