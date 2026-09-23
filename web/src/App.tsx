@@ -1,5 +1,7 @@
 import { HealthBadge } from "./components/HealthBadge";
 import { ImportancePanel } from "./components/ImportancePanel";
+import { ClassificationQuality } from "./components/ClassificationQuality";
+import { CvSpread } from "./components/CvSpread";
 import { LearnerTable } from "./components/LearnerTable";
 import { MetricCards } from "./components/MetricCards";
 import { PredictionForm } from "./components/PredictionForm";
@@ -35,6 +37,12 @@ export default function App() {
         </div>
         <div className="lg:col-span-2">
           <LearnerTable />
+        </div>
+        <div className="lg:col-span-2">
+          <ClassificationQuality />
+        </div>
+        <div className="lg:col-span-2">
+          <CvSpread />
         </div>
       </main>
 
