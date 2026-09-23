@@ -49,7 +49,7 @@ Tool selection follows the literature review theoretical evaluation, which ranke
 Forest strongest. The ensemble resists noise and overfitting and ranks feature importance,
 expected to highlight raised hands and visited resources. Configuration is 100 trees,
 balanced weights, and a fixed seed, with stratified 80 percent training and 20 percent
-testing. The demonstration dashboard uses Flask, React, and Chart.js to show trends, tiers,
+testing. The demonstration dashboard uses FastAPI, React, and the ui design-system chart (Recharts) to show trends, tiers,
 and importance.
 
 ## 3.4 Evaluation Criteria

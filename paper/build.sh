@@ -1,21 +1,18 @@
 #!/usr/bin/env bash
 # Build the SEB-XRIF paper PDF.
 #
-# Markdown in sections/*.md is the source of truth; this script refreshes the
-# generated results table from reports/, then compiles with Typst (cmarker
-# renders the Markdown). The comparison figure is embedded by main.typ from
-# ../reports/figures/.
+# Markdown in sections/*.md is the source of truth. This script regenerates the
+# data tables from reports/ (stdlib Python only), then compiles with Typst
+# (cmarker renders the Markdown). The comparison figure is embedded by main.typ
+# from ../reports/figures/.
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-if [ -f ../reports/results.md ]; then
-  cp ../reports/results.md sections/results_table.md
-  echo "==> Refreshed sections/results_table.md from reports/results.md"
+if command -v python3 >/dev/null 2>&1; then
+  python3 tools/make_tables.py
 else
-  printf '_Results table not generated yet. Run `make matrix` first._\n' \
-    > sections/results_table.md
-  echo "!! reports/results.md not found; wrote a placeholder"
+  echo "!! python3 not found; leaving generated tables as they are"
 fi
 
 if ! command -v typst >/dev/null 2>&1; then

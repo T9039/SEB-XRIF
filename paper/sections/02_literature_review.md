@@ -55,5 +55,5 @@ questionnaires, feedback transcripts, and performance assessments.
 The SLR does not consistently report programming languages, databases, or development
 environments, so these are not assumed. The specified foundation is therefore XR
 environments with 3D content, AI language technologies for feedback, and logged
-performance data, which Section 3 implements as Flask, React, and Chart.js over the xAPI
+performance data, which Section 3 implements as FastAPI, React, and Recharts over the xAPI
 schema.

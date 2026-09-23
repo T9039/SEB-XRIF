@@ -11,11 +11,11 @@
 
 #set page(
   paper: "a4",
-  margin: (x: 1.9cm, y: 2.0cm),
+  margin: (x: 1.7cm, y: 1.8cm),
   numbering: "1",
 )
-#set text(font: "New Computer Modern", size: 10pt)
-#set par(justify: true, leading: 0.72em)
+#set text(font: "New Computer Modern", size: 9.5pt)
+#set par(justify: true, leading: 0.62em)
 #show heading.where(level: 1): set text(size: 14pt, weight: "bold")
 #show heading.where(level: 2): set text(size: 12pt, weight: "bold")
 #show heading.where(level: 3): set text(size: 11pt, weight: "bold", style: "italic")
@@ -42,7 +42,7 @@
 #md("sections/results_table.md")
 
 #figure(
-  image("../reports/figures/model_comparison.png", width: 92%),
+  image("../reports/figures/model_comparison.png", width: 88%),
   caption: [Model comparison matrix across the 16 estimators (CV macro F1 ± std).],
 )
 

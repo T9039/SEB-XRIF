@@ -18,7 +18,7 @@ framework that connects real-time student engagement with long-term retention tr
 **Proposed solution.** This study proposes the Scalable, Evidence-Based XR Integration
 Framework (SEB-XRIF). It addresses the retention and scalability gaps above, adopts the
 Design Science Research Methodology (DSRM), uses the public xAPI Educational Mining
-Dataset (480 records, 17 attributes) acquired from Kaggle, builds on a Python, Flask,
+Dataset (480 records, 17 attributes) acquired from Kaggle, builds on a Python, FastAPI,
 React.js, and Scikit-learn stack with a Random Forest Classifier, and evaluates with
 F1-score, the System Usability Scale, and Cohen's d effect size.
 
