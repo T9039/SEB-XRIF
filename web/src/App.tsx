@@ -1,6 +1,8 @@
 import { HealthBadge } from "./components/HealthBadge";
 import { ImportancePanel } from "./components/ImportancePanel";
+import { LearnerTable } from "./components/LearnerTable";
 import { MetricCards } from "./components/MetricCards";
+import { PredictionForm } from "./components/PredictionForm";
 import { TierDistribution } from "./components/TierDistribution";
 import { TrendChart } from "./components/TrendChart";
 
@@ -23,10 +25,16 @@ export default function App() {
         <div className="lg:col-span-2">
           <MetricCards />
         </div>
+        <div className="lg:col-span-2">
+          <PredictionForm />
+        </div>
         <TierDistribution />
         <ImportancePanel />
         <div className="lg:col-span-2">
           <TrendChart />
+        </div>
+        <div className="lg:col-span-2">
+          <LearnerTable />
         </div>
       </main>
 

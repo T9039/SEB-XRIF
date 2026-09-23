@@ -1,5 +1,5 @@
-"""API route modules: predict, metrics, importance, trends."""
+"""API route modules: predict, metrics, importance, trends, learners."""
 
-from . import importance, metrics, predict, trends
+from . import importance, learners, metrics, predict, trends
 
-__all__ = ["importance", "metrics", "predict", "trends"]
+__all__ = ["importance", "learners", "metrics", "predict", "trends"]

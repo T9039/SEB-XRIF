@@ -55,3 +55,16 @@ export interface PredictionResponse {
   probabilities: Record<string, number>;
   confidence: number;
 }
+
+export interface LearnerOptions {
+  data_source: string;
+  options: Record<string, string[]>;
+}
+
+export interface LearnerPage {
+  data_source: string;
+  total: number;
+  limit: number;
+  offset: number;
+  rows: Record<string, string | number>[];
+}

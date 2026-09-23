@@ -3,6 +3,8 @@ import { api } from "./client";
 import type {
   Health,
   Importance,
+  LearnerOptions,
+  LearnerPage,
   Metrics,
   PredictionRequest,
   PredictionResponse,
@@ -41,5 +43,24 @@ export function usePredict() {
   return useMutation({
     mutationFn: async (payload: PredictionRequest) =>
       (await api.post<PredictionResponse>("/predict", payload)).data,
+  });
+}
+
+export function useOptions() {
+  return useQuery({
+    queryKey: ["options"],
+    queryFn: async () => (await api.get<LearnerOptions>("/options")).data,
+  });
+}
+
+export function useLearners(params: {
+  limit: number;
+  offset: number;
+  topic?: string;
+  tier?: string;
+}) {
+  return useQuery({
+    queryKey: ["learners", params],
+    queryFn: async () => (await api.get<LearnerPage>("/learners", { params })).data,
   });
 }

@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 
 from .logging import configure_logging, get_logger
 from .model_store import get_store
-from .routes import importance, metrics, predict, trends
+from .routes import importance, learners, metrics, predict, trends
 from .schemas import HealthResponse
 
 configure_logging()
@@ -91,6 +91,7 @@ app.include_router(predict.router)
 app.include_router(metrics.router)
 app.include_router(importance.router)
 app.include_router(trends.router)
+app.include_router(learners.router)
 
 
 @app.get("/", tags=["system"])
