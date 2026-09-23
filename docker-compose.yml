@@ -6,6 +6,9 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://sebxrif:sebxrif@db:5432/sebxrif
       MLFLOW_TRACKING_URI: http://mlflow:5000
+      LRS_ENDPOINT: http://lrsql:8080/xapi
+      LRS_KEY: seb-xrif-lrs
+      LRS_SECRET: seb-xrif-secret
     volumes:
       # Share trained artifacts between the host and the container.
       - ./models:/app/models
@@ -36,14 +39,42 @@ services:
       POSTGRES_PASSWORD: sebxrif
       POSTGRES_DB: sebxrif
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # Postgres 18 stores data under /var/lib/postgresql/<major>/docker.
+      - pgdata:/var/lib/postgresql
+      # Creates the lrsql database on first initialisation.
+      - ./docker/postgres/init-lrsql.sql:/docker-entrypoint-initdb.d/10-lrsql.sql:ro
     ports:
-      - "5432:5432"
+      # 5433 on the host to avoid clashing with a system PostgreSQL.
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sebxrif"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # Learning Record Store: the xAPI endpoint every adopter writes to.
+  # Postgres-backed, sharing the db service; ClamAV is disabled (no attachments).
+  lrsql:
+    image: yetanalytics/lrsql:latest
+    command: ["/lrsql/bin/run_postgres.sh"]
+    environment:
+      LRSQL_ADMIN_USER_DEFAULT: admin
+      LRSQL_ADMIN_PASS_DEFAULT: seb-xrif-admin
+      LRSQL_API_KEY_DEFAULT: seb-xrif-lrs
+      LRSQL_API_SECRET_DEFAULT: seb-xrif-secret
+      LRSQL_DB_HOST: db
+      LRSQL_DB_PORT: 5432
+      LRSQL_DB_NAME: lrsql_db
+      LRSQL_DB_USER: sebxrif
+      LRSQL_DB_PASSWORD: sebxrif
+      LRSQL_POOL_INITIALIZATION_FAIL_TIMEOUT: 30000
+      LRSQL_ENABLE_CLAMAV: "false"
+      LRSQL_ALLOW_ALL_ORIGINS: "false"
+    ports:
+      - "8081:8080"
+    depends_on:
+      db:
+        condition: service_healthy
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:latest
