@@ -12,7 +12,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "==> Starting API on http://localhost:8000"
-uv run uvicorn api.main:app --reload --port 8000 &
+uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8000 &
 
 echo "==> Starting web dev server on http://localhost:5173"
 (cd "$ROOT/web" && pnpm run dev) &

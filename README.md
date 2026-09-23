@@ -160,6 +160,33 @@ notebooks/  exploratory analysis
 - **Design system:** shadcn/ui (Base UI + Tailwind v4) with Storybook; charts via the ui chart component (Recharts)
 - **Evaluation:** scikit-learn metrics, pingouin, scipy (see the GPL-3 note in the spec)
 
+## Remote access (Tailscale)
+
+The dev servers bind to all interfaces, so they are reachable over the tailnet
+using this machine's Tailscale address (find it with `tailscale ip -4`):
+
+| Service | Local | Over Tailscale |
+| --- | --- | --- |
+| Dashboard | http://localhost:5173 | http://\<tailscale-ip\>:5173 |
+| API docs | http://localhost:8000/docs | http://\<tailscale-ip\>:8000/docs |
+| Storybook | http://localhost:6006 | http://\<tailscale-ip\>:6006 |
+
+If a host firewall blocks inbound, allow the Tailscale interface once:
+
+```bash
+sudo ufw allow in on tailscale0
+```
+
+Or keep the firewall closed and use Tailscale Serve (set the operator once to
+avoid sudo for every command):
+
+```bash
+sudo tailscale set --operator=$USER
+tailscale serve --bg --yes --http=5173 http://localhost:5173
+tailscale serve --bg --yes --http=8000 http://localhost:8000
+tailscale serve --bg --yes --http=6006 http://localhost:6006
+```
+
 ## Continuous integration
 
 GitHub Actions runs on every push and pull request (`.github/workflows/ci.yml`):

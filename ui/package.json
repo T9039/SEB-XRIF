@@ -16,7 +16,7 @@
     "dev": "vp pack --watch",
     "test": "vp test run --passWithNoTests",
     "check": "vp check",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 6006 --host 0.0.0.0",
     "build-storybook": "storybook build -o storybook-static"
   },
   "dependencies": {
