@@ -160,6 +160,19 @@ notebooks/  exploratory analysis
 - **Design system:** shadcn/ui (Base UI + Tailwind v4) with Storybook; charts via the ui chart component (Recharts)
 - **Evaluation:** scikit-learn metrics, pingouin, scipy (see the GPL-3 note in the spec)
 
+## Continuous integration
+
+GitHub Actions runs on every push and pull request (`.github/workflows/ci.yml`):
+
+- **python** — `uv sync`, ruff, mypy, Alembic against a Postgres service, pytest
+- **web** — pnpm install, `vp check`, vitest, `vp build`
+- **ui** — static Storybook build
+- **docker** — builds the API and web images (with layer caching)
+- **paper** — compiles the Typst paper and uploads the PDF as an artifact
+
+Recommended repository setting: protect `main` and require these jobs to pass.
+Developer tools run behind a Compose profile: `docker compose --profile tools up storybook` (or `mlflow`).
+
 ## Documentation
 
 | Document | Description |

@@ -87,6 +87,17 @@ services:
     volumes:
       - mlartifacts:/mlartifacts
 
+  # Developer tools, started explicitly: docker compose --profile tools up
+  storybook:
+    image: node:24-alpine
+    profiles: ["tools"]
+    working_dir: /workspace
+    command: sh -c "npm install -g pnpm@12 && pnpm install && pnpm --filter @humanity-erp/ui storybook -- --host 0.0.0.0 --port 6006 --ci"
+    volumes:
+      - .:/workspace
+    ports:
+      - "6006:6006"
+
 volumes:
   pgdata:
   mlartifacts:

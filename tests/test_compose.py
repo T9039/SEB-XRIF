@@ -48,6 +48,12 @@ def test_api_knows_the_lrs_endpoint():
     assert "LRS_KEY" in env and "LRS_SECRET" in env
 
 
+def test_storybook_is_behind_the_tools_profile():
+    services = load_compose()["services"]
+    assert "storybook" in services
+    assert "tools" in services["storybook"]["profiles"]
+
+
 # ------------------------------------------------------------------------- e2e
 @pytest.mark.skipif(shutil.which("docker") is None, reason="docker not installed")
 def test_compose_config_is_valid():
