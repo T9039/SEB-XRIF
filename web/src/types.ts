@@ -103,3 +103,35 @@ export interface DiagnosticsPayload {
   calibration: Record<string, number>[];
   learning: Record<string, number>[];
 }
+
+export interface ColumnInfo {
+  name: string;
+  kind: "categorical" | "numeric";
+  options?: string[];
+  min?: number;
+  max?: number;
+  mean?: number;
+}
+
+export interface ColumnsPayload {
+  data_source: string;
+  target: string;
+  columns: ColumnInfo[];
+}
+
+export interface AnalyticsQueryResult {
+  data_source: string;
+  x: string;
+  y: string | null;
+  group: string | null;
+  aggregate: string;
+  series: string[];
+  rows: Record<string, string | number | null>[];
+  total: number;
+}
+
+export interface SavedChartView {
+  id: number;
+  name: string;
+  spec: Record<string, unknown>;
+}

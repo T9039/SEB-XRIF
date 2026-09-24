@@ -151,6 +151,19 @@ class Evaluation(Base):
     learner: Mapped[Learner | None] = relationship(back_populates="evaluations")
 
 
+class ChartView(Base):
+    """A saved Chart Studio specification."""
+
+    __tablename__ = "chart_views"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), unique=True, index=True)
+    spec: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_utcnow
+    )
+
+
 # --------------------------------------------------------------------- engine
 def get_engine(url: str | None = None) -> Engine:
     """Create an engine for the given URL, or the configured default."""
@@ -335,12 +348,43 @@ def counts(engine: Engine) -> dict[str, int]:
         ("activity_events", ActivityEvent),
         ("predictions", Prediction),
         ("evaluations", Evaluation),
+        ("chart_views", ChartView),
     ]
     with session_scope(engine) as session:
         return {
             name: int(session.scalar(select(func.count()).select_from(model)) or 0)
             for name, model in tables
         }
+
+
+def save_view(engine: Engine, name: str, spec: dict[str, Any]) -> dict[str, Any]:
+    """Insert or update a saved chart view by name."""
+    with session_scope(engine) as session:
+        view = session.scalar(select(ChartView).where(ChartView.name == name))
+        if view is None:
+            view = ChartView(name=name, spec=spec)
+            session.add(view)
+        else:
+            view.spec = spec
+        session.flush()
+        return {"id": view.id, "name": view.name, "spec": view.spec}
+
+
+def list_views(engine: Engine) -> list[dict[str, Any]]:
+    """Return all saved chart views ordered by name."""
+    with session_scope(engine) as session:
+        views = session.scalars(select(ChartView).order_by(ChartView.name)).all()
+    return [{"id": view.id, "name": view.name, "spec": view.spec} for view in views]
+
+
+def delete_view(engine: Engine, name: str) -> bool:
+    """Delete a saved chart view by name; returns whether it existed."""
+    with session_scope(engine) as session:
+        view = session.scalar(select(ChartView).where(ChartView.name == name))
+        if view is None:
+            return False
+        session.delete(view)
+        return True
 
 
 def main(argv: list[str] | None = None) -> None:

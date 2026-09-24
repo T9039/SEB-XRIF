@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "./client";
 import type {
+  AnalyticsQueryResult,
+  ColumnsPayload,
   DiagnosticsPayload,
   Health,
   Importance,
@@ -10,6 +12,7 @@ import type {
   PredictionRequest,
   PredictionResponse,
   ResultsPayload,
+  SavedChartView,
   Trends,
 } from "../types";
 
@@ -79,5 +82,41 @@ export function useDiagnostics() {
     queryKey: ["diagnostics"],
     queryFn: async () => (await api.get<DiagnosticsPayload>("/model/diagnostics")).data,
     retry: false,
+  });
+}
+
+export function useColumns() {
+  return useQuery({
+    queryKey: ["columns"],
+    queryFn: async () => (await api.get<ColumnsPayload>("/analytics/columns")).data,
+  });
+}
+
+export function useAnalyticsQuery(spec: Record<string, unknown>, enabled = true) {
+  return useQuery({
+    queryKey: ["analytics-query", spec],
+    queryFn: async () => (await api.post<AnalyticsQueryResult>("/analytics/query", spec)).data,
+    enabled,
+  });
+}
+
+export function useChartViews() {
+  return useQuery({
+    queryKey: ["chart-views"],
+    queryFn: async () => (await api.get<SavedChartView[]>("/charts")).data,
+  });
+}
+
+export function useSaveChartView() {
+  return useMutation({
+    mutationFn: async (view: { name: string; spec: Record<string, unknown> }) =>
+      (await api.post<SavedChartView>("/charts", view)).data,
+  });
+}
+
+export function useDeleteChartView() {
+  return useMutation({
+    mutationFn: async (name: string) =>
+      (await api.delete(`/charts/${encodeURIComponent(name)}`)).data,
   });
 }

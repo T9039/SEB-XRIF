@@ -73,6 +73,7 @@ def test_init_and_repository_roundtrip():
         "activity_events": 1,
         "predictions": 1,
         "evaluations": 1,
+        "chart_views": 0,
     }
 
 
@@ -121,6 +122,7 @@ def test_alembic_upgrade_creates_schema(tmp_path: Path):
         "activity_events",
         "predictions",
         "evaluations",
+        "chart_views",
     }
 
     with session_scope(engine) as session:
