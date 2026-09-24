@@ -36,10 +36,8 @@ def _interp(grid: np.ndarray, xs: np.ndarray, ys: np.ndarray) -> list[float]:
     return [round(float(value), 4) for value in values]
 
 
-def compute_diagnostics(
-    settings: Settings | None = None, folds: int = 5
-) -> dict[str, Any]:
-    """Compute ROC/PR/calibration/learning curves for the promoted model."""
+def _compute_diagnostics(settings: Settings, folds: int) -> dict[str, Any]:
+    """Compute the diagnostic curves (uncached)."""
     settings = settings or get_settings()
     pipeline = joblib.load(settings.model_path)
 
@@ -126,3 +124,21 @@ def compute_diagnostics(
         "calibration": calibration_rows,
         "learning": learning_rows,
     }
+
+
+_CACHE: dict[tuple[str, float, int], dict[str, Any]] = {}
+
+
+def compute_diagnostics(
+    settings: Settings | None = None, folds: int = 5
+) -> dict[str, Any]:
+    """Return the diagnostic curves, cached until the model artifact changes."""
+    settings = settings or get_settings()
+    try:
+        mtime = settings.model_path.stat().st_mtime
+    except OSError:
+        mtime = 0.0
+    key = (str(settings.model_path), mtime, folds)
+    if key not in _CACHE:
+        _CACHE[key] = _compute_diagnostics(settings, folds)
+    return _CACHE[key]
