@@ -135,3 +135,25 @@ export interface SavedChartView {
   name: string;
   spec: Record<string, unknown>;
 }
+
+export interface EmbeddingPayload {
+  data_source: string;
+  n_clusters: number;
+  explained_variance: number[];
+  points: { x: number; y: number; tier: string; cluster: number }[];
+  profiles: Record<string, string | number>[];
+  clusters: string[];
+}
+
+export interface PdpPayload {
+  data_source: string;
+  feature: string;
+  classes: string[];
+  rows: Record<string, number>[];
+}
+
+export interface CorrelationPayload {
+  data_source: string;
+  columns: string[];
+  matrix: number[][];
+}

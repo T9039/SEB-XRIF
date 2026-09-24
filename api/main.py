@@ -22,6 +22,7 @@ from fastapi.responses import JSONResponse
 from .logging import configure_logging, get_logger
 from .model_store import get_store
 from .routes import (
+    advanced,
     analytics,
     charts,
     diagnostics,
@@ -104,6 +105,7 @@ app.include_router(trends.router)
 app.include_router(learners.router)
 app.include_router(results.router)
 app.include_router(analytics.router)
+app.include_router(advanced.router)
 app.include_router(charts.router)
 app.include_router(diagnostics.router)
 

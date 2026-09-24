@@ -1,6 +1,7 @@
-import { Activity, BarChart3, LayoutDashboard, Sparkles, Table2 } from "lucide-react";
+import { Activity, BarChart3, Compass, LayoutDashboard, Sparkles, Table2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@humanity-erp/ui";
 import { ChartStudio } from "./components/ChartStudio";
+import { ExplorePanel } from "./components/ExplorePanel";
 import { ClassificationQuality } from "./components/ClassificationQuality";
 import { CvSpread } from "./components/CvSpread";
 import { HealthBadge } from "./components/HealthBadge";
@@ -18,6 +19,7 @@ const NAV = [
   { value: "predict", label: "Predict", icon: Sparkles },
   { value: "data", label: "Data", icon: Table2 },
   { value: "diagnostics", label: "Diagnostics", icon: Activity },
+  { value: "explore", label: "Explore", icon: Compass },
   { value: "studio", label: "Studio", icon: BarChart3 },
 ] as const;
 
@@ -78,6 +80,10 @@ export default function App() {
               <ImportancePanel />
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="explore" className="min-w-0 flex-1">
+          <ExplorePanel />
         </TabsContent>
 
         <TabsContent value="studio" className="min-w-0 flex-1">

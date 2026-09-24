@@ -3,7 +3,9 @@ import { api } from "./client";
 import type {
   AnalyticsQueryResult,
   ColumnsPayload,
+  CorrelationPayload,
   DiagnosticsPayload,
+  EmbeddingPayload,
   Health,
   Importance,
   LearnerOptions,
@@ -12,6 +14,7 @@ import type {
   PredictionRequest,
   PredictionResponse,
   ResultsPayload,
+  PdpPayload,
   SavedChartView,
   Trends,
 } from "../types";
@@ -118,5 +121,29 @@ export function useDeleteChartView() {
   return useMutation({
     mutationFn: async (name: string) =>
       (await api.delete(`/charts/${encodeURIComponent(name)}`)).data,
+  });
+}
+
+export function useCorrelation() {
+  return useQuery({
+    queryKey: ["correlation"],
+    queryFn: async () => (await api.get<CorrelationPayload>("/analytics/correlation")).data,
+  });
+}
+
+export function useEmbedding(clusters = 3) {
+  return useQuery({
+    queryKey: ["embedding", clusters],
+    queryFn: async () =>
+      (await api.get<EmbeddingPayload>("/analytics/embedding", { params: { clusters } })).data,
+  });
+}
+
+export function usePdp(feature: string, enabled = true) {
+  return useQuery({
+    queryKey: ["pdp", feature],
+    queryFn: async () => (await api.get<PdpPayload>("/model/pdp", { params: { feature } })).data,
+    enabled: enabled && Boolean(feature),
+    retry: false,
   });
 }

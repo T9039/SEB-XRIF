@@ -1,6 +1,7 @@
 """API route modules."""
 
 from . import (
+    advanced,
     analytics,
     charts,
     diagnostics,
@@ -13,6 +14,7 @@ from . import (
 )
 
 __all__ = [
+    "advanced",
     "analytics",
     "charts",
     "diagnostics",
