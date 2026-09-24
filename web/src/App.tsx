@@ -6,6 +6,7 @@ import { HealthBadge } from "./components/HealthBadge";
 import { ImportancePanel } from "./components/ImportancePanel";
 import { LearnerTable } from "./components/LearnerTable";
 import { MetricCards } from "./components/MetricCards";
+import { ModelResultsTable } from "./components/ModelResultsTable";
 import { PredictionForm } from "./components/PredictionForm";
 import { TierDistribution } from "./components/TierDistribution";
 import { TrendChart } from "./components/TrendChart";
@@ -66,6 +67,7 @@ export default function App() {
 
         <TabsContent value="diagnostics" className="min-w-0 flex-1">
           <div className="flex flex-col gap-4">
+            <ModelResultsTable />
             <ClassificationQuality />
             <div className="grid gap-4 lg:grid-cols-2">
               <CvSpread />

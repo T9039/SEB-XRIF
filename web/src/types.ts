@@ -68,3 +68,24 @@ export interface LearnerPage {
   offset: number;
   rows: Record<string, string | number>[];
 }
+
+export interface ResultRow {
+  model: string;
+  status: string;
+  accuracy: number | null;
+  precision_macro: number | null;
+  recall_macro: number | null;
+  f1_macro: number | null;
+  f1_weighted: number | null;
+  roc_auc_ovr: number | null;
+  cv_mean: number | null;
+  cv_std: number | null;
+  fit_seconds: number | null;
+}
+
+export interface ResultsPayload {
+  results: ResultRow[];
+  tuning: Record<string, unknown> | null;
+  explain: Record<string, unknown> | null;
+  evaluation: Record<string, unknown> | null;
+}

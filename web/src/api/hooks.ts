@@ -8,6 +8,7 @@ import type {
   Metrics,
   PredictionRequest,
   PredictionResponse,
+  ResultsPayload,
   Trends,
 } from "../types";
 
@@ -62,5 +63,12 @@ export function useLearners(params: {
   return useQuery({
     queryKey: ["learners", params],
     queryFn: async () => (await api.get<LearnerPage>("/learners", { params })).data,
+  });
+}
+
+export function useResults() {
+  return useQuery({
+    queryKey: ["results"],
+    queryFn: async () => (await api.get<ResultsPayload>("/results")).data,
   });
 }

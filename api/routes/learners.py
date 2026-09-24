@@ -21,7 +21,7 @@ def _frame():
 
 @router.get("/learners")
 def learners(
-    limit: int = Query(20, ge=1, le=200),
+    limit: int = Query(20, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     topic: str | None = None,
     tier: str | None = Query(None, alias="class"),
