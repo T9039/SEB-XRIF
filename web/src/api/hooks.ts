@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "./client";
 import type {
+  DiagnosticsPayload,
   Health,
   Importance,
   LearnerOptions,
@@ -70,5 +71,13 @@ export function useResults() {
   return useQuery({
     queryKey: ["results"],
     queryFn: async () => (await api.get<ResultsPayload>("/results")).data,
+  });
+}
+
+export function useDiagnostics() {
+  return useQuery({
+    queryKey: ["diagnostics"],
+    queryFn: async () => (await api.get<DiagnosticsPayload>("/model/diagnostics")).data,
+    retry: false,
   });
 }

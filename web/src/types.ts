@@ -89,3 +89,17 @@ export interface ResultsPayload {
   explain: Record<string, unknown> | null;
   evaluation: Record<string, unknown> | null;
 }
+
+export interface DiagnosticsPayload {
+  data_source: string;
+  folds: number;
+  classes: string[];
+  macro_auc: number;
+  auc: Record<string, number>;
+  average_precision: Record<string, number>;
+  brier: Record<string, number>;
+  roc: Record<string, number>[];
+  pr: Record<string, number>[];
+  calibration: Record<string, number>[];
+  learning: Record<string, number>[];
+}

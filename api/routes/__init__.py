@@ -2,6 +2,7 @@
 
 from . import (
     analytics,
+    diagnostics,
     importance,
     learners,
     metrics,
@@ -12,6 +13,7 @@ from . import (
 
 __all__ = [
     "analytics",
+    "diagnostics",
     "importance",
     "learners",
     "metrics",
