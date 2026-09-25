@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 import {
   Alert,
@@ -11,13 +10,11 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  Label,
-  NativeSelect,
-  NativeSelectOption,
   Skeleton,
   type ChartConfig,
 } from "@humanity-erp/ui";
-import { useXrPilots, useXrTrends } from "../api/hooks";
+import { useXrTrends } from "../api/hooks";
+import { useSource } from "../lib/source-context";
 
 const timelineConfig = {
   events: { label: "Events", color: "#4472C4" },
@@ -28,14 +25,11 @@ const verbConfig = {
   count: { label: "Events", color: "#70AD47" },
 } satisfies ChartConfig;
 
-/** Engagement trends over the ARETE augmented-reality pilots. */
+/** Engagement trends over the selected ARETE augmented-reality pilot. */
 export function XrTrendsPanel() {
-  const pilots = useXrPilots();
-  const [pilot, setPilot] = useState("pbis");
-  const { data, isLoading, isError } = useXrTrends(pilot, "W");
-
-  const options = pilots.data?.pilots ?? [];
-  const selected = options.find((option) => option.name === pilot);
+  const { source, sourceId } = useSource();
+  const isXr = source.kind === "xr";
+  const { data, isLoading, isError } = useXrTrends(sourceId, "W", isXr);
 
   const timeline = (data?.period_start ?? []).map((period, index) => ({
     period: period.slice(0, 10),
@@ -47,40 +41,29 @@ export function XrTrendsPanel() {
     count,
   }));
 
-  const description = data
-    ? `${selected?.description ?? ""} · ${data.learners} learners, ${data.events} xAPI statements · licence ${data.licence}`
-    : "Select an ARETE pilot. Download it with `make fetch-arete` if the chart is empty.";
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>XR engagement over time{pilot ? ` (${pilot})` : ""}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle>XR engagement over time{isXr ? ` (${sourceId})` : ""}</CardTitle>
+        <CardDescription>
+          {isXr
+            ? `${source.description} · ${data?.learners ?? 0} learners, ${data?.events ?? 0} xAPI statements`
+            : "Select an ARETE XR pilot in the header to see engagement trends."}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="xr-pilot">XR pilot</Label>
-          <NativeSelect
-            id="xr-pilot"
-            value={pilot}
-            onChange={(event) => setPilot(event.target.value)}
-            disabled={options.length === 0}
-          >
-            {options.map((option) => (
-              <NativeSelectOption key={option.name} value={option.name}>
-                {option.name}
-                {option.available ? "" : " (not downloaded)"}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </div>
-
-        {isLoading ? (
+        {!isXr ? (
+          <Alert>
+            <AlertDescription>
+              The active source is LMS data. Choose an ARETE pilot in the header.
+            </AlertDescription>
+          </Alert>
+        ) : isLoading ? (
           <Skeleton className="h-72 w-full" />
         ) : isError || !data ? (
           <Alert>
             <AlertDescription>
-              Download this pilot with `make fetch-arete ARGS={pilot}`.
+              Download this pilot with `make fetch-arete ARGS={sourceId}`.
             </AlertDescription>
           </Alert>
         ) : (

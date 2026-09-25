@@ -12,8 +12,10 @@ import { MetricCards } from "./components/MetricCards";
 import { ModelDiagnostics } from "./components/ModelDiagnostics";
 import { ModelResultsTable } from "./components/ModelResultsTable";
 import { PredictionForm } from "./components/PredictionForm";
+import { SourceSelector } from "./components/SourceSelector";
 import { TierDistribution } from "./components/TierDistribution";
 import { TrendChart } from "./components/TrendChart";
+import { SourceProvider } from "./lib/source-context";
 
 const NAV = [
   { value: "overview", label: "Overview", icon: LayoutDashboard },
@@ -26,72 +28,77 @@ const NAV = [
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-10 border-b bg-card/80 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <div>
-            <h1 className="font-heading text-xl font-semibold">SEB-XRIF Dashboard</h1>
-            <p className="text-sm text-muted-foreground">
-              Scalable, Evidence-Based XR Integration Framework
-            </p>
-          </div>
-          <HealthBadge />
-        </div>
-      </header>
-
-      <Tabs
-        defaultValue="overview"
-        orientation="vertical"
-        className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-6 lg:flex-row"
-      >
-        <TabsList className="w-full lg:sticky lg:top-24 lg:h-fit lg:w-56 lg:self-start">
-          {NAV.map((item) => (
-            <TabsTrigger key={item.value} value={item.value} className="gap-2">
-              <item.icon />
-              <span>{item.label}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <TabsContent value="overview" className="min-w-0 flex-1">
-          <div className="flex flex-col gap-4">
-            <MetricCards />
-            <div className="grid gap-4 lg:grid-cols-2">
-              <TierDistribution />
-              <TrendChart />
+    <SourceProvider>
+      <div className="min-h-screen bg-background text-foreground">
+        <header className="sticky top-0 z-10 border-b bg-card/80 backdrop-blur">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
+            <div>
+              <h1 className="font-heading text-xl font-semibold">SEB-XRIF Dashboard</h1>
+              <p className="text-sm text-muted-foreground">
+                Scalable, Evidence-Based XR Integration Framework
+              </p>
             </div>
-            <EvaluationPanel />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="predict" className="min-w-0 flex-1">
-          <PredictionForm />
-        </TabsContent>
-
-        <TabsContent value="data" className="min-w-0 flex-1">
-          <LearnerTable />
-        </TabsContent>
-
-        <TabsContent value="diagnostics" className="min-w-0 flex-1">
-          <div className="flex flex-col gap-4">
-            <ModelResultsTable />
-            <ClassificationQuality />
-            <ModelDiagnostics />
-            <div className="grid gap-4 lg:grid-cols-2">
-              <CvSpread />
-              <ImportancePanel />
+            <div className="flex flex-wrap items-end gap-4">
+              <SourceSelector />
+              <HealthBadge />
             </div>
           </div>
-        </TabsContent>
+        </header>
 
-        <TabsContent value="explore" className="min-w-0 flex-1">
-          <ExplorePanel />
-        </TabsContent>
+        <Tabs
+          defaultValue="overview"
+          orientation="vertical"
+          className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-6 lg:flex-row"
+        >
+          <TabsList className="w-full lg:sticky lg:top-24 lg:h-fit lg:w-56 lg:self-start">
+            {NAV.map((item) => (
+              <TabsTrigger key={item.value} value={item.value} className="gap-2">
+                <item.icon />
+                <span>{item.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-        <TabsContent value="studio" className="min-w-0 flex-1">
-          <ChartStudio />
-        </TabsContent>
-      </Tabs>
-    </div>
+          <TabsContent value="overview" className="min-w-0 flex-1">
+            <div className="flex flex-col gap-4">
+              <MetricCards />
+              <div className="grid gap-4 lg:grid-cols-2">
+                <TierDistribution />
+                <TrendChart />
+              </div>
+              <EvaluationPanel />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="predict" className="min-w-0 flex-1">
+            <PredictionForm />
+          </TabsContent>
+
+          <TabsContent value="data" className="min-w-0 flex-1">
+            <LearnerTable />
+          </TabsContent>
+
+          <TabsContent value="diagnostics" className="min-w-0 flex-1">
+            <div className="flex flex-col gap-4">
+              <ModelResultsTable />
+              <ClassificationQuality />
+              <ModelDiagnostics />
+              <div className="grid gap-4 lg:grid-cols-2">
+                <CvSpread />
+                <ImportancePanel />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="explore" className="min-w-0 flex-1">
+            <ExplorePanel />
+          </TabsContent>
+
+          <TabsContent value="studio" className="min-w-0 flex-1">
+            <ChartStudio />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </SourceProvider>
   );
 }

@@ -158,22 +158,23 @@ export function useXrPilots() {
     queryFn: async () => (await api.get<XrPilotsPayload>("/xr/pilots")).data,
   });
 }
-
-export function useXrTrends(pilot = "pbis", freq = "W") {
+export function useXrTrends(pilot = "pbis", freq = "W", enabled = true) {
   return useQuery({
     queryKey: ["xr-trends", pilot, freq],
     queryFn: async () => (await api.get<XrTrends>("/xr/trends", { params: { pilot, freq } })).data,
-    retry: false,
-  });
-}
-export function useXrRisk(pilot = "pbis", folds = 5) {
-  return useQuery({
-    queryKey: ["xr-risk", pilot, folds],
-    queryFn: async () => (await api.get<XrRisk>("/xr/risk", { params: { pilot, folds } })).data,
+    enabled,
     retry: false,
   });
 }
 
+export function useXrRisk(pilot = "pbis", folds = 5, enabled = true) {
+  return useQuery({
+    queryKey: ["xr-risk", pilot, folds],
+    queryFn: async () => (await api.get<XrRisk>("/xr/risk", { params: { pilot, folds } })).data,
+    enabled,
+    retry: false,
+  });
+}
 export function useEvaluation() {
   return useQuery({
     queryKey: ["evaluation"],

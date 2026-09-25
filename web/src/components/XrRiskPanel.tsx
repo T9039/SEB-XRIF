@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Alert,
@@ -11,13 +10,11 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  Label,
-  NativeSelect,
-  NativeSelectOption,
   Skeleton,
   type ChartConfig,
 } from "@humanity-erp/ui";
-import { useXrPilots, useXrRisk } from "../api/hooks";
+import { useXrRisk } from "../api/hooks";
+import { useSource } from "../lib/source-context";
 
 const bandConfig = {
   count: { label: "Learners", color: "#C00000" },
@@ -31,13 +28,12 @@ function metric(value: number | undefined): string {
   return value === undefined ? "—" : value.toFixed(3);
 }
 
-/** Early-warning engagement/risk bands over the ARETE XR pilots. */
+/** Early-warning engagement/risk bands over the selected ARETE pilot. */
 export function XrRiskPanel() {
-  const pilots = useXrPilots();
-  const [pilot, setPilot] = useState("pbis");
-  const { data, isLoading, isError } = useXrRisk(pilot, 5);
+  const { source, sourceId } = useSource();
+  const isXr = source.kind === "xr";
+  const { data, isLoading, isError } = useXrRisk(sourceId, 5, isXr);
 
-  const options = pilots.data?.pilots ?? [];
   const bands = Object.entries(data?.bands ?? {}).map(([band, count]) => ({ band, count }));
   const importances = Object.entries(data?.importances ?? {}).map(([feature, importance]) => ({
     feature,
@@ -47,36 +43,25 @@ export function XrRiskPanel() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>XR early-warning risk ({pilot})</CardTitle>
+        <CardTitle>XR early-warning risk{isXr ? ` (${sourceId})` : ""}</CardTitle>
         <CardDescription>
           Predicts later engagement from early-session behaviour · {data?.n ?? 0} learners,{" "}
           {data?.positives ?? 0} flagged outcomes
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="xr-risk-pilot">XR pilot</Label>
-          <NativeSelect
-            id="xr-risk-pilot"
-            value={pilot}
-            onChange={(event) => setPilot(event.target.value)}
-            disabled={options.length === 0}
-          >
-            {options.map((option) => (
-              <NativeSelectOption key={option.name} value={option.name}>
-                {option.name}
-                {option.available ? "" : " (not downloaded)"}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </div>
-
-        {isLoading ? (
+        {!isXr ? (
+          <Alert>
+            <AlertDescription>
+              The active source is LMS data. Choose an ARETE pilot in the header.
+            </AlertDescription>
+          </Alert>
+        ) : isLoading ? (
           <Skeleton className="h-56 w-full" />
         ) : isError || !data ? (
           <Alert>
             <AlertDescription>
-              Download this pilot with `make fetch-arete ARGS={pilot}`.
+              Download this pilot with `make fetch-arete ARGS={sourceId}`.
             </AlertDescription>
           </Alert>
         ) : !data.available ? (
