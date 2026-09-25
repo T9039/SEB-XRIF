@@ -34,14 +34,16 @@ def build_report(
     t0: Sequence[float] | None = None,
     t1: Sequence[float] | None = None,
     t2: Sequence[float] | None = None,
+    source: str = "example",
 ) -> dict[str, Any]:
     """Build the evaluation report from raw responses and time-point scores."""
     report: dict[str, Any] = {
+        "source": source,
         "benchmarks": {
             "sus": SUS_BENCHMARK,
             "cohens_d": COHEN_D_BENCHMARK,
             "thresholds": COHEN_THRESHOLDS,
-        }
+        },
     }
 
     if sus_responses:
@@ -122,7 +124,7 @@ def to_markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _store(payload: dict[str, Any], url: str | None) -> dict[str, int]:
+def _store(payload: dict[str, Any], url: str | None, source: str) -> dict[str, int]:
     """Persist the raw measurements to the application database."""
     from analytics.db import get_engine, record_evaluation, session_scope
 
@@ -131,10 +133,18 @@ def _store(payload: dict[str, Any], url: str | None) -> dict[str, int]:
     with session_scope(engine) as session:
         for time_point in ("t0", "t1", "t2"):
             for value in payload.get(time_point) or []:
-                record_evaluation(session, time_point.upper(), "score", float(value))
+                record_evaluation(
+                    session, time_point.upper(), "score", float(value), source=source
+                )
                 stored["scores"] += 1
         for responses in payload.get("sus") or []:
-            record_evaluation(session, "T1", "sus", sus_score(list(responses)))
+            record_evaluation(
+                session,
+                "T1",
+                "sus",
+                sus_score(list(responses)),
+                source=source,
+            )
             stored["sus"] += 1
     return stored
 
@@ -148,21 +158,30 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--json-out", type=Path, default=None)
     parser.add_argument("--store", action="store_true", help="Persist to the database.")
     parser.add_argument("--url", default=None, help="Database URL for --store.")
+    parser.add_argument(
+        "--source",
+        default="example",
+        help="Provenance tag for stored measurements (e.g. pilot, example).",
+    )
     args = parser.parse_args(argv)
 
     payload = json.loads(args.input.read_text(encoding="utf-8"))
     report = build_report(
-        payload.get("sus"), payload.get("t0"), payload.get("t1"), payload.get("t2")
+        payload.get("sus"),
+        payload.get("t0"),
+        payload.get("t1"),
+        payload.get("t2"),
+        source=args.source,
     )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(to_markdown(report), encoding="utf-8")
     json_out = args.json_out or args.out.with_suffix(".json")
-    json_out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    json_out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {args.out} and {json_out}")
 
     if args.store:
-        stored = _store(payload, args.url)
+        stored = _store(payload, args.url, args.source)
         print(f"Stored {stored['scores']} scores and {stored['sus']} SUS rows")
 
 

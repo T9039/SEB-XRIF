@@ -2,6 +2,7 @@ import { Activity, BarChart3, Compass, LayoutDashboard, Sparkles, Table2 } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@humanity-erp/ui";
 import { ChartStudio } from "./components/ChartStudio";
 import { ExplorePanel } from "./components/ExplorePanel";
+import { EvaluationPanel } from "./components/EvaluationPanel";
 import { ClassificationQuality } from "./components/ClassificationQuality";
 import { CvSpread } from "./components/CvSpread";
 import { HealthBadge } from "./components/HealthBadge";
@@ -59,6 +60,7 @@ export default function App() {
               <TierDistribution />
               <TrendChart />
             </div>
+            <EvaluationPanel />
           </div>
         </TabsContent>
 

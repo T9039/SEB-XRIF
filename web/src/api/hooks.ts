@@ -6,6 +6,7 @@ import type {
   CorrelationPayload,
   DiagnosticsPayload,
   EmbeddingPayload,
+  EvaluationPayload,
   Health,
   Importance,
   LearnerOptions,
@@ -165,11 +166,18 @@ export function useXrTrends(pilot = "pbis", freq = "W") {
     retry: false,
   });
 }
-
 export function useXrRisk(pilot = "pbis", folds = 5) {
   return useQuery({
     queryKey: ["xr-risk", pilot, folds],
     queryFn: async () => (await api.get<XrRisk>("/xr/risk", { params: { pilot, folds } })).data,
+    retry: false,
+  });
+}
+
+export function useEvaluation() {
+  return useQuery({
+    queryKey: ["evaluation"],
+    queryFn: async () => (await api.get<EvaluationPayload>("/evaluation")).data,
     retry: false,
   });
 }

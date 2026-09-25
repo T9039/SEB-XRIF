@@ -1,4 +1,5 @@
 {
+  "source": "example",
   "benchmarks": {
     "sus": 76.6,
     "cohens_d": 0.936,

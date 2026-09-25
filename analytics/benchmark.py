@@ -231,7 +231,9 @@ def write_reports(
     written["markdown"] = md_path
 
     json_path = out_dir / "results.json"
-    json_path.write_text(results.to_json(orient="records", indent=2), encoding="utf-8")
+    json_path.write_text(
+        results.to_json(orient="records", indent=2) + "\n", encoding="utf-8"
+    )
     written["json"] = json_path
 
     if make_figure:

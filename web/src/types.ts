@@ -213,3 +213,18 @@ export interface XrRisk {
   support_bands?: Record<string, string>;
   learners?: { learner: string; risk: number; band: string }[];
 }
+
+export interface EvaluationPayload {
+  available: boolean;
+  reason?: string;
+  sources?: string[];
+  records?: number;
+  benchmarks?: { sus: number; cohens_d: number };
+  usability?: {
+    n: number;
+    mean: number;
+    benchmark: number;
+    meets_benchmark: boolean;
+  };
+  learning?: Record<string, number | null>;
+}

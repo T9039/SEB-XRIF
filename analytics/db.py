@@ -144,6 +144,7 @@ class Evaluation(Base):
     time_point: Mapped[str] = mapped_column(String(4))  # T0, T1, T2
     measure: Mapped[str] = mapped_column(String(32))  # e.g. score, sus
     value: Mapped[float] = mapped_column(Float)
+    source: Mapped[str] = mapped_column(String(64), default="pilot", index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_utcnow
     )
@@ -263,10 +264,11 @@ def evaluations_frame(engine: Engine) -> pd.DataFrame:
                 "time_point": item.time_point,
                 "measure": item.measure,
                 "value": item.value,
+                "source": item.source,
             }
             for item in evaluations
         ],
-        columns=["learner_id", "time_point", "measure", "value"],
+        columns=["learner_id", "time_point", "measure", "value", "source"],
     )
 
 
@@ -331,10 +333,15 @@ def record_evaluation(
     measure: str,
     value: float,
     learner: Learner | None = None,
+    source: str = "pilot",
 ) -> Evaluation:
-    """Persist a longitudinal or usability measurement."""
+    """Persist a longitudinal or usability measurement, tagged by source."""
     evaluation = Evaluation(
-        learner=learner, time_point=time_point, measure=measure, value=value
+        learner=learner,
+        time_point=time_point,
+        measure=measure,
+        value=value,
+        source=source,
     )
     session.add(evaluation)
     session.flush()
