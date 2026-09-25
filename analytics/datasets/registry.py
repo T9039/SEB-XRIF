@@ -2,6 +2,13 @@
 
 from __future__ import annotations
 
+from .arete import (
+    AreteEnglishLiteracyAdapter,
+    AreteLxdAdapter,
+    AretePbisAdapter,
+    AreteStemGeographyAdapter,
+    AreteStemGeometryAdapter,
+)
 from .base import DatasetAdapter
 from .kalboard import KalboardAdapter
 from .xapi_profile import XapiProfileAdapter
@@ -9,6 +16,11 @@ from .xapi_profile import XapiProfileAdapter
 _ADAPTERS: dict[str, type[DatasetAdapter]] = {
     KalboardAdapter.name: KalboardAdapter,
     XapiProfileAdapter.name: XapiProfileAdapter,
+    AretePbisAdapter.name: AretePbisAdapter,
+    AreteEnglishLiteracyAdapter.name: AreteEnglishLiteracyAdapter,
+    AreteStemGeometryAdapter.name: AreteStemGeometryAdapter,
+    AreteStemGeographyAdapter.name: AreteStemGeographyAdapter,
+    AreteLxdAdapter.name: AreteLxdAdapter,
 }
 
 
