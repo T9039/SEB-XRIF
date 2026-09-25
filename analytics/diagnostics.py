@@ -22,7 +22,7 @@ from sklearn.metrics import (
 from sklearn.model_selection import StratifiedKFold, cross_val_predict, learning_curve
 
 from .config import Settings, get_settings
-from .data import features_and_target, load_source
+from .data import load_dataset
 
 GRID = np.linspace(0.0, 1.0, 21)
 
@@ -59,13 +59,17 @@ def expected_calibration_error(
     return error
 
 
-def _compute_diagnostics(settings: Settings, folds: int) -> dict[str, Any]:
+def _compute_diagnostics(
+    settings: Settings, folds: int, model_path=None, dataset=None
+) -> dict[str, Any]:
     """Compute the diagnostic curves (uncached)."""
     settings = settings or get_settings()
-    pipeline = joblib.load(settings.model_path)
+    dataset = dataset or load_dataset(settings)
+    pipeline = joblib.load(model_path or settings.model_path)
 
-    frame, source = load_source(settings)
-    features, target = features_and_target(frame, settings)
+    features = dataset.frame[dataset.features]
+    target = dataset.frame[dataset.target]
+    source = dataset.source
     classes = [str(label) for label in pipeline.named_steps["clf"].classes_]
 
     cv = StratifiedKFold(n_splits=folds, shuffle=True, random_state=settings.seed)
@@ -158,15 +162,21 @@ _CACHE: dict[tuple[str, float, int], dict[str, Any]] = {}
 
 
 def compute_diagnostics(
-    settings: Settings | None = None, folds: int = 5
+    settings: Settings | None = None,
+    folds: int = 5,
+    model_path=None,
+    dataset=None,
 ) -> dict[str, Any]:
     """Return the diagnostic curves, cached until the model artifact changes."""
     settings = settings or get_settings()
+    path = model_path or settings.model_path
     try:
-        mtime = settings.model_path.stat().st_mtime
+        mtime = path.stat().st_mtime
     except OSError:
         mtime = 0.0
-    key = (str(settings.model_path), mtime, folds)
+    key = (str(path), mtime, folds)
     if key not in _CACHE:
-        _CACHE[key] = _compute_diagnostics(settings, folds)
+        _CACHE[key] = _compute_diagnostics(
+            settings, folds, model_path=path, dataset=dataset
+        )
     return _CACHE[key]

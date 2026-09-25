@@ -1,14 +1,16 @@
 """Artifact loading and inference for the API.
 
-Loads the promoted pipeline and metadata once at startup, either from the local
-joblib artifact or the MLflow model registry (``model_source``). If no model
-exists the service still starts and reports a degraded state; prediction routes
-return HTTP 503 until a model is available.
+Loads a promoted pipeline and its sidecars per source, either from the local
+joblib artifact or (for Kalboard) the MLflow model registry. Stores are cached
+per source and loaded lazily. If no model exists the service still starts and
+reports a degraded state; prediction routes return HTTP 503 until a model is
+available.
 """
 
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
 import joblib
@@ -24,38 +26,54 @@ logger = get_logger("api.model_store")
 
 
 class ModelStore:
-    """Holds the loaded pipeline, metadata, and explanation payloads."""
+    """Holds one source's loaded pipeline, metadata, and explanation payloads."""
 
-    def __init__(self) -> None:
+    def __init__(self, source: str = "kalboard") -> None:
+        self.source = source
         self.pipeline: Any | None = None
         self.metadata: dict[str, Any] = {}
         self.shap: dict[str, Any] = {}
         self.support_bands: dict[str, str] = {}
         self.decision_thresholds: dict[str, float] = {}
 
-    def load(self) -> ModelStore:
-        """Load the pipeline and sidecars from the configured source."""
-        settings = get_api_settings()
+    def _paths(self) -> tuple[Path, Path, Path, Path]:
+        """Return the model, metadata, run, and SHAP paths for this source."""
+        if self.source == "kalboard":
+            api = get_api_settings()
+            return (
+                api.model_path,
+                api.metadata_path,
+                api.run_path,
+                api.shap_path,
+            )
+        analytics = get_analytics_settings()
+        model_path, metadata_path, run_path = analytics.artifacts_for(self.source)
+        return model_path, metadata_path, run_path, analytics.shap_for(self.source)
 
+    def load(self, source: str | None = None) -> ModelStore:
+        """Load the pipeline and sidecars for the configured source."""
+        if source:
+            self.source = source
         analytics = get_analytics_settings()
         self.support_bands = dict(analytics.support_bands)
         self.decision_thresholds = dict(analytics.decision_thresholds)
 
-        if settings.model_source == "registry":
-            self._load_from_registry(settings)
-        if self.pipeline is None and settings.model_path.exists():
-            self.pipeline = joblib.load(settings.model_path)
-            logger.info("model_loaded", source="local", path=str(settings.model_path))
+        api = get_api_settings()
+        model_path, metadata_path, run_path, shap_path = self._paths()
 
-        if settings.metadata_path.exists():
-            self.metadata = json.loads(
-                settings.metadata_path.read_text(encoding="utf-8")
-            )
-        if settings.run_path.exists():
-            run = json.loads(settings.run_path.read_text(encoding="utf-8"))
+        if api.model_source == "registry" and self.source == "kalboard":
+            self._load_from_registry(api)
+        if self.pipeline is None and model_path.exists():
+            self.pipeline = joblib.load(model_path)
+            logger.info("model_loaded", source=self.source, path=str(model_path))
+
+        if metadata_path.exists():
+            self.metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        if run_path.exists():
+            run = json.loads(run_path.read_text(encoding="utf-8"))
             self.metadata = {**self.metadata, **run}
-        if settings.shap_path.exists():
-            self.shap = json.loads(settings.shap_path.read_text(encoding="utf-8"))
+        if shap_path.exists():
+            self.shap = json.loads(shap_path.read_text(encoding="utf-8"))
         return self
 
     def _load_from_registry(self, settings: ApiSettings) -> None:
@@ -93,6 +111,11 @@ class ModelStore:
         frame = pd.DataFrame(rows)
         order = self.feature_order
         if order:
+            missing = [column for column in order if column not in frame.columns]
+            if missing:
+                raise ValueError(
+                    f"missing required features for source '{self.source}': {missing}"
+                )
             frame = frame[order]
 
         if hasattr(self.pipeline, "predict_proba"):
@@ -124,9 +147,18 @@ class ModelStore:
         return results
 
 
-_store = ModelStore()
+_STORES: dict[str, ModelStore] = {}
 
 
-def get_store() -> ModelStore:
-    """Return the process-wide model store."""
-    return _store
+def get_store(source: str = "kalboard") -> ModelStore:
+    """Return the process-wide store for a source, loading it on first use."""
+    store = _STORES.get(source)
+    if store is None:
+        store = ModelStore(source).load()
+        _STORES[source] = store
+    return store
+
+
+def clear_stores() -> None:
+    """Drop every cached store (used by tests)."""
+    _STORES.clear()

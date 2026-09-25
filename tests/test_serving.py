@@ -14,7 +14,7 @@ from analytics.config import get_settings
 from analytics.train import train_model
 from api.config import get_api_settings
 from api.main import app
-from api.model_store import ModelStore, get_store
+from api.model_store import ModelStore, clear_stores, get_store
 
 SAMPLE = {
     "gender": "M",
@@ -55,11 +55,13 @@ def served_model(tmp_path: Path, monkeypatch):
         encoding="utf-8",
     )
 
+    clear_stores()
     store = get_store()
     store.load()
     yield result
 
     get_api_settings.cache_clear()
+    clear_stores()
 
 
 # --------------------------------------------------------------------- feature

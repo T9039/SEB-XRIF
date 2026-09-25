@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from ..model_store import get_store
 
@@ -10,9 +10,11 @@ router = APIRouter(tags=["analytics"])
 
 
 @router.get("/importance")
-def importance() -> dict:
-    """Return native and SHAP feature importance for the active model."""
-    store = get_store()
+def importance(
+    source: str = Query("kalboard", description="Dataset source of the model."),
+) -> dict:
+    """Return native and SHAP feature importance for the source's model."""
+    store = get_store(source)
     native = store.metadata.get("importance")
     shap = store.shap
     if not native and not shap:
@@ -21,4 +23,4 @@ def importance() -> dict:
             detail="No importance payload. Train a model with: "
             "uv run python -m analytics.train",
         )
-    return {"native": native, "shap": shap}
+    return {"source": source, "native": native, "shap": shap}
