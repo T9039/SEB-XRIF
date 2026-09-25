@@ -25,6 +25,7 @@ from .routes import (
     advanced,
     analytics,
     charts,
+    datasets,
     diagnostics,
     evaluation,
     importance,
@@ -112,6 +113,7 @@ app.include_router(charts.router)
 app.include_router(diagnostics.router)
 app.include_router(xr.router)
 app.include_router(evaluation.router)
+app.include_router(datasets.router)
 
 
 @app.get("/", tags=["system"])

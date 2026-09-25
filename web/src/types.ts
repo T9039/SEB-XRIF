@@ -237,3 +237,15 @@ export interface XrLearnerPage {
   columns: string[];
   rows: Record<string, string | number>[];
 }
+
+export interface DatasetSource {
+  name: string;
+  kind: string;
+  adapter: string;
+  description: string;
+  trained: boolean;
+}
+
+export interface DatasetList {
+  sources: DatasetSource[];
+}

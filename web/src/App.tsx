@@ -1,9 +1,18 @@
-import { Activity, BarChart3, Compass, LayoutDashboard, Sparkles, Table2 } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  Compass,
+  Database,
+  LayoutDashboard,
+  Sparkles,
+  Table2,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@humanity-erp/ui";
 import { ChartStudio } from "./components/ChartStudio";
 import { ClassificationQuality } from "./components/ClassificationQuality";
 import { CvSpread } from "./components/CvSpread";
 import { DataPanel } from "./components/DataPanel";
+import { DatasetManager } from "./components/DatasetManager";
 import { ExplorePanel } from "./components/ExplorePanel";
 import { HealthBadge } from "./components/HealthBadge";
 import { ImportancePanel } from "./components/ImportancePanel";
@@ -22,6 +31,7 @@ const NAV = [
   { value: "diagnostics", label: "Diagnostics", icon: Activity },
   { value: "explore", label: "Explore", icon: Compass },
   { value: "studio", label: "Studio", icon: BarChart3 },
+  { value: "datasets", label: "Datasets", icon: Database },
 ] as const;
 
 export default function App() {
@@ -93,6 +103,10 @@ export default function App() {
             <SourceGate surface="Chart Studio">
               <ChartStudio />
             </SourceGate>
+          </TabsContent>
+
+          <TabsContent value="datasets" className="min-w-0 flex-1">
+            <DatasetManager />
           </TabsContent>
         </Tabs>
       </div>

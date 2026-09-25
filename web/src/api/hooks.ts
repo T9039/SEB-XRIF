@@ -4,6 +4,7 @@ import type {
   AnalyticsQueryResult,
   ColumnsPayload,
   CorrelationPayload,
+  DatasetList,
   DiagnosticsPayload,
   EmbeddingPayload,
   EvaluationPayload,
@@ -195,5 +196,50 @@ export function useEvaluation() {
     queryKey: ["evaluation"],
     queryFn: async () => (await api.get<EvaluationPayload>("/evaluation")).data,
     retry: false,
+  });
+}
+
+export function useDatasets() {
+  return useQuery({
+    queryKey: ["datasets"],
+    queryFn: async () => (await api.get<DatasetList>("/datasets")).data,
+    retry: false,
+  });
+}
+
+export function useUploadDataset() {
+  return useMutation({
+    mutationFn: async (input: {
+      name: string;
+      description: string;
+      target: string;
+      classLabels: string;
+      file: File;
+    }) => {
+      const form = new FormData();
+      form.append("name", input.name);
+      form.append("description", input.description);
+      form.append("target", input.target);
+      form.append("class_labels", input.classLabels);
+      form.append("file", input.file);
+      return (await api.post("/datasets", form)).data;
+    },
+  });
+}
+
+export function useDeleteDataset() {
+  return useMutation({
+    mutationFn: async (name: string) => (await api.delete(`/datasets/${name}`)).data,
+  });
+}
+
+export function useTrainDataset() {
+  return useMutation({
+    mutationFn: async (input: { name: string; mode: string; model?: string }) =>
+      (
+        await api.post(`/datasets/${input.name}/train`, null, {
+          params: { mode: input.mode, ...(input.model ? { model: input.model } : {}) },
+        })
+      ).data,
   });
 }
