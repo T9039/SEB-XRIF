@@ -26,12 +26,26 @@ class XapiProfileAdapter(DatasetAdapter):
         "progressed / completed statements)."
     )
 
-    def __init__(self, path: Path | str | None = None) -> None:
+    def __init__(
+        self,
+        path: Path | str | None = None,
+        *,
+        name: str | None = None,
+        description: str | None = None,
+        target: str | None = None,
+        class_labels: list[str] | None = None,
+    ) -> None:
         self.path = path
+        self._name = name
+        self._description = description
+        self._target = target
+        self._class_labels = class_labels
 
     def load(self, settings: Settings | None = None) -> Dataset:
         settings = settings or get_settings()
         source_path = Path(self.path) if self.path else settings.statements_path
+        target = self._target or settings.target
+        class_labels = list(self._class_labels or settings.class_labels)
         statements = read_statements(source_path)
         frame = frame_from_statements(statements)
 
@@ -41,19 +55,19 @@ class XapiProfileAdapter(DatasetAdapter):
                 f"{source_path} does not contain profiles with demographics and "
                 "behavioural statements."
             )
-        if not frame[settings.target].notna().any():
+        if target not in frame.columns or not frame[target].notna().any():
             raise ValueError(
-                f"{source_path} carries no '{settings.target}' target; the "
+                f"{source_path} carries no '{target}' target; the "
                 "framework profile needs a completed statement with the target."
             )
 
         validated = SCHEMA.validate(frame, lazy=True)
         return Dataset(
-            name=self.name,
-            description=self.description,
-            source="xapi-profile",
+            name=self._name or self.name,
+            description=self._description or self.description,
+            source=self._name or "xapi-profile",
             frame=validated,
             features=features,
-            target=settings.target,
-            class_labels=list(settings.class_labels),
+            target=target,
+            class_labels=class_labels,
         )

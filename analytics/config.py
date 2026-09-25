@@ -99,6 +99,11 @@ class Settings:
         return self.resolve("statements")
 
     @property
+    def uploads_dir(self) -> Path:
+        """Directory holding uploaded sources (statements + sidecar)."""
+        return self.resolve("uploads")
+
+    @property
     def arete_raw_dir(self) -> Path:
         return self.resolve("arete_raw")
 

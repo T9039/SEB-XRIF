@@ -19,7 +19,7 @@ def test_registry_lists_kalboard():
 
 
 def test_unknown_dataset_raises():
-    with pytest.raises(ValueError, match="Unknown dataset"):
+    with pytest.raises(ValueError, match="Unknown source"):
         get_adapter("does-not-exist")
 
 

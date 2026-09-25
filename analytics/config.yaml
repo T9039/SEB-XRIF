@@ -77,3 +77,4 @@ paths:
   reports: reports
   arete_raw: data/raw/arete
   statements: data/raw/uploads/statements.jsonl
+  uploads: data/raw/uploads

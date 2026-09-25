@@ -7,15 +7,20 @@ source directly, so a new source is a new adapter, not a branch in the core.
 
 from .base import Dataset, DatasetAdapter
 from .kalboard import KalboardAdapter
-from .registry import get_adapter, list_datasets, register
+from .registry import get_adapter, list_datasets, list_sources, register
+from .uploads import UploadSource, read_upload, write_upload
 from .xapi_profile import XapiProfileAdapter
 
 __all__ = [
     "Dataset",
     "DatasetAdapter",
     "KalboardAdapter",
+    "UploadSource",
     "XapiProfileAdapter",
     "get_adapter",
     "list_datasets",
+    "list_sources",
+    "read_upload",
     "register",
+    "write_upload",
 ]

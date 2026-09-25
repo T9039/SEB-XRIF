@@ -53,7 +53,7 @@ def read_learners(
 def load_dataset(settings: Settings | None = None) -> Dataset:
     """Return the configured dataset (frame + features + target) via its adapter."""
     settings = settings or get_settings()
-    return get_adapter(settings.dataset).load(settings)
+    return get_adapter(settings.dataset, settings).load(settings)
 
 
 def load_source(settings: Settings | None = None) -> tuple[pd.DataFrame, str]:
