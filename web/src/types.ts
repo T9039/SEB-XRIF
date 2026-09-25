@@ -187,5 +187,6 @@ export interface XrTrends {
   events_by_period: number[];
   active_learners_by_period: number[];
   verb_counts: Record<string, number>;
+  verb_class_counts: Record<string, number>;
   top_objects: { name: string; count: number }[];
 }

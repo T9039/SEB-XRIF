@@ -28,9 +28,12 @@ Locker CSV exports.
 | Pilot | Zenodo record | Topics |
 | --- | --- | --- |
 | `pbis` | [7876959](https://zenodo.org/records/7876959) | Positive Behaviour Intervention and Support, nine AR behavioural lessons |
+| `english-literacy` | [7876947](https://zenodo.org/records/7876947) | English literacy AR modules |
+| `stem-geometry` | [7877072](https://zenodo.org/records/7877072) | STEM geometry AR activities |
+| `stem-geography` | [7877072](https://zenodo.org/records/7877072) | STEM geography AR activities |
+| `lxd` | [8009365](https://zenodo.org/records/8009365) | Learning Experience Design: teachers authoring AR resources |
 
-The remaining pilots (English Literacy, STEM Geometry, STEM Geography, LXD) are
-added by the "all pilots" work.
+Geometry and geography share a Zenodo record, so five files cover four pilots.
 
 ### Fetching
 
@@ -38,23 +41,35 @@ The files are downloaded rather than committed, and verified against a pinned
 SHA-256 (recorded in `analytics/xr.py`) so a changed upstream file is rejected.
 
 ```bash
-make fetch-arete            # all known pilots
-make fetch-arete ARGS=pbis  # one pilot
+make fetch-arete                       # all known pilots
+make fetch-arete ARGS=pbis             # one pilot
+make fetch-arete ARGS="pbis lxd"       # several pilots
 ```
 
-They land in `data/raw/arete/` (git-ignored). A small sample is committed under
-`tests/fixtures/arete/` so tests run offline.
+They land in `data/raw/arete/` (git-ignored). A small sample of every pilot is
+committed under `tests/fixtures/arete/` so tests run offline.
 
 ### Statement schema
 
-Each CSV row is one xAPI statement, flattened by Learning Locker:
+Each CSV row is one xAPI statement, flattened by Learning Locker. The exports
+differ between pilots, and the adapter normalises all of it:
 
-`timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_response;result_raw`
+- **Delimiter:** PBIS is `;`-delimited, the other four are `,`-delimited.
+- **Column names:** `actor name`/`actor`, `verb_id`/`verb id`,
+  `verb_display`/`verb display`.
+- **Encodings:** UTF-8, some with a BOM; LXD has trailing empty columns.
+- **Displays:** most pilots store dict-strings such as
+  `{'en-US': 'selected'}`; PBIS stores plain text.
+- **Results:** PBIS has numeric `result_raw` and textual `result_response`;
+  the others store JSON-ish `result` blobs (`score.raw`, `success`,
+  `completion`) and LXD stores measured values (`"39.26cm"`).
 
-The adapter parses `timestamp`, `actor name` (learner), `verb_display` (verb),
-`object name` (activity) and `result_raw` (numeric response), then derives one
-engagement row per learner (events, active days, distinct verbs/objects,
-per-verb counts, responses, span, events per active day).
+The adapter parses `timestamp`, the actor (learner), the verb, the object
+(activity) and a numeric result, then derives one engagement row per learner
+(events, active days, distinct verbs/objects, responses, span, events per active
+day). Raw verbs are mapped to five stable behaviour classes — interaction,
+progress, assessment, content, disengagement — so the feature schema is
+identical across pilots (see `analytics/xr_schema.py`).
 
 ## LMS feature to XR analogue
 

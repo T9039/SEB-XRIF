@@ -13,7 +13,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-03-17T12:40:52.157Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://id.tincanapi.com/verb/selected;selected;http://activitystrea.ms/schema/1.0/task;Replay;;
 2023-03-17T12:37:48.910Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson9NE;;
 2023-03-17T12:36:40.434Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E2;;
-2023-03-17T12:35:07.338Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;Bullying;Laugh;3.0
+2023-03-17T12:35:07.338Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;Bullying;Laugh;3
 2023-03-17T12:34:02.561Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://activitystrea.ms/schema/1.0/leave;left;http://activitystrea.ms/schema/1.0/task;MultiuserTask;;
 2023-03-17T12:33:00.044Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-marigold;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-03-17T12:32:43.470Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
@@ -24,7 +24,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-03-17T12:28:32.854Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-marigold;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
 2023-03-17T12:26:53.511Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-tulip;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2023-03-17T12:23:37.868Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-tulip;http://id.tincanapi.com/verb/selected;selected;http://adlnet.gov/expapi/activities/module;1-Ik groet anderen;;
-2023-03-17T12:22:08.743Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-marigold;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4E2;Ja, want door zijn nette werkplek kan Arpro zijn spullen snel vinden, en het voorkomt ongelukken;3.0
+2023-03-17T12:22:08.743Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-marigold;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4E2;Ja, want door zijn nette werkplek kan Arpro zijn spullen snel vinden, en het voorkomt ongelukken;3
 2023-03-17T12:21:01.960Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Orchid;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E2;;
 2023-03-17T12:19:31.398Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-marigold;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson1NE;;
 2023-03-17T12:17:57.459Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-marigold;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
@@ -40,11 +40,11 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-03-09T12:16:47.059Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://id.tincanapi.com/verb/selected;selected;http://adlnet.gov/expapi/activities/module;8-Ik help anderen met vragen;;
 2023-03-09T12:12:59.559Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
 2023-03-08T16:02:29.242Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Beagle;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
-2023-03-08T12:49:03.109Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Cow;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4NE1;De la opruimen en alleen de rekenspullen eruit halen;3.0
+2023-03-08T12:49:03.109Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Cow;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4NE1;De la opruimen en alleen de rekenspullen eruit halen;3
 2023-03-08T12:45:38.160Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Cow;http://id.tincanapi.com/verb/selected;selected;http://activitystrea.ms/schema/1.0/task;Replay;;
 2023-03-08T12:40:13.218Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Dog;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2023-03-08T12:35:36.887Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Dog;http://activitystrea.ms/schema/1.0/join;joined;http://activitystrea.ms/schema/1.0/group;SCHOOLNL2-klas1-Antelope+Dog;;
-2023-03-08T12:32:20.674Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Dog;http://adlnet.gov/expapi/verbs/completed;completed;http://activitystrea.ms/schema/1.0/task;TidyDrawer;;3.0
+2023-03-08T12:32:20.674Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Dog;http://adlnet.gov/expapi/verbs/completed;completed;http://activitystrea.ms/schema/1.0/task;TidyDrawer;;3
 2023-03-08T12:29:49.242Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Cow;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
 2023-03-08T12:29:14.903Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Cow;http://activitystrea.ms/schema/1.0/join;joined;http://activitystrea.ms/schema/1.0/group;SCHOOLNL2-klas1-Cow+Fish;;
 2023-03-08T12:24:41.022Z;637261a3fd468b05b41cb454;SCHOOLNL2-klas1-Fish;http://activitystrea.ms/schema/1.0/read;read;http://adlnet.gov/expapi/activities/media;AlienPresentation;;
@@ -69,7 +69,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-02-17T12:59:01.469Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Goose;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Tidy (UnityEngine.GameObject);;
 2023-02-17T12:58:58.228Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Goose;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Tidy (UnityEngine.GameObject);;
 2023-02-17T12:58:54.585Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Goose;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Tidy (UnityEngine.GameObject);;
-2023-02-17T12:57:08.234Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Goose;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E2;Ik ruim mijn spullen op;0.0
+2023-02-17T12:57:08.234Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Goose;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E2;Ik ruim mijn spullen op;0
 2023-02-17T12:56:45.679Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Chicken;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson5E1;;
 2023-02-17T12:55:34.630Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Fly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5NE;;
 2023-02-17T12:54:19.636Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Chicken;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson5NE1;;
@@ -97,7 +97,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-01-31T12:58:14.189Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Chicken;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-01-31T12:57:11.054Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Eagle;http://activitystrea.ms/schema/1.0/join;joined;http://activitystrea.ms/schema/1.0/group;SCHOOLNL5-klas15-Chicken+Eagle;;
 2023-01-31T12:52:48.615Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Fish;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson4E2;;
-2023-01-31T12:50:49.749Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Chicken;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4E2;Ja, want door zijn nette werkplek kan Arpro zijn spullen snel vinden, en het voorkomt ongelukken;0.0
+2023-01-31T12:50:49.749Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Chicken;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4E2;Ja, want door zijn nette werkplek kan Arpro zijn spullen snel vinden, en het voorkomt ongelukken;0
 2023-01-31T12:49:01.008Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Goose;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson4E2;;
 2023-01-31T12:47:11.473Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Eagle;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson4E2;;
 2023-01-31T12:45:33.157Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Chicken;http://id.tincanapi.com/verb/selected;selected;http://activitystrea.ms/schema/1.0/task;Replay;;
@@ -111,18 +111,18 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-01-31T12:06:41.832Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson9NE;;
 2023-01-31T12:04:30.541Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Baboon;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson4E2;;
 2023-01-31T12:02:26.457Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson4E2;;
-2023-01-31T11:59:54.274Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Baboon;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Rustig en met een doel lopen, en afstand houden van anderen;0.0
+2023-01-31T11:59:54.274Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Baboon;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Rustig en met een doel lopen, en afstand houden van anderen;0
 2023-01-31T11:56:11.383Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Baboon;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2023-01-31T06:53:15.391Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-rose;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
 2023-01-27T10:44:00.802Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
-2023-01-27T10:41:17.074Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E1;Arpro doet wat zijn klasgenoten ook doen;0.0
+2023-01-27T10:41:17.074Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E1;Arpro doet wat zijn klasgenoten ook doen;0
 2023-01-27T10:38:46.770Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5NE;;
 2023-01-27T10:35:56.606Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
 2023-01-27T10:33:19.002Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
 2023-01-27T10:30:55.171Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
 2023-01-27T10:27:57.472Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson5NE1;;
-2023-01-27T10:25:43.155Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E1;Arpro doet wat de leraar zegt;0.0
-2023-01-27T10:23:27.675Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E1;Arpro voorkomt ongelukken door de rugzak op te hangen;0.0
+2023-01-27T10:25:43.155Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E1;Arpro doet wat de leraar zegt;0
+2023-01-27T10:23:27.675Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E1;Arpro voorkomt ongelukken door de rugzak op te hangen;0
 2023-01-12T10:52:18.938Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Butterfly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson4E2;;
 2023-01-12T10:47:52.995Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Butterfly;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
 2023-01-12T10:43:08.169Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Butterfly;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson4E2;;
@@ -139,16 +139,16 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2022-12-15T12:32:17.105Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson3NE;;
 2022-12-15T12:28:58.690Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson3NE;;
 2022-12-15T12:25:12.729Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson3NE1;;
-2022-12-15T12:22:06.916Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas9-Cat;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Rustig en met een doel lopen, en afstand houden van anderen;0.0
+2022-12-15T12:22:06.916Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas9-Cat;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Rustig en met een doel lopen, en afstand houden van anderen;0
 2022-12-15T12:19:23.989Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Beagle;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
 2022-12-15T12:11:08.975Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas9-Cat;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2022-12-15T11:59:55.716Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas9-Cat;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson2NE;;
 2022-12-15T11:50:10.461Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas9-cat;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson2NE;;
 2022-12-14T12:42:42.107Z;637261a3fd468b05b41cb454;SCHOOLNL6-klas6-Bat;https://w3id.org/xapi/seriousgames/verbs/accessed;accessed;http://activitystrea.ms/schema/1.0/task;Handshake;;
 2022-12-14T12:25:45.574Z;637261a3fd468b05b41cb454;SCHOOLNL6-klas6-bat;http://id.tincanapi.com/verb/selected;selected;http://adlnet.gov/expapi/activities/module;3-Ik houd mijn handen en voeten bij me ;;
-2022-12-13T12:05:15.652Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-dog;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;Handshake;HighFive;0.0
+2022-12-13T12:05:15.652Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-dog;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;Handshake;HighFive;0
 2022-12-13T12:00:56.842Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-chicken;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;woman-handshake;;
-2022-12-13T11:58:13.482Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-chicken;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Rustig en met een doel lopen, en afstand houden van anderen;3.0
+2022-12-13T11:58:13.482Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-chicken;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Rustig en met een doel lopen, en afstand houden van anderen;3
 2022-12-13T11:52:02.068Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-Dog;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2022-12-13T11:36:21.321Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-Dog;http://activitystrea.ms/schema/1.0/find;found;http://marker;Handshake;;
 2022-12-13T11:33:59.690Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-chicken;https://w3id.org/xapi/seriousgames/verbs/accessed;accessed;http://activitystrea.ms/schema/1.0/task;Handshake;;
@@ -161,25 +161,25 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2022-12-08T12:26:53.770Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson2NE;;
 2022-12-08T12:22:21.733Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Butterfly;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;2-loop met doel vb;;
 2022-12-07T13:53:39.439Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Donkey;http://activitystrea.ms/schema/1.0/leave;left;http://activitystrea.ms/schema/1.0/task;MultiuserTask;;
-2022-12-07T13:52:49.818Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Frog;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;Handshake;Pugnetto;0.0
-2022-12-07T13:49:54.380Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Baboon;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5NE1;Arpro moet zijn rugzak ophangen;1.0
+2022-12-07T13:52:49.818Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Frog;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;Handshake;Pugnetto;0
+2022-12-07T13:49:54.380Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Baboon;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5NE1;Arpro moet zijn rugzak ophangen;1
 2022-12-07T13:47:46.705Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Frog;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2022-12-07T13:45:36.701Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Frog;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2022-12-07T13:42:06.568Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Baboon;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;1-begroeten nv;;
 2022-12-07T13:33:39.510Z;637261a3fd468b05b41cb454;SCHOOLNL3-klas16-Frog;http://activitystrea.ms/schema/1.0/read;read;http://adlnet.gov/expapi/activities/media;AlienPresentation;;
 2022-12-03T13:33:19.427Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-Bat;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2022-12-01T12:50:42.177Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Beagle;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson1NE;;
-2022-12-01T12:48:33.589Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;De directeur en klasgenoten begroeten;0.0
-2022-12-01T12:45:51.485Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;De directeur en klasgenoten begroeten;0.0
+2022-12-01T12:48:33.589Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;De directeur en klasgenoten begroeten;0
+2022-12-01T12:45:51.485Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;De directeur en klasgenoten begroeten;0
 2022-12-01T12:42:09.439Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson1NE;;
-2022-12-01T12:39:47.765Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;De directeur en klasgenoten begroeten;0.0
+2022-12-01T12:39:47.765Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;De directeur en klasgenoten begroeten;0
 2022-12-01T12:32:24.974Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;1-begroeten nv;;
 2022-12-01T12:27:31.138Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Caterpillar;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Practice;;
 2022-11-30T15:22:05.936Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Donkey;http://activitystrea.ms/schema/1.0/leave;left;http://activitystrea.ms/schema/1.0/task;MultiuserTask;;
 2022-11-30T15:18:01.326Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson2NE;;
 2022-11-30T14:59:38.005Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Eagle;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;1-begroeten nv;;
 2022-11-30T13:14:43.169Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Fish;http://id.tincanapi.com/verb/selected;selected;http://activitystrea.ms/schema/1.0/task;Replay;;
-2022-11-30T13:12:15.635Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Goose;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;Handshake;HighFive;0.0
+2022-11-30T13:12:15.635Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Goose;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;Handshake;HighFive;0
 2022-11-30T13:08:06.967Z;637261a3fd468b05b41cb454;SCHOOLNL5-klas15-Fish;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2022-11-28T14:58:06.870Z;637261a3fd468b05b41cb454;SCHOOLNL6-klas6-Bat;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;1-begroeten nv;;
 2022-11-28T14:42:14.396Z;637261a3fd468b05b41cb454;SCHOOLNL4-klas8-Butterfly;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
@@ -188,7 +188,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2022-11-14T11:28:47.582Z;637261a3fd468b05b41cb454;SCHOOLNL1-klas2-Dolphin;http://activitystrea.ms/schema/1.0/start;started;http://activitystrea.ms/schema/1.0/application;PBISAR_App;;
 2023-02-16T10:26:34.005Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-goose;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson9NE;;
 2023-02-16T10:19:40.998Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Donkey;http://id.tincanapi.com/verb/selected;selected;http://activitystrea.ms/schema/1.0/task;Replay;;
-2023-02-16T09:26:54.770Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-fly;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson9NE1;Arpro si ferma, riflette e decide cosa fare,  seguendo le indicazioni del semaforo;3.0
+2023-02-16T09:26:54.770Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-fly;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson9NE1;Arpro si ferma, riflette e decide cosa fare,  seguendo le indicazioni del semaforo;3
 2023-02-16T09:20:52.391Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-Beagle;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson9NE1;;
 2023-02-16T09:15:07.533Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-cat;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Practice;;
 2023-02-16T09:12:50.950Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-cat;http://activitystrea.ms/schema/1.0/start;started;http://activitystrea.ms/schema/1.0/application;PBISAR_App - Versione: 0.4.9;;
@@ -208,7 +208,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-02-15T11:46:44.485Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-fly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson1NE;;
 2023-02-15T11:40:10.171Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-eagle;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson9NE1;;
 2023-02-15T11:36:54.377Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Bird;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
-2023-02-15T11:35:06.483Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Bird;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson9NE1;Arpro riflette e decide cosa fare;0.0
+2023-02-15T11:35:06.483Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Bird;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson9NE1;Arpro riflette e decide cosa fare;0
 2023-02-15T11:33:34.764Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-fly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson9NE;;
 2023-02-15T11:32:31.677Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Bird;http://id.tincanapi.com/verb/skipped;skipped;http://adlnet.gov/expapi/activities/media;AlienPresentation;;
 2023-02-09T13:02:57.701Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;9-Lasciare gli altri in pace es1;;
@@ -280,10 +280,10 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-01-19T11:21:07.690Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Fish;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-01-19T11:21:00.172Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-goose;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-01-19T11:20:37.657Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-ant;https://w3id.org/xapi/seriousgames/verbs/accessed;accessed;http://activitystrea.ms/schema/1.0/task;UntidyDrawer;;
-2023-01-19T11:15:32.064Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E1;Arpro appendendo lo zaino all'attaccapanni evita pericoli;3.0
+2023-01-19T11:15:32.064Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-donkey;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5E1;Arpro appendendo lo zaino all'attaccapanni evita pericoli;3
 2023-01-19T11:12:16.759Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Fish;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson4E1;;
 2023-01-19T11:09:52.238Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-caterpillar;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson5E2;;
-2023-01-19T11:08:36.335Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Fish;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5NE1;Arpro appende lo zaino al posto giusto, prende il materiale didattico dallo zaino ed entra in classe;3.0
+2023-01-19T11:08:36.335Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Fish;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson5NE1;Arpro appende lo zaino al posto giusto, prende il materiale didattico dallo zaino ed entra in classe;3
 2023-01-19T11:07:36.473Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-caterpillar;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
 2023-01-19T11:06:49.410Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-goose;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
 2023-01-19T11:06:06.479Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Fish;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
@@ -293,7 +293,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-01-19T10:27:52.304Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-cat;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Tidy (UnityEngine.GameObject);;
 2023-01-19T10:26:17.865Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-cat;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Tidy (UnityEngine.GameObject);;
 2023-01-19T10:24:37.247Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-cat;https://w3id.org/xapi/seriousgames/verbs/accessed;accessed;http://activitystrea.ms/schema/1.0/task;TidyDrawer;;
-2023-01-19T10:22:49.921Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-Bear;http://adlnet.gov/expapi/verbs/completed;completed;http://activitystrea.ms/schema/1.0/task;UntidyDrawer;;0.0
+2023-01-19T10:22:49.921Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-Bear;http://adlnet.gov/expapi/verbs/completed;completed;http://activitystrea.ms/schema/1.0/task;UntidyDrawer;;0
 2023-01-19T10:22:07.305Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-Beagle;http://activitystrea.ms/schema/1.0/join;joined;http://activitystrea.ms/schema/1.0/group;SCHOOLIT10-classe4-Ant+Beagle;;
 2023-01-19T10:21:33.942Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-fly;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-01-19T10:20:20.436Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe4-Beagle;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;girl-Bullying;;
@@ -309,7 +309,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-01-18T12:46:34.645Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://activitystrea.ms/schema/1.0/leave;left;http://activitystrea.ms/schema/1.0/task;MultiuserTask;;
 2023-01-18T12:46:12.572Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-dolphin;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-01-18T12:45:35.467Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
-2023-01-18T12:44:03.551Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/completed;completed;http://activitystrea.ms/schema/1.0/task;UntidyDrawer;;3.0
+2023-01-18T12:44:03.551Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/completed;completed;http://activitystrea.ms/schema/1.0/task;UntidyDrawer;;3
 2023-01-18T12:42:31.485Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Cow;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-01-18T12:38:34.325Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E2;;
 2023-01-18T12:37:40.877Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson5E2;;
@@ -319,14 +319,14 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-01-18T12:33:40.304Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson5NE1;;
 2023-01-18T12:32:28.334Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Bear;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson4E2;;
 2023-01-18T12:31:33.225Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-dolphin;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson4E2;;
-2023-01-18T12:30:06.563Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-dog;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4NE1;Riordina il cassetto e prende solo il materiale di matematica;3.0
+2023-01-18T12:30:06.563Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-dog;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4NE1;Riordina il cassetto e prende solo il materiale di matematica;3
 2023-01-18T12:28:33.758Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Cow;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson4NE;;
 2023-01-18T12:27:22.601Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Cow;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
 2023-01-18T12:25:42.206Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Bear;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson4E1;;
 2023-01-18T11:54:33.440Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Tidy (UnityEngine.GameObject);;
 2023-01-18T11:53:12.397Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://activitystrea.ms/schema/1.0/leave;left;http://activitystrea.ms/schema/1.0/task;MultiuserTask;;
 2023-01-18T11:51:02.478Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-antelope;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
-2023-01-18T11:50:08.796Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-antelope;http://adlnet.gov/expapi/verbs/completed;completed;http://activitystrea.ms/schema/1.0/task;TidyDrawer;;3.0
+2023-01-18T11:50:08.796Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-antelope;http://adlnet.gov/expapi/verbs/completed;completed;http://activitystrea.ms/schema/1.0/task;TidyDrawer;;3
 2023-01-18T11:49:30.171Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-01-18T11:49:26.652Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
 2023-01-18T11:49:23.546Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://activitystrea.ms/schema/1.0/add;placed;http://id.tincanapi.com/activitytype/resource;Objects Untidy (UnityEngine.GameObject);;
@@ -348,7 +348,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2023-01-18T11:41:22.595Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Eagle;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E2;;
 2023-01-18T11:39:12.163Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E2;;
 2023-01-18T11:37:52.230Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Eagle;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
-2023-01-18T11:32:33.840Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4NE1;Riordina il cassetto e prende tutto il materiale;0.0
+2023-01-18T11:32:33.840Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson4NE1;Riordina il cassetto e prende tutto il materiale;0
 2023-01-18T11:30:36.251Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-antelope;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson4NE;;
 2023-01-18T11:27:58.126Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-antelope;http://activitystrea.ms/schema/1.0/start;started;http://activitystrea.ms/schema/1.0/application;PBISAR_App - Versione: 0.4.9;;
 2023-01-12T11:50:36.489Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-fly;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;6-Lavora da solo al banco ne1;;
@@ -387,7 +387,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2022-12-07T09:53:57.529Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Donkey;http://id.tincanapi.com/verb/selected;selected;http://activitystrea.ms/schema/1.0/task;Replay;;
 2022-12-07T09:52:03.277Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Caterpillar;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson3NE1;;
 2022-12-07T09:50:43.783Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Caterpillar;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson3NE;;
-2022-12-07T09:45:24.673Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Ant;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Arpro  cammina con calma, con un obiettivo e mantiene la distanza dai coetanei;3.0
+2022-12-07T09:45:24.673Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Ant;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Arpro  cammina con calma, con un obiettivo e mantiene la distanza dai coetanei;3
 2022-12-07T09:40:23.084Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Fish;http://id.tincanapi.com/verb/skipped;skipped;http://adlnet.gov/expapi/activities/media;AlienPresentation;;
 2022-12-07T09:37:00.161Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Fish;http://activitystrea.ms/schema/1.0/start;started;http://activitystrea.ms/schema/1.0/application;PBISAR_App - Versione: 0.4.9;;
 2022-12-07T09:33:34.832Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-goose;http://id.tincanapi.com/verb/skipped;skipped;http://adlnet.gov/expapi/activities/media;AlienPresentation;;
@@ -396,13 +396,13 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2022-12-05T12:07:20.197Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://activitystrea.ms/schema/1.0/leave;left;http://activitystrea.ms/schema/1.0/task;MultiuserTask;;
 2022-12-05T12:06:14.269Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Antelope;http://activitystrea.ms/schema/1.0/find;found;http://marker;Handshake;;
 2022-12-05T12:05:24.416Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/resource;woman-handshake;;
-2022-12-05T12:04:10.965Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;Tornare indietro e salutare il preside;0.0
+2022-12-05T12:04:10.965Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;Tornare indietro e salutare il preside;0
 2022-12-05T11:55:39.315Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson3NE;;
 2022-12-05T11:53:55.638Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson3NE;;
 2022-12-05T11:52:33.532Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson3NE1;;
 2022-12-05T11:46:33.339Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-eagle;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
 2022-12-05T11:43:50.501Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-bird;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson2NE;;
-2022-12-05T11:34:33.804Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;Salutare il preside e i compagni di classe;3.0
+2022-12-05T11:34:33.804Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-caterpillar;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;Salutare il preside e i compagni di classe;3
 2022-12-05T11:32:04.001Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-eagle;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson1NE;;
 2022-12-05T11:22:31.235Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://activitystrea.ms/schema/1.0/start;started;http://activitystrea.ms/schema/1.0/application;PBISAR_App - Versione: 0.4.9;;
 2022-12-05T11:17:09.847Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Fly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson1NE;;
@@ -423,11 +423,11 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2022-12-05T08:43:38.720Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-dog;http://id.tincanapi.com/verb/selected;selected;http://activitystrea.ms/schema/1.0/task;Replay;;
 2022-12-05T08:42:46.656Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://activitystrea.ms/schema/1.0/read;read;http://adlnet.gov/expapi/activities/media;AlienPresentation;;
 2022-12-05T08:41:47.818Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Dolphin;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
-2022-12-05T08:37:23.839Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-cow;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Arpro  cammina con calma, con un obiettivo e mantiene la distanza dai coetanei;0.0
-2022-12-05T08:35:53.750Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Arpro cammina nel corridoio con un obiettivo;0.0
+2022-12-05T08:37:23.839Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-cow;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Arpro  cammina con calma, con un obiettivo e mantiene la distanza dai coetanei;0
+2022-12-05T08:35:53.750Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson2NE1;Arpro cammina nel corridoio con un obiettivo;0
 2022-12-05T08:30:02.249Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Dolphin;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson1NE;;
 2022-12-05T08:28:25.271Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-dog;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson1NE;;
-2022-12-05T08:27:15.788Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-dog;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;Salutare il preside e i compagni di classe;3.0
+2022-12-05T08:27:15.788Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-dog;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson1NE1;Salutare il preside e i compagni di classe;3
 2022-12-05T08:25:43.903Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Dolphin;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Discovery;;
 2022-12-05T08:01:54.802Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Eagle;http://id.tincanapi.com/verb/skipped;skipped;http://adlnet.gov/expapi/activities/media;AlienPresentation;;
 2022-12-01T10:32:55.189Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe3-Fish;http://id.tincanapi.com/verb/selected;selected;http://id.tincanapi.com/activitytype/section;Teach;;
@@ -472,7 +472,7 @@ timestamp;lrs_id;actor name;verb_id;verb_display;object id;object name;result_re
 2022-11-11T12:31:46.651Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/completed;completed;http://id.tincanapi.com/activitytype/resource;DiscoveryLesson3NE;;
 2022-11-11T11:34:41.865Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Bear;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson5E1;;
 2022-11-11T11:29:57.045Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe2-Bird;http://activitystrea.ms/schema/1.0/start;started;http://activitystrea.ms/schema/1.0/application;PBISAR_App;;
-2022-11-11T10:43:53.409Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson9NE1;Ci si aspetta che Arpro segua le fasi di arresto, riflessione e scelta del semaforo;0.0
+2022-11-11T10:43:53.409Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://adlnet.gov/expapi/verbs/responded;responded;http://activitystrea.ms/schema/1.0/question;DiscoveryLesson9NE1;Ci si aspetta che Arpro segua le fasi di arresto, riflessione e scelta del semaforo;0
 2022-11-11T10:33:28.667Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson3NE;;
 2022-11-11T10:30:15.118Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://activitystrea.ms/schema/1.0/find;found;http://marker;DiscoveryLesson2NE;;
 2022-11-11T10:24:41.535Z;637261a3fd468b05b41cb454;SCHOOLIT10-classe1-Butterfly;http://id.tincanapi.com/verb/skipped;skipped;http://adlnet.gov/expapi/activities/media;AlienPresentation;;
