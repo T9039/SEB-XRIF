@@ -32,6 +32,8 @@ class Dataset:
     target: str | None = None
     class_labels: list[str] = field(default_factory=list)
     metric: str = "f1_macro"
+    categorical: list[str] = field(default_factory=list)
+    numeric: list[str] = field(default_factory=list)
 
     @property
     def supervised(self) -> bool:

@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 
 from ..config import Settings, get_settings
-from ..schema import SCHEMA
+from ..schema import BEHAVIOURAL, CATEGORICAL, SCHEMA
 from .base import Dataset, DatasetAdapter
 
 
@@ -63,4 +63,6 @@ class KalboardAdapter(DatasetAdapter):
             features=list(settings.feature_columns),
             target=settings.target,
             class_labels=list(settings.class_labels),
+            categorical=list(CATEGORICAL),
+            numeric=list(BEHAVIOURAL),
         )

@@ -65,7 +65,7 @@ fetch-arete:
 > uv run python scripts/fetch_arete.py $(ARGS)
 
 train:
-> @./scripts/train.sh $(ARGS)
+> @./scripts/train.sh $(if $(SOURCE),--source $(SOURCE),) $(ARGS)
 
 matrix:
 > @./scripts/matrix.sh $(ARGS)

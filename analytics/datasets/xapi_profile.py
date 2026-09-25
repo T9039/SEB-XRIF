@@ -70,4 +70,6 @@ class XapiProfileAdapter(DatasetAdapter):
             features=features,
             target=target,
             class_labels=class_labels,
+            categorical=[*CATEGORICAL],
+            numeric=[*BEHAVIOURAL],
         )

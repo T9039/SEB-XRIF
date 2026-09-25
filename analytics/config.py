@@ -89,6 +89,27 @@ class Settings:
         """Volatile run provenance, kept out of the reproducible artifact."""
         return self.metadata_path.with_name("model.run.json")
 
+    def artifacts_for(self, source: str) -> tuple[Path, Path, Path]:
+        """Return ``(model, metadata, run)`` paths for a source.
+
+        Kalboard keeps the historical ``model.*`` names (the DVC stage and the
+        default serving path); every other source gets ``<source>.*``.
+        """
+        if source == "kalboard":
+            return self.model_path, self.metadata_path, self.run_path
+        base = self.model_path.parent
+        return (
+            base / f"{source}.joblib",
+            base / f"{source}.meta.json",
+            base / f"{source}.run.json",
+        )
+
+    def shap_for(self, source: str) -> Path:
+        """Return the SHAP payload path for a source."""
+        if source == "kalboard":
+            return self.metadata_path.with_name("shap.json")
+        return self.model_path.parent / f"{source}.shap.json"
+
     @property
     def reports_dir(self) -> Path:
         return self.resolve("reports")

@@ -227,13 +227,23 @@ def build_estimator(name: str, seed: int = 42, n_jobs: int = DEFAULT_N_JOBS) -> 
     return MODEL_FACTORIES[name](seed, n_jobs)
 
 
-def build_pipeline(name: str, seed: int = 42, n_jobs: int = DEFAULT_N_JOBS) -> Pipeline:
-    """Wrap an estimator with the appropriate preprocessing pipeline."""
+def build_pipeline(
+    name: str,
+    seed: int = 42,
+    n_jobs: int = DEFAULT_N_JOBS,
+    categorical: list[str] | None = None,
+    numeric: list[str] | None = None,
+) -> Pipeline:
+    """Wrap an estimator with the appropriate preprocessing pipeline.
+
+    ``categorical`` and ``numeric`` default to the Kalboard schema; pass a
+    source's own columns for a different feature set.
+    """
     if name not in MODEL_FACTORIES:
         raise KeyError(f"Unknown model '{name}'. Known: {model_catalog()}")
     pre = (
-        build_scaled_preprocessor()
+        build_scaled_preprocessor(categorical, numeric)
         if name in SCALE_SENSITIVE
-        else build_tree_preprocessor()
+        else build_tree_preprocessor(categorical, numeric)
     )
     return Pipeline([("pre", pre), ("clf", build_estimator(name, seed, n_jobs))])

@@ -43,6 +43,8 @@ class AreteAdapter(DatasetAdapter):
             features=list(features.columns),
             target=TARGET,
             class_labels=["retained", "elevated"],
+            categorical=[],
+            numeric=list(features.columns),
         )
 
 

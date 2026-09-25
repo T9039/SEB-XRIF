@@ -1,14 +1,14 @@
 """Training entrypoint.
 
-Trains one or more models from the comparison matrix, evaluates the proposed
-Random Forest, and persists the promoted artifact plus metadata, metrics, and
-explanation payloads. MLflow logging is best effort so training works without a
-running tracking server.
+Trains a model (or the full comparison matrix) for a dataset source, promotes
+the best model, and persists the artifact, metadata, and SHAP payload for that
+source. MLflow logging is best effort so training works without a running
+tracking server.
 
 Examples:
     uv run python -m analytics.train
-    uv run python -m analytics.train --models random_forest svc knn
-    uv run python -m analytics.train --all --tune
+    uv run python -m analytics.train --source arete-pbis --matrix
+    uv run python -m analytics.train --source my-upload --models random_forest svc
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ import inspect
 import json
 import platform
 import subprocess
+from dataclasses import replace
 from datetime import UTC, datetime
 from typing import Any
 
@@ -25,7 +26,7 @@ import joblib
 from sklearn import __version__ as sklearn_version
 
 from .config import Settings, get_settings
-from .data import class_distribution, features_and_target, load_source, split
+from .data import class_distribution, load_dataset, split
 from .evaluate import classification_metrics, cross_validate_model
 from .explain import feature_importance, shap_payload
 from .models import build_pipeline, model_catalog
@@ -42,18 +43,38 @@ def _git_commit() -> str:
 
 
 def train_model(
-    name: str, settings: Settings | None = None, *, with_tuning: bool = False
+    name: str,
+    settings: Settings | None = None,
+    *,
+    with_tuning: bool = False,
+    dataset=None,
 ) -> dict[str, Any]:
-    """Train one model and return its pipeline and held-out metrics."""
+    """Train one model for a dataset and return its pipeline and metrics."""
     settings = settings or get_settings()
-    df = load_source(settings=settings)[0]
-    features, target = features_and_target(df, settings)
+    dataset = dataset or load_dataset(settings)
+    if not dataset.supervised:
+        raise ValueError(f"Dataset '{dataset.name}' has no target to train on.")
+
+    features = dataset.frame[dataset.features]
+    target = dataset.frame[dataset.target]
+    labels = list(dataset.class_labels) or sorted(
+        str(value) for value in target.unique()
+    )
     x_train, x_test, y_train, y_test = split(features, target, settings)
 
     if with_tuning:
         tune(name, x_train, y_train, seed=settings.seed, n_jobs=settings.n_jobs)
 
-    pipeline = build_pipeline(name, settings.seed, settings.n_jobs)
+    def build() -> Any:
+        return build_pipeline(
+            name,
+            settings.seed,
+            settings.n_jobs,
+            dataset.categorical,
+            dataset.numeric,
+        )
+
+    pipeline = build()
     pipeline.fit(x_train, y_train)
 
     estimator = pipeline.named_steps["clf"]
@@ -61,10 +82,10 @@ def train_model(
         pipeline.predict_proba(x_test) if hasattr(estimator, "predict_proba") else None
     )
     metrics = classification_metrics(
-        y_test, pipeline.predict(x_test), proba, labels=settings.class_labels
+        y_test, pipeline.predict(x_test), proba, labels=labels
     )
     metrics["cv"] = cross_validate_model(
-        build_pipeline(name, settings.seed, settings.n_jobs),
+        build(),
         features,
         target,
         folds=settings.cv_folds,
@@ -73,6 +94,9 @@ def train_model(
     )
     return {
         "model": name,
+        "source": dataset.name,
+        "target": dataset.target,
+        "class_labels": labels,
         "pipeline": pipeline,
         "metrics": metrics,
         "n_train": int(len(x_train)),
@@ -82,16 +106,20 @@ def train_model(
     }
 
 
-def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
-    """Persist the promoted pipeline and its metadata sidecar.
+def save_artifact(
+    result: dict[str, Any], settings: Settings, source: str | None = None
+) -> dict[str, Any]:
+    """Persist the promoted pipeline and its metadata sidecar for a source.
 
     The metadata sidecar is deterministic so it can be verified by the
     reproducible pipeline (DVC): it must not embed timestamps or the current
-    commit. Volatile provenance is written to a separate ``model.run.json``
-    sidecar that DVC does not track, and the two are returned merged.
+    commit. Volatile provenance is written to a separate run sidecar that DVC
+    does not track, and the two are returned merged.
     """
-    settings.model_path.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(result["pipeline"], settings.model_path)
+    source = source or str(result.get("source") or settings.dataset)
+    model_path, metadata_path, run_path = settings.artifacts_for(source)
+    model_path.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(result["pipeline"], model_path)
 
     importance: dict[str, Any]
     try:
@@ -104,11 +132,12 @@ def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
 
     metadata = {
         "model": result["model"],
+        "source": source,
         "seed": settings.seed,
         "test_size": settings.test_size,
         "cv_folds": settings.cv_folds,
-        "target": settings.target,
-        "class_labels": settings.class_labels,
+        "target": result.get("target", settings.target),
+        "class_labels": result.get("class_labels", settings.class_labels),
         "feature_order": result["features"],
         "n_train": result["n_train"],
         "n_test": result["n_test"],
@@ -122,8 +151,8 @@ def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
             "scikit_learn": sklearn_version,
         },
     }
-    settings.metadata_path.parent.mkdir(parents=True, exist_ok=True)
-    settings.metadata_path.write_text(
+    metadata_path.parent.mkdir(parents=True, exist_ok=True)
+    metadata_path.write_text(
         json.dumps(metadata, indent=2, sort_keys=True), encoding="utf-8"
     )
 
@@ -132,9 +161,7 @@ def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
         "created_utc": datetime.now(UTC).isoformat(),
         "git_commit": _git_commit(),
     }
-    settings.run_path.write_text(
-        json.dumps(run, indent=2, sort_keys=True), encoding="utf-8"
-    )
+    run_path.write_text(json.dumps(run, indent=2, sort_keys=True), encoding="utf-8")
     return {**metadata, **run}
 
 
@@ -146,6 +173,7 @@ def _log_mlflow(
     register: bool = True,
     tracking_uri: str | None = None,
     experiment: str | None = None,
+    registered_model: str | None = None,
 ) -> str | None:
     """Log the run to MLflow and register the model; best effort.
 
@@ -162,6 +190,7 @@ def _log_mlflow(
                 {
                     "git_commit": str(metadata.get("git_commit")),
                     "model_version": str(metadata.get("model_version")),
+                    "source": str(metadata.get("source")),
                     "n_train": str(result["n_train"]),
                     "n_test": str(result["n_test"]),
                 }
@@ -169,6 +198,7 @@ def _log_mlflow(
             mlflow.log_params(
                 {
                     "model": result["model"],
+                    "source": str(metadata.get("source")),
                     "seed": settings.seed,
                     "test_size": settings.test_size,
                     "cv_folds": settings.cv_folds,
@@ -194,7 +224,9 @@ def _log_mlflow(
                 result["pipeline"],
                 name="model",
                 registered_model_name=(
-                    settings.mlflow_registered_model if register else None
+                    (registered_model or settings.mlflow_registered_model)
+                    if register
+                    else None
                 ),
                 **log_kwargs,
             )
@@ -204,15 +236,91 @@ def _log_mlflow(
         return None
 
 
+def train_source(
+    source: str,
+    settings: Settings | None = None,
+    *,
+    models: list[str] | None = None,
+    matrix: bool = False,
+    with_tuning: bool = False,
+    no_mlflow: bool = False,
+    register: bool = True,
+    tracking_uri: str | None = None,
+    experiment: str | None = None,
+) -> dict[str, Any]:
+    """Train and promote a model for one source (single model or best-of-matrix)."""
+    settings = settings or get_settings()
+    if source != settings.dataset:
+        settings = replace(settings, dataset=source)
+    dataset = load_dataset(settings)
+
+    names = model_catalog() if matrix else (models or ["random_forest"])
+    results: dict[str, dict[str, Any]] = {}
+    for name in names:
+        print(f"Training {name} on {dataset.name} ...")
+        result = train_model(name, settings, with_tuning=with_tuning, dataset=dataset)
+        results[name] = result
+        f1 = result["metrics"]["f1_macro"]
+        acc = result["metrics"]["accuracy"]
+        print(f"  {name}: accuracy={acc:.4f} macro-F1={f1:.4f}")
+
+    if matrix:
+        promoted = max(results.values(), key=lambda row: row["metrics"]["cv"]["mean"])
+    else:
+        promoted = results.get("random_forest") or max(
+            results.values(), key=lambda row: row["metrics"]["cv"]["mean"]
+        )
+
+    metadata = save_artifact(promoted, settings, source=source)
+    shap_path = settings.shap_for(source)
+    shap_data = shap_payload(promoted["pipeline"], dataset.frame[dataset.features])
+    shap_path.parent.mkdir(parents=True, exist_ok=True)
+    shap_path.write_text(json.dumps(shap_data, indent=2), encoding="utf-8")
+
+    if not no_mlflow:
+        registered = (
+            settings.mlflow_registered_model
+            if source == "kalboard"
+            else f"seb-xrif-{source}"
+        )
+        run_id = _log_mlflow(
+            promoted,
+            metadata,
+            settings,
+            register=register,
+            tracking_uri=tracking_uri,
+            experiment=experiment,
+            registered_model=registered,
+        )
+        if run_id:
+            print(f"MLflow run -> {run_id}")
+
+    model_path, metadata_path, _ = settings.artifacts_for(source)
+    print(f"Promoted '{promoted['model']}' -> {model_path}")
+    print(f"Metadata -> {metadata_path}")
+    return promoted
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Train SEB-XRIF models.")
+    parser.add_argument(
+        "--source",
+        default=None,
+        help="Dataset source to train (see: list_sources). Defaults to the config.",
+    )
     parser.add_argument(
         "--models",
         nargs="*",
         default=["random_forest"],
         help="Model names to train (see --list).",
     )
-    parser.add_argument("--all", action="store_true", help="Train the full matrix.")
+    parser.add_argument(
+        "--matrix",
+        "--all",
+        dest="matrix",
+        action="store_true",
+        help="Train the full matrix and promote the best model.",
+    )
     parser.add_argument("--tune", action="store_true", help="Tune before fitting.")
     parser.add_argument("--list", action="store_true", help="List available models.")
     parser.add_argument("--no-mlflow", action="store_true", help="Skip MLflow logging.")
@@ -230,43 +338,18 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     settings = get_settings()
-    names = model_catalog() if args.all else args.models
-
-    results: dict[str, dict[str, Any]] = {}
-    for name in names:
-        print(f"Training {name} ...")
-        result = train_model(name, settings, with_tuning=args.tune)
-        results[name] = result
-        f1 = result["metrics"]["f1_macro"]
-        acc = result["metrics"]["accuracy"]
-        print(f"  {name}: accuracy={acc:.4f} macro-F1={f1:.4f}")
-
-    # Promote the Random Forest as the dashboard artifact by default.
-    promoted = results.get("random_forest") or results[names[0]]
-    metadata = save_artifact(promoted, settings)
-
-    shap_data = shap_payload(
-        promoted["pipeline"],
-        load_source(settings=settings)[0][settings.feature_columns],
+    source = args.source or settings.dataset
+    train_source(
+        source,
+        settings,
+        models=args.models,
+        matrix=args.matrix,
+        with_tuning=args.tune,
+        no_mlflow=args.no_mlflow,
+        register=not args.no_register,
+        tracking_uri=args.tracking_uri,
+        experiment=args.experiment,
     )
-    settings.metadata_path.with_name("shap.json").write_text(
-        json.dumps(shap_data, indent=2), encoding="utf-8"
-    )
-
-    if not args.no_mlflow:
-        run_id = _log_mlflow(
-            promoted,
-            metadata,
-            settings,
-            register=not args.no_register,
-            tracking_uri=args.tracking_uri,
-            experiment=args.experiment,
-        )
-        if run_id:
-            print(f"MLflow run -> {run_id}")
-
-    print(f"Promoted '{promoted['model']}' -> {settings.model_path}")
-    print(f"Metadata -> {settings.metadata_path}")
 
 
 if __name__ == "__main__":
