@@ -95,6 +95,7 @@ def test_predict_endpoint_with_loaded_model(served_model):
     assert response.status_code == 200
     body = response.json()
     assert body["prediction"] in {"L", "M", "H"}
+    assert body["support_band"] in {"priority-support", "monitor", "on-track"}
     assert 0.0 <= body["confidence"] <= 1.0
 
 

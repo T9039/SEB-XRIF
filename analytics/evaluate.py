@@ -74,15 +74,30 @@ def cross_validate_model(
     scoring: str = "f1_macro",
     n_jobs: int = 1,
 ) -> dict[str, Any]:
-    """Return per-fold scores and their mean/std under stratified k-fold CV."""
+    """Return per-fold scores and their mean/std under stratified k-fold CV.
+
+    Also reports a 95% confidence interval for the mean, so a small cohort is
+    read with its uncertainty rather than as a point estimate.
+    """
+    from scipy import stats
+
     cv = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
     scores = cross_val_score(
         model, features, target, cv=cv, scoring=scoring, n_jobs=n_jobs
     )
+    count = len(scores)
+    mean = float(scores.mean())
+    std = float(scores.std())
+    stderr = std / np.sqrt(count) if count else 0.0
+    margin = float(stats.t.ppf(0.975, df=count - 1)) * stderr if count > 1 else 0.0
     return {
         "metric": scoring,
         "folds": folds,
         "scores": [float(score) for score in scores],
-        "mean": float(scores.mean()),
-        "std": float(scores.std()),
+        "mean": mean,
+        "std": std,
+        "stderr": float(stderr),
+        "ci_low": float(mean - margin),
+        "ci_high": float(mean + margin),
+        "ci_level": 0.95,
     }

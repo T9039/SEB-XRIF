@@ -36,6 +36,29 @@ def _interp(grid: np.ndarray, xs: np.ndarray, ys: np.ndarray) -> list[float]:
     return [round(float(value), 4) for value in values]
 
 
+def expected_calibration_error(
+    binary: np.ndarray, scores: np.ndarray, bins: int = 10
+) -> float:
+    """Return the (unweighted-by-count) expected calibration error.
+
+    Sums the count-weighted gap between predicted confidence and observed
+    frequency across equal-width probability bins.
+    """
+    edges = np.linspace(0.0, 1.0, bins + 1)
+    index = np.clip(np.digitize(scores, edges) - 1, 0, bins - 1)
+    total = len(scores)
+    if total == 0:  # pragma: no cover - callers guard against empty folds
+        return 0.0
+    error = 0.0
+    for bin_id in range(bins):
+        mask = index == bin_id
+        if mask.any():
+            observed = float(binary[mask].mean())
+            confidence = float(scores[mask].mean())
+            error += float(mask.sum()) / total * abs(observed - confidence)
+    return error
+
+
 def _compute_diagnostics(settings: Settings, folds: int) -> dict[str, Any]:
     """Compute the diagnostic curves (uncached)."""
     settings = settings or get_settings()
@@ -57,6 +80,7 @@ def _compute_diagnostics(settings: Settings, folds: int) -> dict[str, Any]:
     auc: dict[str, float] = {}
     average_precision: dict[str, float] = {}
     brier: dict[str, float] = {}
+    ece: dict[str, float] = {}
 
     for index, label in enumerate(classes):
         binary = (indicator == label).astype(int)
@@ -88,6 +112,7 @@ def _compute_diagnostics(settings: Settings, folds: int) -> dict[str, Any]:
                 prob_true.append(float(binary[mask].mean()))
         calibration_values = _interp(GRID, np.asarray(prob_pred), np.asarray(prob_true))
         brier[label] = round(float(brier_score_loss(binary, scores)), 4)
+        ece[label] = round(float(expected_calibration_error(binary, scores)), 4)
         for row, value in zip(calibration_rows, calibration_values, strict=True):
             row[label] = value
 
@@ -111,6 +136,7 @@ def _compute_diagnostics(settings: Settings, folds: int) -> dict[str, Any]:
     ]
 
     macro_auc = round(float(np.mean(list(auc.values()))), 4)
+    macro_ece = round(float(np.mean(list(ece.values()))), 4)
     return {
         "data_source": source,
         "folds": folds,
@@ -119,6 +145,8 @@ def _compute_diagnostics(settings: Settings, folds: int) -> dict[str, Any]:
         "auc": auc,
         "average_precision": average_precision,
         "brier": brier,
+        "ece": ece,
+        "macro_ece": macro_ece,
         "roc": roc_rows,
         "pr": pr_rows,
         "calibration": calibration_rows,

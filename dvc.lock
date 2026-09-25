@@ -25,9 +25,9 @@ stages:
     deps:
     - path: analytics
       hash: md5
-      md5: e025ad05a96edefccdc747de6e66a240.dir
-      size: 118663
-      nfiles: 25
+      md5: 28a11f918c3b264ed0cf14c32edfa664.dir
+      size: 123354
+      nfiles: 26
     - path: data/raw/xAPI-Edu-Data.csv
       hash: md5
       md5: 24b17c0a18b445c6f18eb28c95540d77
@@ -39,8 +39,8 @@ stages:
       size: 1745930
     - path: models/model.meta.json
       hash: md5
-      md5: 3229888e4c63ffbcd5a3add7a70f6af7
-      size: 5558
+      md5: e979081d1853a67815729de79f79fa50
+      size: 5690
     - path: models/shap.json
       hash: md5
       md5: b7cb50345bab322f91dfcf94ef593ea7

@@ -51,6 +51,16 @@ const columns: ColumnDef<ResultRow>[] = [
     },
   },
   {
+    accessorKey: "cv_ci_low",
+    header: "CV 95% CI",
+    enableSorting: false,
+    cell: ({ row }) => {
+      const low = row.getValue("cv_ci_low") as number | null;
+      const high = row.original.cv_ci_high;
+      return low === null || high === null ? "—" : `${low.toFixed(3)}–${high.toFixed(3)}`;
+    },
+  },
+  {
     accessorKey: "roc_auc_ovr",
     header: "ROC-AUC",
     enableSorting: true,

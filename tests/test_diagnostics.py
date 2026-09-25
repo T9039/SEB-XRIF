@@ -36,6 +36,8 @@ def test_compute_diagnostics_shape(tmp_path: Path):
     assert set(payload["classes"]) == {"L", "M", "H"}
     assert 0.0 <= payload["macro_auc"] <= 1.0
     assert set(payload["auc"]) == set(payload["classes"])
+    assert set(payload["ece"]) == set(payload["classes"])
+    assert 0.0 <= payload["macro_ece"] <= 1.0
 
     assert len(payload["roc"]) == 21
     assert len(payload["pr"]) == 21

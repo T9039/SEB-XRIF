@@ -38,5 +38,6 @@ class PredictionRequest(BaseModel):
 
 class PredictionResponse(BaseModel):
     prediction: str
+    support_band: str
     probabilities: dict[str, float]
     confidence: float

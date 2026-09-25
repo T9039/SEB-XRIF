@@ -52,6 +52,7 @@ export interface PredictionRequest {
 
 export interface PredictionResponse {
   prediction: string;
+  support_band: string;
   probabilities: Record<string, number>;
   confidence: number;
 }
@@ -80,6 +81,8 @@ export interface ResultRow {
   roc_auc_ovr: number | null;
   cv_mean: number | null;
   cv_std: number | null;
+  cv_ci_low: number | null;
+  cv_ci_high: number | null;
   fit_seconds: number | null;
 }
 

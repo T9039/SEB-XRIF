@@ -32,6 +32,8 @@ def test_run_benchmark_returns_ranked_table():
     ok = results[results["status"] == "ok"]
     assert not ok.empty
     assert ok["cv_mean"].between(0.0, 1.0).all()
+    assert (ok["cv_ci_low"] <= ok["cv_mean"]).all()
+    assert (ok["cv_mean"] <= ok["cv_ci_high"]).all()
     # Sorted by CV macro F1 descending.
     assert ok["cv_mean"].is_monotonic_decreasing or len(ok) == 1
 

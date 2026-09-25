@@ -7,7 +7,7 @@ pipeline is location independent.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -43,6 +43,14 @@ class Settings:
     lrs_key: str = "seb-xrif-lrs"
     lrs_secret: str = "seb-xrif-secret"
     dataset: str = "kalboard"
+    support_bands: dict[str, str] = field(
+        default_factory=lambda: {
+            "L": "priority-support",
+            "M": "monitor",
+            "H": "on-track",
+        }
+    )
+    decision_thresholds: dict[str, float] = field(default_factory=dict)
 
     def resolve_database_url(self) -> str:
         """Return the application database URL, preferring the environment."""

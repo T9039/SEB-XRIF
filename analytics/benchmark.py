@@ -39,6 +39,8 @@ METRIC_COLUMNS = [
     "roc_auc_ovr",
     "cv_mean",
     "cv_std",
+    "cv_ci_low",
+    "cv_ci_high",
     "fit_seconds",
     "n_train",
     "n_test",
@@ -89,6 +91,8 @@ def evaluate_model(
         ),
         "cv_mean": round(cv["mean"], 4),
         "cv_std": round(cv["std"], 4),
+        "cv_ci_low": round(cv["ci_low"], 4),
+        "cv_ci_high": round(cv["ci_high"], 4),
         "fit_seconds": round(fit_seconds, 3),
         "n_train": int(len(x_train)),
         "n_test": int(len(x_test)),
@@ -143,18 +147,28 @@ def to_markdown(results: pd.DataFrame, folds: int) -> str:
         f"Stratified {folds}-fold cross-validation and a held-out 80/20 split "
         f"on the xAPI Educational Mining Dataset (n=480).",
         "",
-        "| Model | Accuracy | Macro F1 | CV macro F1 | CV std | ROC-AUC | Fit (s) |",
-        "| --- | --- | --- | --- | --- | --- | --- |",
+        "| Model | Accuracy | Macro F1 | CV macro F1 | CV std | CV 95% CI "
+        "| ROC-AUC | Fit s |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for _, row in results.iterrows():
         roc = "—" if pd.isna(row.get("roc_auc_ovr")) else f"{row['roc_auc_ovr']:.4f}"
         if row.get("status") != "ok":
-            lines.append(f"| {row['model']} | — | — | — | — | — | {row['status']} |")
+            lines.append(
+                f"| {row['model']} | — | — | — | — | — | — | {row['status']} |"
+            )
             continue
+        ci_low = row.get("cv_ci_low")
+        ci_high = row.get("cv_ci_high")
+        ci = (
+            "—"
+            if pd.isna(ci_low) or pd.isna(ci_high)
+            else f"{ci_low:.3f}–{ci_high:.3f}"
+        )
         lines.append(
             f"| {row['model']} | {row['accuracy']:.4f} | {row['f1_macro']:.4f} | "
-            f"{row['cv_mean']:.4f} | {row['cv_std']:.4f} | {roc} | "
-            f"{row['fit_seconds']:.2f} |"
+            f"{row['cv_mean']:.4f} | {row['cv_std']:.4f} | {ci} | "
+            f"{roc} | {row['fit_seconds']:.2f} |"
         )
     low, high = BENCHMARK_ACCURACY
     lines += [

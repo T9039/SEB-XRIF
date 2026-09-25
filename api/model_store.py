@@ -14,6 +14,9 @@ from typing import Any
 import joblib
 import pandas as pd
 
+from analytics.config import get_settings as get_analytics_settings
+from analytics.decision import apply_thresholds, support_band
+
 from .config import ApiSettings, get_api_settings
 from .logging import get_logger
 
@@ -27,10 +30,16 @@ class ModelStore:
         self.pipeline: Any | None = None
         self.metadata: dict[str, Any] = {}
         self.shap: dict[str, Any] = {}
+        self.support_bands: dict[str, str] = {}
+        self.decision_thresholds: dict[str, float] = {}
 
     def load(self) -> ModelStore:
         """Load the pipeline and sidecars from the configured source."""
         settings = get_api_settings()
+
+        analytics = get_analytics_settings()
+        self.support_bands = dict(analytics.support_bands)
+        self.decision_thresholds = dict(analytics.decision_thresholds)
 
         if settings.model_source == "registry":
             self._load_from_registry(settings)
@@ -77,7 +86,7 @@ class ModelStore:
         return list(self.metadata.get("metrics", {}).get("features", [])) or []
 
     def predict(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Predict a tier and per-class probabilities for each input row."""
+        """Predict a support band and per-class probabilities for each row."""
         if self.pipeline is None:
             raise RuntimeError("model not loaded")
 
@@ -86,11 +95,14 @@ class ModelStore:
         if order:
             frame = frame[order]
 
-        predictions = self.pipeline.predict(frame)
         if hasattr(self.pipeline, "predict_proba"):
             probabilities = self.pipeline.predict_proba(frame)
             classes = list(self.pipeline.named_steps["clf"].classes_)
+            predictions = apply_thresholds(
+                probabilities, classes, self.decision_thresholds
+            )
         else:  # pragma: no cover - all catalog models expose predict_proba
+            predictions = [str(value) for value in self.pipeline.predict(frame)]
             probabilities = [
                 [1.0 if p == pred else 0.0 for p in predictions] for pred in predictions
             ]
@@ -104,6 +116,7 @@ class ModelStore:
             results.append(
                 {
                     "prediction": str(label),
+                    "support_band": support_band(str(label), self.support_bands),
                     "probabilities": row,
                     "confidence": float(max(row.values())),
                 }

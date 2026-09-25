@@ -88,9 +88,9 @@ export function PredictionForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Predict a learner tier</CardTitle>
+        <CardTitle>Predict a support band</CardTitle>
         <CardDescription>
-          Send the 16 predictors to the model and read the tier back.
+          Send the 16 predictors to the model and read the support band back.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -144,8 +144,11 @@ export function PredictionForm() {
         {predict.data ? (
           <div className="mt-5 rounded-2xl border p-4">
             <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">Predicted tier</span>
-              <Badge>{predict.data.prediction}</Badge>
+              <span className="text-sm text-muted-foreground">Support band</span>
+              <Badge>{predict.data.support_band}</Badge>
+              <span className="text-xs text-muted-foreground">
+                predicted class {predict.data.prediction}
+              </span>
               <span className="text-sm text-muted-foreground">
                 confidence {(predict.data.confidence * 100).toFixed(0)}%
               </span>
