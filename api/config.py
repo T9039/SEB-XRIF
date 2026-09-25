@@ -25,6 +25,7 @@ class ApiSettings(BaseSettings):
 
     model_path: Path = REPO_ROOT / "models" / "model.joblib"
     metadata_path: Path = REPO_ROOT / "models" / "model.meta.json"
+    run_path: Path = REPO_ROOT / "models" / "model.run.json"
     shap_path: Path = REPO_ROOT / "models" / "shap.json"
     raw_data_path: Path = REPO_ROOT / "data" / "raw" / "xAPI-Edu-Data.csv"
 

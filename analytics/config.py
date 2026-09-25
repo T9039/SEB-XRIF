@@ -76,6 +76,11 @@ class Settings:
         return self.resolve("metadata")
 
     @property
+    def run_path(self) -> Path:
+        """Volatile run provenance, kept out of the reproducible artifact."""
+        return self.metadata_path.with_name("model.run.json")
+
+    @property
     def reports_dir(self) -> Path:
         return self.resolve("reports")
 

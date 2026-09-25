@@ -83,7 +83,13 @@ def train_model(
 
 
 def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
-    """Persist the promoted pipeline and its metadata sidecar."""
+    """Persist the promoted pipeline and its metadata sidecar.
+
+    The metadata sidecar is deterministic so it can be verified by the
+    reproducible pipeline (DVC): it must not embed timestamps or the current
+    commit. Volatile provenance is written to a separate ``model.run.json``
+    sidecar that DVC does not track, and the two are returned merged.
+    """
     settings.model_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(result["pipeline"], settings.model_path)
 
@@ -98,7 +104,6 @@ def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
 
     metadata = {
         "model": result["model"],
-        "model_version": f"{result['model']}-{_git_commit()}",
         "seed": settings.seed,
         "test_size": settings.test_size,
         "cv_folds": settings.cv_folds,
@@ -110,16 +115,25 @@ def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
         "class_distribution": result["class_distribution"],
         "metrics": result["metrics"],
         "importance": importance,
-        "created_utc": datetime.now(UTC).isoformat(),
         "versions": {
             "python": platform.python_version(),
             "scikit_learn": sklearn_version,
         },
-        "git_commit": _git_commit(),
     }
     settings.metadata_path.parent.mkdir(parents=True, exist_ok=True)
-    settings.metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
-    return metadata
+    settings.metadata_path.write_text(
+        json.dumps(metadata, indent=2, sort_keys=True), encoding="utf-8"
+    )
+
+    run = {
+        "model_version": f"{result['model']}-{_git_commit()}",
+        "created_utc": datetime.now(UTC).isoformat(),
+        "git_commit": _git_commit(),
+    }
+    settings.run_path.write_text(
+        json.dumps(run, indent=2, sort_keys=True), encoding="utf-8"
+    )
+    return {**metadata, **run}
 
 
 def _log_mlflow(

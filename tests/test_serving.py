@@ -41,6 +41,7 @@ def served_model(tmp_path: Path, monkeypatch):
     """Train a small model, persist it to temp paths, and reload the store."""
     monkeypatch.setenv("SEBXRIF_MODEL_PATH", str(tmp_path / "model.joblib"))
     monkeypatch.setenv("SEBXRIF_METADATA_PATH", str(tmp_path / "model.meta.json"))
+    monkeypatch.setenv("SEBXRIF_RUN_PATH", str(tmp_path / "model.run.json"))
     monkeypatch.setenv("SEBXRIF_SHAP_PATH", str(tmp_path / "shap.json"))
     get_api_settings.cache_clear()
 

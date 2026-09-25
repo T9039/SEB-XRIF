@@ -42,6 +42,9 @@ class ModelStore:
             self.metadata = json.loads(
                 settings.metadata_path.read_text(encoding="utf-8")
             )
+        if settings.run_path.exists():
+            run = json.loads(settings.run_path.read_text(encoding="utf-8"))
+            self.metadata = {**self.metadata, **run}
         if settings.shap_path.exists():
             self.shap = json.loads(settings.shap_path.read_text(encoding="utf-8"))
         return self

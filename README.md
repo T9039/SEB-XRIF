@@ -73,6 +73,7 @@ http://localhost:5173.
 | Command | What it does |
 | --- | --- |
 | `make prepare` | Validate the raw CSV and write `data/processed/learners.parquet` |
+| `make repro-check` | Reproduce from a clean checkout and verify the DVC graph |
 | `make train` | Train the Random Forest and export artifact + metadata + SHAP |
 | `make train ARGS='--all'` | Train the full comparison matrix |
 | `make train ARGS='--models svc knn'` | Train specific models |
@@ -205,6 +206,7 @@ Developer tools run behind a Compose profile: `docker compose --profile tools up
 | Document | Description |
 | --- | --- |
 | `docs/SEB-XRIF_Technical_Specification.pdf` | Stack, rationale, alternatives, build plan |
+| `docs/reproducibility.md` | What is pinned and how to reproduce from a clean checkout |
 | `analytics/README.md` | Model catalog and training pipeline |
 | `api/README.md` | Service configuration and endpoints |
 | `eval/README.md` | Evaluation protocol |

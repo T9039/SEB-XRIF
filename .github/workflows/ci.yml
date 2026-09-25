@@ -43,6 +43,8 @@ jobs:
           uv run alembic upgrade head
           uv run python -m analytics.data --out data/processed/learners.parquet
       - run: uv run pytest -q
+      - name: Reproduce from a clean checkout
+        run: ./scripts/repro-check.sh
 
   web:
     runs-on: ubuntu-latest

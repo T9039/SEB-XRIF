@@ -47,6 +47,8 @@ the technical specification, section 4.5.
 
 - `models/model.joblib` — the promoted scikit-learn pipeline (preprocessing
   included, so serving applies the identical transform)
-- `models/model.meta.json` — metrics, feature order, library versions, git
-  commit, and class distribution
+- `models/model.meta.json` — deterministic metrics, feature order, class
+  distribution, and library versions (part of the reproducible DVC graph)
+- `models/model.run.json` — volatile run provenance (timestamp, git commit,
+  version string); untracked by DVC and merged in by the API at load time
 - `models/shap.json` — global SHAP summary for the dashboard

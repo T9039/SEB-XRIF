@@ -5,8 +5,8 @@ stages:
     deps:
     - path: analytics/data.py
       hash: md5
-      md5: b326cf3bebb322ec345226c19dfd0d9d
-      size: 2816
+      md5: 1a453abdb5c10571d161ac1136ea2822
+      size: 3897
     - path: analytics/schema.py
       hash: md5
       md5: 91937d2996ec17a067d3c7229369964d
@@ -25,9 +25,9 @@ stages:
     deps:
     - path: analytics
       hash: md5
-      md5: 31c580b31f27af0ddabcddad11d385b0.dir
-      size: 74468
-      nfiles: 22
+      md5: 7a60f2d3491e22733e12b0ebd29c0daa.dir
+      size: 96261
+      nfiles: 19
     - path: data/raw/xAPI-Edu-Data.csv
       hash: md5
       md5: 24b17c0a18b445c6f18eb28c95540d77
@@ -35,12 +35,12 @@ stages:
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: 6e2bcb88ceeca96cf74366d5404f5de9
+      md5: 8f1cb165ae82ebe8ffe1fe0757444e18
       size: 1745930
     - path: models/model.meta.json
       hash: md5
-      md5: 3afcdb0233cdecd8671f74d7fc401b5f
-      size: 5646
+      md5: 3e8694a76499f0d81ee151d0b7358dda
+      size: 5561
     - path: models/shap.json
       hash: md5
       md5: b7cb50345bab322f91dfcf94ef593ea7
