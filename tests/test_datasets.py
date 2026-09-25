@@ -1,4 +1,4 @@
-"""Dataset-adapter seam: registry and the Kalboard migration."""
+"""Dataset-adapter seam: registry, the Dataset contract, and the migration."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import pytest
 
 from analytics.config import get_settings
 from analytics.data import load_source
-from analytics.datasets.base import DatasetAdapter
+from analytics.datasets.base import Dataset, DatasetAdapter
 from analytics.datasets.registry import get_adapter, list_datasets, register
 from analytics.schema import SCHEMA
 
@@ -23,11 +23,16 @@ def test_unknown_dataset_raises():
         get_adapter("does-not-exist")
 
 
-def test_kalboard_adapter_returns_validated_canonical_frame():
-    frame, source = get_adapter("kalboard").load(get_settings())
-    assert source == "csv"
-    assert len(frame) == 480
-    assert set(SCHEMA.columns) <= set(frame.columns)
+def test_kalboard_adapter_returns_a_dataset():
+    dataset = get_adapter("kalboard").load(get_settings())
+    assert isinstance(dataset, Dataset)
+    assert dataset.source == "csv"
+    assert dataset.target == "Class"
+    assert dataset.class_labels == ["L", "M", "H"]
+    assert dataset.features == get_settings().feature_columns
+    assert dataset.supervised is True
+    assert len(dataset.frame) == 480
+    assert set(SCHEMA.columns) <= set(dataset.frame.columns)
 
 
 def test_load_source_uses_configured_adapter():
@@ -36,7 +41,13 @@ def test_load_source_uses_configured_adapter():
         description = "in-test adapter"
 
         def load(self, settings):
-            return pd.DataFrame({"x": [1, 2]}), "alpha"
+            return Dataset(
+                name=self.name,
+                description=self.description,
+                source="alpha",
+                frame=pd.DataFrame({"x": [1, 2]}),
+                features=["x"],
+            )
 
     register(Alpha)
     assert "alpha-test" in list_datasets()

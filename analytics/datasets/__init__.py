@@ -5,11 +5,12 @@ pipeline asks the registry for the configured adapter instead of reading a
 source directly, so a new source is a new adapter, not a branch in the core.
 """
 
-from .base import DatasetAdapter
+from .base import Dataset, DatasetAdapter
 from .kalboard import KalboardAdapter
 from .registry import get_adapter, list_datasets, register
 
 __all__ = [
+    "Dataset",
     "DatasetAdapter",
     "KalboardAdapter",
     "get_adapter",

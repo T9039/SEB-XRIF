@@ -13,6 +13,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from .config import Settings, get_settings
+from .datasets.base import Dataset
 from .datasets.kalboard import KalboardAdapter
 from .datasets.registry import get_adapter
 
@@ -49,10 +50,16 @@ def read_learners(
     return _kalboard.read_learners(settings, prefer_db)
 
 
-def load_source(settings: Settings | None = None) -> tuple[pd.DataFrame, str]:
-    """Return the configured dataset via its adapter (``settings.dataset``)."""
+def load_dataset(settings: Settings | None = None) -> Dataset:
+    """Return the configured dataset (frame + features + target) via its adapter."""
     settings = settings or get_settings()
     return get_adapter(settings.dataset).load(settings)
+
+
+def load_source(settings: Settings | None = None) -> tuple[pd.DataFrame, str]:
+    """Return ``(frame, source)`` for the configured dataset (``settings.dataset``)."""
+    dataset = load_dataset(settings)
+    return dataset.frame, dataset.source
 
 
 def features_and_target(

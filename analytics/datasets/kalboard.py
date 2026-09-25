@@ -12,7 +12,7 @@ import pandas as pd
 
 from ..config import Settings, get_settings
 from ..schema import SCHEMA
-from .base import DatasetAdapter
+from .base import Dataset, DatasetAdapter
 
 
 class KalboardAdapter(DatasetAdapter):
@@ -49,8 +49,18 @@ class KalboardAdapter(DatasetAdapter):
                 pass
         return self.validate(self.load_raw(settings=settings)), "csv"
 
-    def load(self, settings: Settings | None = None) -> tuple[pd.DataFrame, str]:
+    def load(self, settings: Settings | None = None) -> Dataset:
         settings = settings or get_settings()
         if settings.data_source == "db":
-            return self.read_learners(settings, prefer_db=True)
-        return self.validate(self.load_raw(settings=settings)), "csv"
+            frame, source = self.read_learners(settings, prefer_db=True)
+        else:
+            frame, source = self.validate(self.load_raw(settings=settings)), "csv"
+        return Dataset(
+            name=self.name,
+            description=self.description,
+            source=source,
+            frame=frame,
+            features=list(settings.feature_columns),
+            target=settings.target,
+            class_labels=list(settings.class_labels),
+        )
