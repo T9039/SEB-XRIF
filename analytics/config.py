@@ -86,6 +86,10 @@ class Settings:
         return self.resolve("reports")
 
     @property
+    def arete_raw_dir(self) -> Path:
+        return self.resolve("arete_raw")
+
+    @property
     def feature_columns(self) -> list[str]:
         return [*self.categorical, *self.behavioural]
 

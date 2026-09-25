@@ -17,6 +17,8 @@ import type {
   PdpPayload,
   SavedChartView,
   Trends,
+  XrPilotsPayload,
+  XrTrends,
 } from "../types";
 
 export function useHealth() {
@@ -144,6 +146,21 @@ export function usePdp(feature: string, enabled = true) {
     queryKey: ["pdp", feature],
     queryFn: async () => (await api.get<PdpPayload>("/model/pdp", { params: { feature } })).data,
     enabled: enabled && Boolean(feature),
+    retry: false,
+  });
+}
+
+export function useXrPilots() {
+  return useQuery({
+    queryKey: ["xr-pilots"],
+    queryFn: async () => (await api.get<XrPilotsPayload>("/xr/pilots")).data,
+  });
+}
+
+export function useXrTrends(pilot = "pbis", freq = "W") {
+  return useQuery({
+    queryKey: ["xr-trends", pilot, freq],
+    queryFn: async () => (await api.get<XrTrends>("/xr/trends", { params: { pilot, freq } })).data,
     retry: false,
   });
 }

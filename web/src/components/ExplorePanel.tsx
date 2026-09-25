@@ -18,6 +18,7 @@ import { Heatmap } from "../charts/Heatmap";
 import { ParallelCoordinates } from "../charts/ParallelCoordinates";
 import type { Row } from "../charts/data";
 import { PanelMessage, PanelSkeleton } from "./panel-states";
+import { XrTrendsPanel } from "./XrTrendsPanel";
 
 const BEHAVIOURS = ["raisedhands", "VisITedResources", "AnnouncementsView", "Discussion"];
 
@@ -192,6 +193,7 @@ function PdpPanel() {
 export function ExplorePanel() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
+      <XrTrendsPanel />
       <CorrelationPanel />
       <BoxPanel />
       <ParallelPanel />

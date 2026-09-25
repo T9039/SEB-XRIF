@@ -74,6 +74,7 @@ http://localhost:5173.
 | --- | --- |
 | `make prepare` | Validate the raw CSV and write `data/processed/learners.parquet` |
 | `make repro-check` | Reproduce from a clean checkout and verify the DVC graph |
+| `make fetch-arete` | Download the ARETE XR xAPI pilots (checksum-verified) |
 | `make train` | Train the Random Forest and export artifact + metadata + SHAP |
 | `make train ARGS='--all'` | Train the full comparison matrix |
 | `make train ARGS='--models svc knn'` | Train specific models |
@@ -131,6 +132,8 @@ share one design system. See [`ui/README.md`](ui/README.md) for details.
 | `GET` | `/metrics` | Active model metrics (503 until trained) |
 | `GET` | `/importance` | Native + SHAP importance (503 until trained) |
 | `GET` | `/trends` | Class counts and behaviour by tier |
+| `GET` | `/xr/pilots` | Known ARETE XR pilots and whether downloaded |
+| `GET` | `/xr/trends` | Engagement over time for an XR pilot |
 
 The service starts even without a trained model; prediction and metrics routes
 return `503` with a clear message until `make train` has been run.
@@ -207,6 +210,7 @@ Developer tools run behind a Compose profile: `docker compose --profile tools up
 | --- | --- |
 | `docs/SEB-XRIF_Technical_Specification.pdf` | Stack, rationale, alternatives, build plan |
 | `docs/reproducibility.md` | What is pinned and how to reproduce from a clean checkout |
+| `docs/datasets.md` | Bundled seed, ARETE XR pilots, and the LMS-to-XR feature mapping |
 | `analytics/README.md` | Model catalog and training pipeline |
 | `api/README.md` | Service configuration and endpoints |
 | `eval/README.md` | Evaluation protocol |

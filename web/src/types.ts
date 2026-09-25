@@ -157,3 +157,35 @@ export interface CorrelationPayload {
   columns: string[];
   matrix: number[][];
 }
+
+export interface XrPilot {
+  name: string;
+  filename: string;
+  url: string;
+  licence: string;
+  doi: string;
+  description: string;
+  available: boolean;
+}
+
+export interface XrPilotsPayload {
+  licence: string;
+  doi: string;
+  pilots: XrPilot[];
+}
+
+export interface XrTrends {
+  pilot: string;
+  description: string;
+  licence: string;
+  doi: string;
+  events: number;
+  learners: number;
+  first_seen: string;
+  last_seen: string;
+  period_start: string[];
+  events_by_period: number[];
+  active_learners_by_period: number[];
+  verb_counts: Record<string, number>;
+  top_objects: { name: string; count: number }[];
+}

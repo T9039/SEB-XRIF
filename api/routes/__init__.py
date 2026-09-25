@@ -11,6 +11,7 @@ from . import (
     predict,
     results,
     trends,
+    xr,
 )
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     "predict",
     "results",
     "trends",
+    "xr",
 ]

@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 
 .PHONY: help bootstrap sync lint format type test api web dev train prepare \
-        matrix tune paper mlflow db-upgrade db-init repro-check \
+        matrix tune paper mlflow db-upgrade db-init repro-check fetch-arete \
         docker-up docker-down docker-logs figures clean \
         ui-install storybook storybook-build
 
@@ -20,6 +20,7 @@ help:
 > @echo "  matrix       run the full 16-model comparison matrix (single-threaded)"
 > @echo "  tune         tune the top models with Optuna (ARGS='--trials 20')"
 > @echo "  repro-check  reproduce from a clean checkout and verify the DVC graph"
+> @echo "  fetch-arete  download the ARETE XR pilots (ARGS='pbis')"
 > @echo "  mlflow       open the MLflow UI on :5000"
 > @echo "  db-upgrade   apply database migrations (alembic upgrade head)"
 > @echo "  db-init      create tables directly (development convenience)"
@@ -59,6 +60,9 @@ prepare:
 
 repro-check:
 > @./scripts/repro-check.sh
+
+fetch-arete:
+> uv run python scripts/fetch_arete.py $(ARGS)
 
 train:
 > @./scripts/train.sh $(ARGS)

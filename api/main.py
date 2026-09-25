@@ -32,6 +32,7 @@ from .routes import (
     predict,
     results,
     trends,
+    xr,
 )
 from .schemas import HealthResponse
 
@@ -108,6 +109,7 @@ app.include_router(analytics.router)
 app.include_router(advanced.router)
 app.include_router(charts.router)
 app.include_router(diagnostics.router)
+app.include_router(xr.router)
 
 
 @app.get("/", tags=["system"])

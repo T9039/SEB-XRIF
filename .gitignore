@@ -40,6 +40,9 @@ catboost_info/
 /data/processed/*
 !/data/processed/.gitkeep
 
+# External XR pilots (downloaded, checksum-verified; not committed)
+/data/raw/arete/
+
 # Environment / secrets
 .env
 .env.*

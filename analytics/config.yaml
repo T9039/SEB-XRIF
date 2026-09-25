@@ -65,3 +65,4 @@ paths:
   model: models/model.joblib
   metadata: models/model.meta.json
   reports: reports
+  arete_raw: data/raw/arete
