@@ -42,6 +42,7 @@ catboost_info/
 
 # External XR pilots (downloaded, checksum-verified; not committed)
 /data/raw/arete/
+/data/raw/uploads/
 
 # Environment / secrets
 .env

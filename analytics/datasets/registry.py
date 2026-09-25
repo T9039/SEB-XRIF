@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from .base import DatasetAdapter
 from .kalboard import KalboardAdapter
+from .xapi_profile import XapiProfileAdapter
 
 _ADAPTERS: dict[str, type[DatasetAdapter]] = {
     KalboardAdapter.name: KalboardAdapter,
+    XapiProfileAdapter.name: XapiProfileAdapter,
 }
 
 

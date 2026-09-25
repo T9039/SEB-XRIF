@@ -18,15 +18,16 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import json
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import httpx
 import pandas as pd
 
 from .config import get_settings
-from .data import load_raw
 from .db import FRAME_TO_DB, get_engine, session_scope, upsert_learner
 from .schema import BEHAVIOURAL, CATEGORICAL
 
@@ -223,6 +224,23 @@ def frame_from_statements(statements: list[dict[str, Any]]) -> pd.DataFrame:
     return pd.DataFrame(extract_rows(statements), columns=FEATURE_COLUMNS)
 
 
+def read_statements(path: Path | str) -> list[dict[str, Any]]:
+    """Read xAPI statements from a JSON array or a JSON Lines file.
+
+    This is how a profile-conformant source is ingested without code: the
+    statements are exported from an LRS and dropped in as a file.
+    """
+    text = Path(path).read_text(encoding="utf-8")
+    if text.lstrip().startswith("["):
+        payload = json.loads(text)
+        statements = list(payload) if isinstance(payload, list) else []
+    else:
+        statements = [json.loads(line) for line in text.splitlines() if line.strip()]
+    if not statements:
+        raise ValueError(f"No xAPI statements found in {path}")
+    return statements
+
+
 def to_learner_dict(row: dict[str, Any], external_id: str) -> dict[str, Any]:
     """Map a reconstructed row to application database field names."""
     data = {"external_id": external_id}
@@ -234,6 +252,8 @@ def to_learner_dict(row: dict[str, Any], external_id: str) -> dict[str, Any]:
 
 def ingest_csv(client: LrsClient, limit: int | None = None) -> int:
     """Read the source CSV and post statements for each learner row."""
+    from .data import load_raw
+
     frame = load_raw()
     if limit is not None:
         frame = frame.head(limit)

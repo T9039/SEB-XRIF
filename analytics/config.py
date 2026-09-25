@@ -94,6 +94,11 @@ class Settings:
         return self.resolve("reports")
 
     @property
+    def statements_path(self) -> Path:
+        """Default path for a profile-conformant statements file."""
+        return self.resolve("statements")
+
+    @property
     def arete_raw_dir(self) -> Path:
         return self.resolve("arete_raw")
 

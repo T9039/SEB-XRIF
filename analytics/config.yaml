@@ -76,3 +76,4 @@ paths:
   metadata: models/model.meta.json
   reports: reports
   arete_raw: data/raw/arete
+  statements: data/raw/uploads/statements.jsonl
