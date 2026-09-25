@@ -116,7 +116,9 @@ def save_artifact(result: dict[str, Any], settings: Settings) -> dict[str, Any]:
         "metrics": result["metrics"],
         "importance": importance,
         "versions": {
-            "python": platform.python_version(),
+            # Record only major.minor: the patch release differs across
+            # machines and would otherwise make the reproducible artifact drift.
+            "python": ".".join(platform.python_version_tuple()[:2]),
             "scikit_learn": sklearn_version,
         },
     }
