@@ -69,7 +69,7 @@
 SEB-XRIF is a reusable way of conducting XR education research, not a single
 model or dashboard. It has four layers: *data*, *analytics*, *visualization*,
 and *evaluation*. The artifact delivered by this plan is a reproducible
-analytics pipeline, a prediction API, a placeholder dashboard, and a fixed
+analytics pipeline, a prediction API, a dashboard, and a fixed
 evaluation protocol. The Random Forest and the dashboard are the first
 instantiation of the framework; the framework is the recipe others reuse.
 
@@ -80,8 +80,8 @@ literature review and the project SWOT analysis:
   pipeline with the same seed and configuration, and obtain a comparable result.
 + *Scale.* The pipeline operates on a public dataset larger than the SLR median
   of 30 participants and is designed for multi-institutional reuse.
-+ *Prediction.* The analytics layer predicts a Low/Medium/High performance tier
-  from logged behaviour and ranks the behaviours that drive the prediction.
++ *Prediction.* The analytics layer predicts an actionable support band from a
+  logged-behaviour model and ranks the behaviours that drive the prediction.
 + *Longitudinal evidence.* The evaluation layer fixes a T0/T1/T2 measurement
   protocol so retention is measured, closing the SLR's central gap.
 
@@ -97,8 +97,8 @@ fixed inputs to this specification.
   [2], [`uv`-managed fresh Python 3.12 environment (not the system Python 3.14).],
   [3], [Full model comparison matrix, including classical baselines, tree ensembles, boosting libraries, and stacked ensembles.],
   [4], [`MLflow` for experiment tracking and model registry.],
-  [5], [CSV ingestion only for now; no live Learning Record Store until the DUT pilot.],
-  [6], [Secondary datasets (OULAD, UCI) deferred beyond the current paper.],
+  [5], [xAPI ingestion through the `lrsql` Learning Record Store, with a CSV fallback; the ARETE XR pilots are the second source.],
+  [6], [The ARETE augmented-reality xAPI pilots are the XR transfer demonstration; further secondary datasets (OULAD, UCI) deferred.],
 )
 
 #pagebreak()
@@ -130,12 +130,13 @@ layer is implemented as reusable scoring modules.
                   |
         +---------v---------------------------------------------+
         |  SERVICE LAYER (FastAPI + uvicorn + Pydantic)         |
-        |  /predict  /metrics  /importance  /trends  /health    |
+        |  /predict  /metrics  /importance  /trends  /xr/*     |
+        |  /model/diagnostics  /results  /evaluation  /health   |
         +---------+---------------------------------------------+
                   |
         +---------v---------------------------------------------+
         |  VISUALIZATION LAYER                                  |
-        |  React + Vite+ / Rolldown / Oxc (placeholder UI)      |
+        |  React + Vite+ / Rolldown / Oxc (tabbed dashboard)    |
         |  ui charts (Recharts) |  TanStack Query data          |
         +-------------------------------------------------------+
 
@@ -238,9 +239,9 @@ faster than the previous esbuild-plus-Rollup stack and remove tool drift by
 keeping configuration in one `vite.config.ts`. Charts use the design system's
 chart component (Recharts), which is more than adequate for a 480-row dataset.
 TanStack Query
-centralises fetching, caching, and loading states so the placeholder UI can be
-replaced by the production UI kit without touching data logic. The design
-system is delivered as a `shadcn/ui` component library (Base UI + Tailwind v4)
+centralises fetching, caching, and loading states so the dashboard can
+be re-skinned without touching data logic. The design system is delivered as a
+`shadcn/ui` component library (Base UI + Tailwind v4)
 under `ui/`, with a `Storybook` story for every component so the UI can be
 edited and reviewed visually; only the chart wrapper and API contract are
 fixed.
@@ -303,8 +304,10 @@ and `Weights & Biases` (hosted, rejected for data sovereignty and cost);
 == Task definition
 
 Supervised multi-class classification. Given 16 predictors describing a
-learner's demographics, academic context, and logged behaviour, predict the
-performance tier `Class` in `{Low, Medium, High}`.
+learner's demographics, academic context, and logged behaviour, predict a
+support band derived from the academic `Class` in `{Low, Medium, High}`. The
+classes are reported as priority-support, monitor, and on-track, and a
+cost-sensitive threshold can flag priority-support below the argmax.
 
 #table(
   columns: (auto, 1fr),
@@ -454,11 +457,17 @@ rejected with HTTP 422 before reaching the model.
   columns: (auto, auto, 1fr),
   table.header([*Method and path*], [*Purpose*], [*Returns*]),
   [`GET /health`], [Liveness and model-loaded check], [`{"status": "ok", "model_version": "..."}`],
-  [`POST /predict`], [Predict tier for one learner], [Predicted class, per-class probabilities, confidence],
+  [`POST /predict`], [Predict a support band for one learner], [Predicted class and support band, per-class probabilities, confidence],
   [`POST /predict/batch`], [Vectorized batch scoring], [List of predictions],
   [`GET /metrics`], [Evaluation metrics for the active model], [Accuracy, macro/weighted F1, CV mean and std, confusion matrix],
   [`GET /importance`], [Global feature importance and SHAP summary], [Ranked feature list with scores],
   [`GET /trends`], [Behavioural trends for dashboard charts], [Aggregated time/cohort series from the data layer],
+  [`GET /model/diagnostics`], [Out-of-fold model diagnostics], [ROC, PR, calibration, ECE, learning curves],
+  [`GET /results`], [Comparison matrix and sidecars], [Matrix, tuning, explain, evaluation payloads],
+  [`GET /xr/pilots`], [Known ARETE XR pilots], [Pilot metadata and download status],
+  [`GET /xr/trends`], [XR engagement over time], [Period buckets, verb counts, top activities],
+  [`GET /xr/risk`], [XR early-warning bands], [ROC-AUC, average precision, Brier, risk bands],
+  [`GET /evaluation`], [Longitudinal evaluation summary], [SUS, T0/T1/T2 learning and retention, or an empty state],
 )
 
 Operational choices: model loaded once at module scope, not per request;
@@ -469,14 +478,19 @@ scikit-learn version used for training is the version used for loading.
 
 = Visualization Layer Specification
 
-The dashboard is a thin client over the API. Views planned: performance-tier
-distribution, behavioural trend charts, feature-importance and SHAP panel, and
-model metric cards. Charts use the `ui` `ChartContainer` wrapper over Recharts,
+The dashboard is a thin client over the API. It has six tabs: Overview (metric
+cards, support-band distribution, trends, and the longitudinal impact panel),
+Predict (the support-band form), Data (the paged learner table), Diagnostics
+(comparison matrix, confusion and calibration, CV spread, importance), Explore
+(XR engagement trends, XR early-warning risk, the LMS-to-XR feature mapping,
+correlation, embedding, and partial dependence), and Studio (a chart builder
+with saved views). A persistent header selector switches the active data source
+between the LMS seed and the ARETE XR pilots, and the XR panels follow it.
+Charts use the `ui` `ChartContainer` wrapper over Recharts,
 so the library can be swapped behind one interface. TanStack
-Query owns all fetching, caching, and retry logic; mock JSON fixtures underpin
-development so the placeholder UI is fully functional before the production UI
-kit is dropped in. The UI kit itself is explicitly out of scope here and
-replaces only the presentation layer.
+Query owns all fetching, caching, and retry logic; empty states are explicit, so
+the dashboard is fully functional before any pilot data exists. The UI kit
+itself replaces only the presentation layer.
 
 = Evaluation Layer Specification
 
@@ -517,8 +531,8 @@ VR_Education_framework/
   api/
     main.py               # FastAPI app + startup model load
     schemas.py            # Pydantic request/response models
-    routes/               # predict, metrics, importance, trends
-  web/                    # Vite+ / React / TypeScript placeholder UI
+    routes/               # predict, metrics, trends, xr, evaluation, charts
+  web/                    # Vite+ / React / TypeScript dashboard
     components/           # ui Card/Badge/Chart panels over the API hooks
     src/api/              # TanStack Query hooks
   eval/
@@ -565,7 +579,7 @@ pass/fail exit gate. Phases 0--6 deliver the paper's technical claims; phases
   [8. Dashboard], [Vite+ / React / TS scaffold built on the ui components; ui Card/Badge/Chart panels; TanStack Query hooks], [All panels populated from live API; design system shared with the ui Storybook],
   [9. Evaluation harness], [SUS scorer; Cohen's d via pingouin with scipy fallback; T0/T1/T2 schemas and report templates], [Scorer unit tests pass against known SUS vectors; d matches hand calculation],
   [10. Hardening and documentation], [Docker Compose; CI workflow; coverage thresholds; README and runbooks; paper stack corrected to FastAPI], [One-command bring-up works; CI green; docs reviewed],
-  [11. Pilot integration (future)], [Point loader at DUT xAPI data; optional `lrsql`; run T0/T1; schedule T2], [T0/T1 reported; T2 scheduled, not fabricated],
+  [11. Pilot integration (future)], [Point loader at DUT xAPI data; run T0/T1 through the `lrsql` LRS; schedule T2], [T0/T1 reported; T2 scheduled, not fabricated],
 )
 
 == Sequencing rationale
@@ -689,5 +703,5 @@ the reason.
   [Observability], [`Prometheus` + `Grafana`], [Deferred --- note Grafana is AGPL-3.0],
   [Effect size], [`scipy` manual, `statsmodels`], [Kept as fallback; `pingouin` selected despite GPL-3 for completeness],
   [Frontend tooling], [`Vite 6` + `Rollup` + `esbuild`, `Vitest 2`], [Replaced by Vite+ (Vite 8 / Rolldown / Oxc) for speed and a single toolchain],
-  [CI], [`GitHub Actions`], [Planned once a remote is configured],
+  [CI], [`GitHub Actions`], [Configured: CI runs on every push and pull request],
 )

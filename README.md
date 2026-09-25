@@ -16,10 +16,10 @@ framework, not the framework itself.
 
 | Layer | Purpose | Module |
 | --- | --- | --- |
-| Data | Validated, versioned xAPI-schema data | `analytics/data.py`, `analytics/schema.py` |
-| Analytics | Predict Low/Medium/High tier; rank drivers | `analytics/` |
+| Data | Validated, versioned xAPI-schema data; ARETE XR pilots | `analytics/data.py`, `analytics/schema.py`, `analytics/xr.py` |
+| Analytics | Compare 16 models; predict a support/risk band; rank drivers | `analytics/` |
 | Service | Prediction and analytics REST API | `api/` |
-| Visualization | Dashboard over the API (placeholder UI) | `web/` |
+| Visualization | Tabbed dashboard over the API (Overview/Predict/Data/Diagnostics/Explore/Studio) | `web/` |
 | Evaluation | Accuracy/F1/CV, SUS, Cohen's d, T0/T1/T2 | `eval/` |
 
 The full design, rationale, alternatives, and phased build plan are in the
@@ -79,6 +79,7 @@ http://localhost:5173.
 | `make train ARGS='--all'` | Train the full comparison matrix |
 | `make train ARGS='--models svc knn'` | Train specific models |
 | `make train ARGS='--tune'` | Tune before fitting |
+| `make eval-report ARGS='--input pilot.json --store --source pilot'` | Build and store an evaluation report |
 | `uv run python -m analytics.train --list` | List every available model |
 | `uv run dvc repro` | Reproduce data + model from a clean checkout |
 
@@ -98,12 +99,13 @@ http://localhost:5173.
 
 | Command | What it does |
 | --- | --- |
-| `make docker-up` | Build and start api, web, postgres, and mlflow |
+| `make docker-up` | Build and start api, web, postgres, lrsql, and mlflow |
 | `make docker-down` | Stop the stack |
 | `make docker-logs` | Tail the stack logs |
 
 The containerized stack exposes the API on `:8000`, the dashboard on `:8080`,
-PostgreSQL on `:5432`, and MLflow on `:5000`.
+PostgreSQL on `:5432`, the Learning Record Store on `:8081`, and MLflow on
+`:5000`.
 
 ## Component library and Storybook
 
@@ -126,14 +128,30 @@ share one design system. See [`ui/README.md`](ui/README.md) for details.
 | --- | --- | --- |
 | `GET` | `/` | Service banner and endpoint list |
 | `GET` | `/health` | Liveness and model-loaded status |
+| `GET` | `/version` | App, model, and runtime versions |
 | `GET` | `/docs` | OpenAPI (Swagger) documentation |
-| `POST` | `/predict` | Predict a tier for one learner |
-| `POST` | `/predict/batch` | Vectorized tier prediction |
+| `POST` | `/predict` | Predict a support band for one learner |
+| `POST` | `/predict/batch` | Vectorized support-band prediction |
 | `GET` | `/metrics` | Active model metrics (503 until trained) |
 | `GET` | `/importance` | Native + SHAP importance (503 until trained) |
-| `GET` | `/trends` | Class counts and behaviour by tier |
+| `GET` | `/trends` | Class counts and behaviour by band |
+| `GET` | `/learners` | Paged learner table |
+| `GET` | `/options` | Categorical option sets |
+| `GET` | `/results` | Model comparison matrix + tuning/explain/evaluation |
+| `GET` | `/model/diagnostics` | ROC, PR, calibration, ECE, learning curves |
+| `GET` | `/analytics/columns` | Queryable columns for Chart Studio |
+| `POST` | `/analytics/query` | Server-side aggregation query |
+| `GET` | `/analytics/correlation` | Correlation matrix |
+| `GET` | `/analytics/distribution` | Feature distribution |
+| `GET` | `/analytics/embedding` | PCA embedding and clusters |
+| `GET` | `/model/pdp` | Partial dependence for a feature |
+| `GET` | `/charts` | Saved Chart Studio views |
+| `POST` | `/charts` | Save a Chart Studio view |
+| `DELETE` | `/charts/{name}` | Delete a Chart Studio view |
 | `GET` | `/xr/pilots` | Known ARETE XR pilots and whether downloaded |
 | `GET` | `/xr/trends` | Engagement over time for an XR pilot |
+| `GET` | `/xr/risk` | Early-warning engagement/risk bands for a pilot |
+| `GET` | `/evaluation` | Longitudinal SUS + T0/T1/T2 summary from the store |
 
 The service starts even without a trained model; prediction and metrics routes
 return `503` with a clear message until `make train` has been run.
@@ -195,7 +213,7 @@ tailscale serve --bg --yes --http=6006 http://localhost:6006
 
 GitHub Actions runs on every push and pull request (`.github/workflows/ci.yml`):
 
-- **python** — `uv sync`, ruff, mypy, Alembic against a Postgres service, pytest
+- **python** — `uv sync`, ruff, mypy, Alembic against a Postgres service, pytest, clean-checkout reproduction check
 - **web** — pnpm install, `vp check`, vitest, `vp build`
 - **ui** — static Storybook build
 - **docker** — builds the API and web images (with layer caching)
@@ -220,7 +238,15 @@ Developer tools run behind a Compose profile: `docker compose --profile tools up
 ## Data
 
 `data/raw/xAPI-Edu-Data.csv` — the xAPI Educational Mining Dataset (Kalboard
-360), 480 records, 127 Low / 211 Medium / 142 High, CC BY-SA 4.0.
+360), 480 records, 127 Low / 211 Medium / 142 High, CC BY-SA 4.0. It is K-12 LMS
+data and is **not XR**; it prototypes the analytics layer. The model's
+Low/Medium/High classes are reported as support bands (priority-support, monitor,
+on-track).
+
+The XR side uses the **ARETE** augmented-reality xAPI pilots (five files across
+four pilots, CC BY 4.0), downloaded with `make fetch-arete` and used for
+engagement trends and an early-warning risk model. See
+[`docs/datasets.md`](docs/datasets.md).
 
 ## License
 

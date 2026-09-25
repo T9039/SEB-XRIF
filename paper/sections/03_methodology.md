@@ -38,19 +38,27 @@ A public dataset addresses the single-cohort median of 30 and supports reproduct
 extension. The records are primary and secondary school level and therefore prototype the
 analytics layer only.
 
+**Scope and transfer.** The bundled dataset is not XR: it is classroom LMS data and the
+target is a general academic band. The claim is not that this model predicts XR outcomes,
+but that the pipeline is schema-driven: the same analytics run once the feature set is
+swapped, because both sources are Experience API statements. To test that, the study also
+ingests the public ARETE augmented-reality xAPI pilots and runs the same code on them,
+reporting support bands rather than judging the learner. XR outcome validation remains the
+DUT pilot.
+
 ## 3.3 Design and Development
 
 Design plans four layers with a pipeline from raw data through preprocessing, stratified
-split, and Random Forest to predicted tiers. Preprocessing applies one-hot encoding to
-categorical variables and retains behavioural counts, as tree models do not require
-scaling.
+split, and Random Forest to predicted support bands. Preprocessing applies one-hot
+encoding to categorical variables and retains behavioural counts, as tree models do not
+require scaling.
 
 Tool selection follows the literature review theoretical evaluation, which ranked Random
 Forest strongest. The ensemble resists noise and overfitting and ranks feature importance,
 expected to highlight raised hands and visited resources. Configuration is 100 trees,
 balanced weights, and a fixed seed, with stratified 80 percent training and 20 percent
-testing. The demonstration dashboard uses FastAPI, React, and the ui design-system chart (Recharts) to show trends, tiers,
-and importance.
+testing. The demonstration dashboard uses FastAPI, React, and the ui design-system chart (Recharts) to show trends, support bands,
+and importance, and to switch between the LMS seed and the XR pilots.
 
 ## 3.4 Evaluation Criteria
 

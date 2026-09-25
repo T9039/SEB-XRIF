@@ -15,7 +15,7 @@ pipeline for another, and new institutions start from an existing, tested
 foundation rather than building their own.
 
 **Earlier support for learners.** The analytics layer turns logged behaviour
-into an early, explainable indication of performance tier, letting instructors
+into an early, explainable support band, letting instructors
 direct support before a course ends. The framing is deliberately supportive:
 the model ranks the behaviours that matter rather than deciding outcomes.
 

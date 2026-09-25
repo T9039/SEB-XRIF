@@ -19,6 +19,12 @@ predictions, and evaluations, created by Alembic migrations. The API reads
 learners from the database when it is populated and falls back to the bundled CSV
 otherwise, so the same code runs in development and in deployment.
 
+The same data contract ingests the public ARETE augmented-reality pilots. Their
+Learning Locker exports differ in delimiter, column names, encodings, and result
+shape; the adapter normalises all of it, maps raw verbs onto stable behaviour
+classes, and reconstructs per-learner engagement features validated against the
+XR schema.
+
 ## 5.2 Analytics layer
 
 A single scikit-learn pipeline applies one-hot encoding to categorical
@@ -29,22 +35,33 @@ Hyperparameters are tuned with Optuna, and the Random Forest (100 trees, balance
 class weights, fixed seed) is promoted as the framework default. Interpretability
 combines native importance, cross-fold permutation importance, and SHAP.
 
+The class labels are reported as support bands, and a cost-sensitive rule can
+flag the priority band below the argmax. The comparison matrix reports 95 percent
+confidence intervals, diagnostics report calibration (reliability, Brier, and
+expected calibration error), and a second model predicts XR engagement drop-off
+from early-session behaviour with cross-validated ROC-AUC.
+
 ## 5.3 Service layer
 
 A FastAPI service exposes single and batch prediction, model metrics, feature
 importance, behavioural trends, a paged learner table, categorical option sets,
-health, and version endpoints. It loads the model once at startup, from a local
-artifact or the MLflow model registry, validates every request, emits structured
-logs with request identifiers, and returns a consistent error envelope.
+the model comparison matrix, diagnostics, Chart Studio queries, the individual
+ARETE pilots, XR engagement trends, XR early-warning risk, and a longitudinal
+evaluation summary. It loads the model once at startup, from a local artifact or
+the MLflow model registry, validates every request, emits structured logs with
+request identifiers, and returns a consistent error envelope.
 
 ## 5.4 Visualization layer
 
 The dashboard is a React application built with Vite+ on a shared shadcn/ui
-component library that also drives its own Storybook. Reflecting the layers
-above, it is organised into a side panel with four sections: Overview, Predict,
-Data, and Diagnostics. The Predict section posts the sixteen predictors to the
-service and returns the tier with per-class probabilities; the Diagnostics
-section reports the confusion matrix and cross-validation spread.
+component library that also drives its own Storybook. It has six tabs — Overview,
+Predict, Data, Diagnostics, Explore, and Studio — and a persistent header
+selector that switches the active data source between the LMS seed and the five
+ARETE XR pilots. Predict returns the support band with per-class probabilities;
+Diagnostics reports the confusion matrix, calibration, and cross-validation
+spread; Explore shows the ARETE engagement trends, XR early-warning risk, and the
+LMS-to-XR feature mapping; Overview shows the longitudinal impact panel, empty
+until pilot data is imported.
 
 ## 5.5 Reproducibility and tooling
 

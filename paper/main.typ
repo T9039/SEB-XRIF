@@ -11,11 +11,11 @@
 
 #set page(
   paper: "a4",
-  margin: (x: 1.7cm, y: 1.8cm),
+  margin: (x: 1.6cm, y: 1.6cm),
   numbering: "1",
 )
 #set text(font: "New Computer Modern", size: 9.5pt)
-#set par(justify: true, leading: 0.62em)
+#set par(justify: true, leading: 0.55em)
 #show heading.where(level: 1): set text(size: 14pt, weight: "bold")
 #show heading.where(level: 2): set text(size: 12pt, weight: "bold")
 #show heading.where(level: 3): set text(size: 11pt, weight: "bold", style: "italic")
