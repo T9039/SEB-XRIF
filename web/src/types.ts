@@ -193,3 +193,23 @@ export interface XrTrends {
   verb_class_counts: Record<string, number>;
   top_objects: { name: string; count: number }[];
 }
+
+export interface XrRisk {
+  pilot: string;
+  description: string;
+  licence: string;
+  doi: string;
+  available: boolean;
+  reason?: string;
+  n: number;
+  positives?: number;
+  folds?: number;
+  roc_auc?: number;
+  average_precision?: number;
+  brier?: number;
+  features?: string[];
+  importances?: Record<string, number>;
+  bands?: Record<string, number>;
+  support_bands?: Record<string, string>;
+  learners?: { learner: string; risk: number; band: string }[];
+}

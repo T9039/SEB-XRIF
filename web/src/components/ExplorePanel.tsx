@@ -19,6 +19,7 @@ import { ParallelCoordinates } from "../charts/ParallelCoordinates";
 import type { Row } from "../charts/data";
 import { PanelMessage, PanelSkeleton } from "./panel-states";
 import { XrTrendsPanel } from "./XrTrendsPanel";
+import { XrRiskPanel } from "./XrRiskPanel";
 
 const BEHAVIOURS = ["raisedhands", "VisITedResources", "AnnouncementsView", "Discussion"];
 
@@ -194,6 +195,7 @@ export function ExplorePanel() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <XrTrendsPanel />
+      <XrRiskPanel />
       <CorrelationPanel />
       <BoxPanel />
       <ParallelPanel />

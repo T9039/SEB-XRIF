@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Query
 
-from analytics import xr
+from analytics import xr, xr_risk
 
 router = APIRouter(tags=["xr"])
 
@@ -48,4 +48,27 @@ def xr_trends(
         "licence": xr.ARETE_LICENCE,
         "doi": xr.ARETE_DOI,
         **trends,
+    }
+
+
+@router.get("/xr/risk")
+def xr_risk_route(
+    pilot: str = Query("pbis", description="ARETE pilot name."),
+    folds: int = Query(5, ge=2, le=10, description="Cross-validation folds."),
+) -> dict:
+    """Early-warning engagement/risk band predictions for one XR pilot."""
+    try:
+        statements, meta = xr.load_pilot(pilot)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    payload = xr_risk.analyse(statements, key=pilot, folds=folds)
+    return {
+        "pilot": meta.name,
+        "description": meta.description,
+        "licence": xr.ARETE_LICENCE,
+        "doi": xr.ARETE_DOI,
+        **payload,
     }

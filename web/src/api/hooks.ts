@@ -18,6 +18,7 @@ import type {
   SavedChartView,
   Trends,
   XrPilotsPayload,
+  XrRisk,
   XrTrends,
 } from "../types";
 
@@ -161,6 +162,14 @@ export function useXrTrends(pilot = "pbis", freq = "W") {
   return useQuery({
     queryKey: ["xr-trends", pilot, freq],
     queryFn: async () => (await api.get<XrTrends>("/xr/trends", { params: { pilot, freq } })).data,
+    retry: false,
+  });
+}
+
+export function useXrRisk(pilot = "pbis", folds = 5) {
+  return useQuery({
+    queryKey: ["xr-risk", pilot, folds],
+    queryFn: async () => (await api.get<XrRisk>("/xr/risk", { params: { pilot, folds } })).data,
     retry: false,
   });
 }
