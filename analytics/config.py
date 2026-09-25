@@ -42,6 +42,7 @@ class Settings:
     lrs_endpoint: str = "http://localhost:8081/xapi"
     lrs_key: str = "seb-xrif-lrs"
     lrs_secret: str = "seb-xrif-secret"
+    dataset: str = "kalboard"
 
     def resolve_database_url(self) -> str:
         """Return the application database URL, preferring the environment."""

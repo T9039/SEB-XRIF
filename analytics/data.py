@@ -13,21 +13,22 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from .config import Settings, get_settings
-from .schema import SCHEMA
+from .datasets.kalboard import KalboardAdapter
+from .datasets.registry import get_adapter
+
+_kalboard = KalboardAdapter()
 
 
 def load_raw(
     path: Path | str | None = None, settings: Settings | None = None
 ) -> pd.DataFrame:
     """Load the raw learner table from CSV."""
-    settings = settings or get_settings()
-    csv_path = Path(path) if path else settings.raw_path
-    return pd.read_csv(csv_path)
+    return _kalboard.load_raw(path, settings)
 
 
 def validate(df: pd.DataFrame) -> pd.DataFrame:
     """Validate the table against the pandera schema, returning a coerced copy."""
-    return SCHEMA.validate(df, lazy=True)
+    return _kalboard.validate(df)
 
 
 def load_validated(
@@ -45,25 +46,13 @@ def read_learners(
     Prefers the application database when it holds learners, and falls back to
     the bundled CSV. The returned source is ``"database"`` or ``"csv"``.
     """
-    settings = settings or get_settings()
-    if prefer_db:
-        try:
-            from .db import get_engine, learners_frame
-
-            frame = learners_frame(get_engine())
-            if not frame.empty:
-                return validate(frame), "database"
-        except Exception:  # noqa: BLE001 - fall back to the CSV seed
-            pass
-    return validate(load_raw(settings=settings)), "csv"
+    return _kalboard.read_learners(settings, prefer_db)
 
 
 def load_source(settings: Settings | None = None) -> tuple[pd.DataFrame, str]:
-    """Return the configured training source (``settings.data_source``)."""
+    """Return the configured dataset via its adapter (``settings.dataset``)."""
     settings = settings or get_settings()
-    if settings.data_source == "db":
-        return read_learners(settings, prefer_db=True)
-    return validate(load_raw(settings=settings)), "csv"
+    return get_adapter(settings.dataset).load(settings)
 
 
 def features_and_target(

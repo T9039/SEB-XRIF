@@ -5,8 +5,8 @@ stages:
     deps:
     - path: analytics/data.py
       hash: md5
-      md5: 1a453abdb5c10571d161ac1136ea2822
-      size: 3897
+      md5: 2624af6cfd1f3772cccf8a57eea211dc
+      size: 3461
     - path: analytics/schema.py
       hash: md5
       md5: 91937d2996ec17a067d3c7229369964d
@@ -25,9 +25,9 @@ stages:
     deps:
     - path: analytics
       hash: md5
-      md5: 7a60f2d3491e22733e12b0ebd29c0daa.dir
-      size: 96261
-      nfiles: 19
+      md5: db2ad6f19a3c28a9b6892a3bd72387dc.dir
+      size: 100619
+      nfiles: 23
     - path: data/raw/xAPI-Edu-Data.csv
       hash: md5
       md5: 24b17c0a18b445c6f18eb28c95540d77
