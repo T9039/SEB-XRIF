@@ -228,3 +228,12 @@ export interface EvaluationPayload {
   };
   learning?: Record<string, number | null>;
 }
+
+export interface XrLearnerPage {
+  pilot: string;
+  description: string;
+  licence: string;
+  total: number;
+  columns: string[];
+  rows: Record<string, string | number>[];
+}

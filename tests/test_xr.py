@@ -129,6 +129,29 @@ def test_xr_trends_endpoint_serves_each_pilot(monkeypatch, pilot, fixture):
     assert len(body["period_start"]) == len(body["active_learners_by_period"])
 
 
+def test_xr_learners_rows_are_validated_features():
+    statements = xr.parse_statements(FIXTURES["pbis"])
+    payload = xr.learner_rows(statements, limit=10, offset=0)
+    assert payload["total"] == statements["learner"].nunique()
+    assert len(payload["rows"]) == 10
+    assert "learner" in payload["columns"]
+    assert "verb_interaction" in payload["columns"]
+    first = payload["rows"][0]
+    assert isinstance(first["events"], int)
+    assert isinstance(first["events_per_active_day"], float)
+
+
+def test_xr_learners_endpoint_paginates(monkeypatch):
+    monkeypatch.setattr(xr, "pilot_path", lambda p, settings=None: FIXTURES[p.name])
+    response = TestClient(app).get("/xr/learners", params={"pilot": "pbis", "limit": 5})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["pilot"] == "pbis"
+    assert len(body["rows"]) == 5
+    assert body["total"] > 5
+    assert "verb_progress" in body["columns"]
+
+
 def test_xr_trends_missing_pilot_is_503(monkeypatch, tmp_path):
     monkeypatch.setattr(
         xr, "pilot_path", lambda pilot, settings=None: tmp_path / "missing.csv"

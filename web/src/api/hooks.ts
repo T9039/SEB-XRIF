@@ -20,6 +20,7 @@ import type {
   Trends,
   XrPilotsPayload,
   XrRisk,
+  XrLearnerPage,
   XrTrends,
 } from "../types";
 
@@ -175,6 +176,20 @@ export function useXrRisk(pilot = "pbis", folds = 5, enabled = true) {
     retry: false,
   });
 }
+export function useXrLearners(pilot = "pbis", limit = 50, offset = 0, enabled = true) {
+  return useQuery({
+    queryKey: ["xr-learners", pilot, limit, offset],
+    queryFn: async () =>
+      (
+        await api.get<XrLearnerPage>("/xr/learners", {
+          params: { pilot, limit, offset },
+        })
+      ).data,
+    enabled,
+    retry: false,
+  });
+}
+
 export function useEvaluation() {
   return useQuery({
     queryKey: ["evaluation"],

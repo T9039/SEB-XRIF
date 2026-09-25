@@ -51,6 +51,29 @@ def xr_trends(
     }
 
 
+@router.get("/xr/learners")
+def xr_learners(
+    pilot: str = Query("pbis", description="ARETE pilot name."),
+    limit: int = Query(50, ge=1, le=500, description="Rows per page."),
+    offset: int = Query(0, ge=0, description="Row offset."),
+) -> dict:
+    """Return a page of the validated per-learner XR engagement frame."""
+    try:
+        statements, meta = xr.load_pilot(pilot)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    payload = xr.learner_rows(statements, limit=limit, offset=offset)
+    return {
+        "pilot": meta.name,
+        "description": meta.description,
+        "licence": xr.ARETE_LICENCE,
+        **payload,
+    }
+
+
 @router.get("/xr/risk")
 def xr_risk_route(
     pilot: str = Query("pbis", description="ARETE pilot name."),

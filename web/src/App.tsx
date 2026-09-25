@@ -1,20 +1,18 @@
 import { Activity, BarChart3, Compass, LayoutDashboard, Sparkles, Table2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@humanity-erp/ui";
 import { ChartStudio } from "./components/ChartStudio";
-import { ExplorePanel } from "./components/ExplorePanel";
-import { EvaluationPanel } from "./components/EvaluationPanel";
 import { ClassificationQuality } from "./components/ClassificationQuality";
 import { CvSpread } from "./components/CvSpread";
+import { DataPanel } from "./components/DataPanel";
+import { ExplorePanel } from "./components/ExplorePanel";
 import { HealthBadge } from "./components/HealthBadge";
 import { ImportancePanel } from "./components/ImportancePanel";
-import { LearnerTable } from "./components/LearnerTable";
-import { MetricCards } from "./components/MetricCards";
 import { ModelDiagnostics } from "./components/ModelDiagnostics";
 import { ModelResultsTable } from "./components/ModelResultsTable";
+import { OverviewPanel } from "./components/OverviewPanel";
 import { PredictionForm } from "./components/PredictionForm";
+import { SourceGate } from "./components/SourceGate";
 import { SourceSelector } from "./components/SourceSelector";
-import { TierDistribution } from "./components/TierDistribution";
-import { TrendChart } from "./components/TrendChart";
 import { SourceProvider } from "./lib/source-context";
 
 const NAV = [
@@ -60,34 +58,31 @@ export default function App() {
           </TabsList>
 
           <TabsContent value="overview" className="min-w-0 flex-1">
-            <div className="flex flex-col gap-4">
-              <MetricCards />
-              <div className="grid gap-4 lg:grid-cols-2">
-                <TierDistribution />
-                <TrendChart />
-              </div>
-              <EvaluationPanel />
-            </div>
+            <OverviewPanel />
           </TabsContent>
 
           <TabsContent value="predict" className="min-w-0 flex-1">
-            <PredictionForm />
+            <SourceGate surface="Prediction">
+              <PredictionForm />
+            </SourceGate>
           </TabsContent>
 
           <TabsContent value="data" className="min-w-0 flex-1">
-            <LearnerTable />
+            <DataPanel />
           </TabsContent>
 
           <TabsContent value="diagnostics" className="min-w-0 flex-1">
-            <div className="flex flex-col gap-4">
-              <ModelResultsTable />
-              <ClassificationQuality />
-              <ModelDiagnostics />
-              <div className="grid gap-4 lg:grid-cols-2">
-                <CvSpread />
-                <ImportancePanel />
+            <SourceGate surface="Diagnostics">
+              <div className="flex flex-col gap-4">
+                <ModelResultsTable />
+                <ClassificationQuality />
+                <ModelDiagnostics />
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <CvSpread />
+                  <ImportancePanel />
+                </div>
               </div>
-            </div>
+            </SourceGate>
           </TabsContent>
 
           <TabsContent value="explore" className="min-w-0 flex-1">
@@ -95,7 +90,9 @@ export default function App() {
           </TabsContent>
 
           <TabsContent value="studio" className="min-w-0 flex-1">
-            <ChartStudio />
+            <SourceGate surface="Chart Studio">
+              <ChartStudio />
+            </SourceGate>
           </TabsContent>
         </Tabs>
       </div>

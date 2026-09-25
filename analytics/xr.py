@@ -372,6 +372,21 @@ def validate_features(features: pd.DataFrame) -> pd.DataFrame:
     return LEARNER_SCHEMA.validate(features, lazy=True)
 
 
+def learner_rows(statements: pd.DataFrame, limit: int = 50, offset: int = 0) -> dict:
+    """Return a page of the validated per-learner engagement frame."""
+    features = validate_features(derive_learner_features(statements))
+    total = int(len(features))
+    page = features.iloc[offset : offset + limit]
+    rows = [
+        {
+            key: (value.item() if hasattr(value, "item") else value)
+            for key, value in record.items()
+        }
+        for record in page.to_dict(orient="records")
+    ]
+    return {"total": total, "columns": list(features.columns), "rows": rows}
+
+
 def engagement_trends(statements: pd.DataFrame, freq: str = "W") -> dict:
     """Summarise engagement over time for a statement frame."""
     offset = _FREQ.get(freq.upper())
