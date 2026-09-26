@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@humanity-erp/ui";
 import { useMetrics } from "../api/hooks";
+import { useSource } from "../lib/source-context";
 import { cellIntensity, classMetrics } from "../lib/metrics";
 import { PanelMessage, PanelSkeleton } from "./panel-states";
 
@@ -25,7 +26,8 @@ interface MetricsPayload {
 const CELL = "68,114,196";
 
 export function ClassificationQuality() {
-  const { data, isLoading, isError } = useMetrics();
+  const { sourceId } = useSource();
+  const { data, isLoading, isError } = useMetrics(sourceId);
 
   if (isLoading) return <PanelSkeleton title="Classification quality" />;
   if (isError || !data) {

@@ -1,4 +1,4 @@
-export type SourceKind = "lms" | "xr";
+export type SourceKind = "lms" | "xr" | "generic";
 
 export interface DataSource {
   id: string;

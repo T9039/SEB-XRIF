@@ -15,6 +15,7 @@ from analytics.xapi import build_statements, learner_id
 from api import model_store
 from api.main import app
 from api.routes import diagnostics as diagnostics_route
+from api.routes import predict as predict_route
 
 SOURCE = "serve-pilot"
 
@@ -58,6 +59,7 @@ def _prepare(tmp_path, monkeypatch):
     train_source(SOURCE, settings, models=["decision_tree"], no_mlflow=True)
     monkeypatch.setattr(model_store, "get_analytics_settings", lambda: settings)
     monkeypatch.setattr(diagnostics_route, "get_settings", lambda: settings)
+    monkeypatch.setattr(predict_route, "get_settings", lambda: settings)
     model_store.clear_stores()
     return settings
 
@@ -89,3 +91,16 @@ def test_unknown_source_has_no_metrics(tmp_path, monkeypatch):
     _prepare(tmp_path, monkeypatch)
     client = TestClient(app)
     assert client.get("/metrics?source=does-not-exist").status_code == 503
+
+
+def test_model_features_describe_the_source(tmp_path, monkeypatch):
+    _prepare(tmp_path, monkeypatch)
+    client = TestClient(app)
+    body = client.get(f"/model/features?source={SOURCE}").json()
+    assert body["source"] == SOURCE
+    assert body["target"] == "Class"
+    assert "raisedhands" in body["features"]
+    assert "gender" in body["categorical"]
+    assert "raisedhands" in body["numeric"]
+    assert body["options"]["gender"]
+    assert client.get("/model/features?source=nope").status_code == 404

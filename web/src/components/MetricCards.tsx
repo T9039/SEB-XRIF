@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, Skeleton } from "@humanity-erp/ui";
 import { useMetrics } from "../api/hooks";
+import { useSource } from "../lib/source-context";
 
 function format(value: unknown): string {
   if (typeof value === "number") {
@@ -9,7 +10,8 @@ function format(value: unknown): string {
 }
 
 export function MetricCards() {
-  const { data, isLoading, isError } = useMetrics();
+  const { sourceId } = useSource();
+  const { data, isLoading, isError } = useMetrics(sourceId);
 
   if (isError) {
     return (

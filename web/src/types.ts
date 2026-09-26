@@ -249,3 +249,13 @@ export interface DatasetSource {
 export interface DatasetList {
   sources: DatasetSource[];
 }
+
+export interface ModelFeatures {
+  source: string;
+  target: string | null;
+  class_labels: string[];
+  features: string[];
+  categorical: string[];
+  numeric: string[];
+  options: Record<string, string[]>;
+}

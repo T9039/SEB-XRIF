@@ -11,6 +11,7 @@ import {
   type ChartConfig,
 } from "@humanity-erp/ui";
 import { useMetrics } from "../api/hooks";
+import { useSource } from "../lib/source-context";
 import { PanelMessage, PanelSkeleton } from "./panel-states";
 
 const config = {
@@ -24,7 +25,8 @@ interface CvPayload {
 }
 
 export function CvSpread() {
-  const { data, isLoading, isError } = useMetrics();
+  const { sourceId } = useSource();
+  const { data, isLoading, isError } = useMetrics(sourceId);
 
   if (isLoading) return <PanelSkeleton title="Cross-validation spread" />;
   if (isError || !data) {

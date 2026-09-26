@@ -13,6 +13,7 @@ import type {
   LearnerOptions,
   LearnerPage,
   Metrics,
+  ModelFeatures,
   PredictionRequest,
   PredictionResponse,
   ResultsPayload,
@@ -39,24 +40,26 @@ export function useTrends() {
   });
 }
 
-export function useMetrics() {
+export function useMetrics(source = "kalboard") {
   return useQuery({
-    queryKey: ["metrics"],
-    queryFn: async () => (await api.get<Metrics>("/metrics")).data,
+    queryKey: ["metrics", source],
+    queryFn: async () => (await api.get<Metrics>("/metrics", { params: { source } })).data,
+    retry: false,
   });
 }
 
-export function useImportance() {
+export function useImportance(source = "kalboard") {
   return useQuery({
-    queryKey: ["importance"],
-    queryFn: async () => (await api.get<Importance>("/importance")).data,
+    queryKey: ["importance", source],
+    queryFn: async () => (await api.get<Importance>("/importance", { params: { source } })).data,
+    retry: false,
   });
 }
 
-export function usePredict() {
+export function usePredict(source = "kalboard") {
   return useMutation({
     mutationFn: async (payload: PredictionRequest) =>
-      (await api.post<PredictionResponse>("/predict", payload)).data,
+      (await api.post<PredictionResponse>("/predict", payload, { params: { source } })).data,
   });
 }
 
@@ -86,10 +89,20 @@ export function useResults() {
   });
 }
 
-export function useDiagnostics() {
+export function useDiagnostics(source = "kalboard") {
   return useQuery({
-    queryKey: ["diagnostics"],
-    queryFn: async () => (await api.get<DiagnosticsPayload>("/model/diagnostics")).data,
+    queryKey: ["diagnostics", source],
+    queryFn: async () =>
+      (await api.get<DiagnosticsPayload>("/model/diagnostics", { params: { source } })).data,
+    retry: false,
+  });
+}
+
+export function useModelFeatures(source = "kalboard") {
+  return useQuery({
+    queryKey: ["model-features", source],
+    queryFn: async () =>
+      (await api.get<ModelFeatures>("/model/features", { params: { source } })).data,
     retry: false,
   });
 }

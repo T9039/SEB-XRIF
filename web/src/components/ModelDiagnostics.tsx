@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@humanity-erp/ui";
 import { useDiagnostics } from "../api/hooks";
+import { useSource } from "../lib/source-context";
 import { ChartRenderer } from "../charts/ChartRenderer";
 import { PanelMessage, PanelSkeleton } from "./panel-states";
 
@@ -18,7 +19,8 @@ function CurveBlock({ title, children }: { title: string; children: ReactNode })
 }
 
 export function ModelDiagnostics() {
-  const { data, isLoading, isError } = useDiagnostics();
+  const { sourceId } = useSource();
+  const { data, isLoading, isError } = useDiagnostics(sourceId);
 
   if (isLoading) return <PanelSkeleton title="Model diagnostics" />;
   if (isError || !data) {

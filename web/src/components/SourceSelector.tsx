@@ -1,16 +1,34 @@
+import { useMemo } from "react";
 import { Badge, Label, NativeSelect, NativeSelectOption } from "@humanity-erp/ui";
+import { useDatasets } from "../api/hooks";
 import { useSource } from "../lib/source-context";
-import { DATA_SOURCES } from "../lib/sources";
+import { DATA_SOURCES, type DataSource } from "../lib/sources";
 
 /** Persistent data-source selector shown in the dashboard header. */
 export function SourceSelector() {
   const { source, sourceId, setSourceId } = useSource();
+  const datasets = useDatasets();
+
+  const options = useMemo(() => {
+    const known = new Map<string, DataSource>(DATA_SOURCES.map((entry) => [entry.id, entry]));
+    for (const entry of datasets.data?.sources ?? []) {
+      if (!known.has(entry.name)) {
+        known.set(entry.name, {
+          id: entry.name,
+          kind: "generic",
+          label: `${entry.name} (${entry.kind})`,
+          description: entry.description,
+        });
+      }
+    }
+    return Array.from(known.values());
+  }, [datasets.data]);
+
+  const kindLabel = source.kind === "xr" ? "XR" : source.kind === "lms" ? "LMS" : "DATA";
 
   return (
     <div className="flex items-center gap-3">
-      <Badge variant={source.kind === "xr" ? "default" : "secondary"}>
-        {source.kind === "xr" ? "XR" : "LMS"}
-      </Badge>
+      <Badge variant={source.kind === "xr" ? "default" : "secondary"}>{kindLabel}</Badge>
       <div className="flex flex-col gap-1">
         <Label htmlFor="data-source" className="text-xs text-muted-foreground">
           Data source
@@ -21,7 +39,7 @@ export function SourceSelector() {
           onChange={(event) => setSourceId(event.target.value)}
           className="w-64"
         >
-          {DATA_SOURCES.map((option) => (
+          {options.map((option) => (
             <NativeSelectOption key={option.id} value={option.id}>
               {option.label}
             </NativeSelectOption>

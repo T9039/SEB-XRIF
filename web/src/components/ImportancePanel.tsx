@@ -10,6 +10,7 @@ import {
   type ChartConfig,
 } from "@humanity-erp/ui";
 import { useImportance } from "../api/hooks";
+import { useSource } from "../lib/source-context";
 import { PanelMessage, PanelSkeleton } from "./panel-states";
 
 const config = {
@@ -17,7 +18,8 @@ const config = {
 } satisfies ChartConfig;
 
 export function ImportancePanel() {
-  const { data, isLoading, isError } = useImportance();
+  const { sourceId } = useSource();
+  const { data, isLoading, isError } = useImportance(sourceId);
 
   if (isLoading) return <PanelSkeleton title="Top behavioural drivers" />;
   if (isError || !data) {

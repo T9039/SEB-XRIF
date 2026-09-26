@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
-import { DEFAULT_SOURCE_ID, getSource, type DataSource } from "./sources";
+import { DATA_SOURCES, DEFAULT_SOURCE_ID, type DataSource } from "./sources";
 
 interface SourceContextValue {
   sourceId: string;
@@ -18,7 +18,16 @@ export function SourceProvider({
   initial?: string;
 }) {
   const [sourceId, setSourceId] = useState(initial);
-  const value = useMemo(() => ({ sourceId, source: getSource(sourceId), setSourceId }), [sourceId]);
+  const value = useMemo(() => {
+    const known = DATA_SOURCES.find((source) => source.id === sourceId);
+    const source: DataSource = known ?? {
+      id: sourceId,
+      kind: "generic",
+      label: sourceId,
+      description: "",
+    };
+    return { sourceId, source, setSourceId };
+  }, [sourceId]);
   return <SourceContext.Provider value={value}>{children}</SourceContext.Provider>;
 }
 
