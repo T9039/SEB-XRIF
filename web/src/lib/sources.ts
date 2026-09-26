@@ -79,3 +79,25 @@ export function getSource(id: string): DataSource {
 export function isXrSource(id: string): boolean {
   return getSource(id).kind === "xr";
 }
+
+export interface ApiSource {
+  name: string;
+  kind: string;
+  description: string;
+}
+
+/** Merge API-listed sources with the built-ins, marking unknown ones generic. */
+export function mergeSources(extra: ApiSource[]): DataSource[] {
+  const known = new Map<string, DataSource>(DATA_SOURCES.map((source) => [source.id, source]));
+  for (const entry of extra) {
+    if (!known.has(entry.name)) {
+      known.set(entry.name, {
+        id: entry.name,
+        kind: "generic",
+        label: `${entry.name} (${entry.kind})`,
+        description: entry.description,
+      });
+    }
+  }
+  return Array.from(known.values());
+}

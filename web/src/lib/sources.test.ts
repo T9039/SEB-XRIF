@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { DATA_SOURCES, DEFAULT_SOURCE_ID, FEATURE_MAPPING, getSource, isXrSource } from "./sources";
+import {
+  DATA_SOURCES,
+  DEFAULT_SOURCE_ID,
+  FEATURE_MAPPING,
+  getSource,
+  isXrSource,
+  mergeSources,
+} from "./sources";
 
 describe("data sources", () => {
   it("lists the LMS prototype and the five ARETE pilots", () => {
@@ -22,6 +29,20 @@ describe("data sources", () => {
 
   it("falls back to the default for an unknown id", () => {
     expect(getSource("does-not-exist").id).toBe(DEFAULT_SOURCE_ID);
+  });
+});
+
+describe("mergeSources", () => {
+  it("adds uploaded sources as generic and keeps the built-ins", () => {
+    const merged = mergeSources([
+      { name: "kalboard", kind: "builtin", description: "" },
+      { name: "my-upload", kind: "upload", description: "demo" },
+    ]);
+    expect(merged.map((entry) => entry.id)).toContain("my-upload");
+    expect(merged.map((entry) => entry.id)).toContain("kalboard");
+    expect(merged.filter((entry) => entry.id === "kalboard")).toHaveLength(1);
+    expect(merged.find((entry) => entry.id === "my-upload")?.kind).toBe("generic");
+    expect(merged.find((entry) => entry.id === "my-upload")?.label).toContain("my-upload");
   });
 });
 

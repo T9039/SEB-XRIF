@@ -83,3 +83,51 @@ the feature set is mapped.
 | `AnnouncementsView` | task briefings read | `read` |
 | `Discussion` | collaborative VR activity | `joined` |
 | `StudentAbsenceDays` | VR session attendance / drop-off | `started` vs `left` |
+
+## Sources and adapters
+
+A **dataset adapter** (`analytics/datasets/`) turns one source into a canonical
+`Dataset`: the feature frame plus its feature columns, target, class labels, and
+which columns are categorical versus numeric. The pipeline reads all of that from
+the adapter, so a new source is a new adapter rather than a branch in the model
+code.
+
+Two ways to add a source:
+
+- **Profile-conformant (no code).** If the source exports the framework's xAPI
+  profile (`registered` demographics, `progressed` behavioural scores, and a
+  `completed` statement carrying the target), the generic `xapi-profile` adapter
+  ingests it. Upload a `.jsonl`/`.json` statements file from the **Datasets** tab
+  or `POST /datasets`; it is validated against the profile and needs no adapter.
+- **Bespoke (code).** A source that does not conform — such as the raw ARETE
+  exports, which have different verbs and no outcome label — needs a small
+  adapter. ARETE is registered as `arete-*` with a **derived** target (drop-off
+  risk), clearly labelled as derived.
+
+An uploaded source is two files in `data/raw/uploads/` (git-ignored):
+
+```
+<name>.jsonl   the xAPI statements
+<name>.json    sidecar: { "description", "target", "class_labels", "statements" }
+```
+
+Both are data, never code; the API enforces size, type, and profile checks.
+Manage them with `GET /datasets`, `POST /datasets`, `DELETE /datasets/{name}` and
+`POST /datasets/{name}/train`.
+
+### Per-source training and serving
+
+Every source trains its own model and target:
+
+```bash
+make train SOURCE=my-pilot                       # one model (Random Forest)
+make train SOURCE=my-pilot ARGS='--models svc'   # a chosen algorithm
+make train SOURCE=arete-pbis ARGS='--matrix'     # full matrix, promote the best
+```
+
+Artifacts land in `models/<source>.joblib|.meta.json|.run.json` (+ SHAP), with an
+MLflow run `seb-xrif-<source>`; Kalboard keeps the historical `model.*` names and
+the DVC stage. The API serves a source's model with `?source=<name>` on
+`/predict`, `/metrics`, `/importance` and `/model/diagnostics`, and
+`GET /model/features` returns the features and option sets that model expects, so
+the dashboard's Predict form adapts to whichever source is selected.

@@ -81,6 +81,8 @@ http://localhost:5173.
 | `make repro-check` | Reproduce from a clean checkout and verify the DVC graph |
 | `make fetch-arete` | Download the ARETE XR xAPI pilots (checksum-verified) |
 | `make train` | Train the Random Forest and export artifact + metadata + SHAP |
+| `make train SOURCE=<name>` | Train a specific source (uploaded or built-in) |
+| `make train SOURCE=<name> ARGS='--matrix'` | Train the full matrix and promote the best model |
 | `make train ARGS='--all'` | Train the full comparison matrix |
 | `make train ARGS='--models svc knn'` | Train specific models |
 | `make train ARGS='--tune'` | Tune before fitting |
@@ -162,6 +164,14 @@ share one design system. See [`ui/README.md`](ui/README.md) for details.
 | `GET` | `/xr/risk` | Early-warning engagement/risk bands for a pilot |
 | `GET` | `/xr/learners` | Paged per-learner XR engagement features |
 | `GET` | `/evaluation` | Longitudinal SUS + T0/T1/T2 summary from the store |
+| `GET` | `/datasets` | Built-in and uploaded sources with trained status |
+| `POST` | `/datasets` | Upload a profile-conformant statements file (data only) |
+| `DELETE` | `/datasets/{name}` | Delete an uploaded source |
+| `POST` | `/datasets/{name}/train` | Train a model for a source (one model or best-of-matrix) |
+| `GET` | `/model/features` | Features and option sets a source's model expects |
+
+`/predict`, `/predict/batch`, `/metrics`, `/importance` and `/model/diagnostics`
+accept a `?source=` parameter (default `kalboard`) and serve that source's model.
 
 The service starts even without a trained model; prediction and metrics routes
 return `503` with a clear message until `make train` has been run.
@@ -261,6 +271,18 @@ trends (`/xr/trends`), and an early-warning drop-off risk model (`/xr/risk`).
 Every source defines its own target — the academic band for Kalboard, drop-off
 risk for ARETE — which is why the data-source selector changes the model and
 panels, not just the data. See [`docs/datasets.md`](docs/datasets.md).
+
+### Sources and adapters
+
+A **dataset adapter** maps one source onto the canonical frame plus its feature
+and target metadata (`analytics/datasets/`). Built-in adapters are code
+(`kalboard`, `arete-*`); the generic `xapi-profile` adapter ingests any source
+that exports the framework's xAPI profile as a statements file — a producer who
+conforms needs no new code. A bespoke source (like ARETE) needs a small adapter
+and a human-defined target. Uploaded sources live as `data/raw/uploads/<name>.jsonl`
+plus a `<name>.json` sidecar (target, class labels, description) and are managed
+from the **Datasets** tab or the `/datasets` API. See
+[`docs/datasets.md`](docs/datasets.md).
 
 ## License
 

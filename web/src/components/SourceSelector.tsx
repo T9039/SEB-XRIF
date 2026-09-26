@@ -2,27 +2,14 @@ import { useMemo } from "react";
 import { Badge, Label, NativeSelect, NativeSelectOption } from "@humanity-erp/ui";
 import { useDatasets } from "../api/hooks";
 import { useSource } from "../lib/source-context";
-import { DATA_SOURCES, type DataSource } from "../lib/sources";
+import { mergeSources } from "../lib/sources";
 
 /** Persistent data-source selector shown in the dashboard header. */
 export function SourceSelector() {
   const { source, sourceId, setSourceId } = useSource();
   const datasets = useDatasets();
 
-  const options = useMemo(() => {
-    const known = new Map<string, DataSource>(DATA_SOURCES.map((entry) => [entry.id, entry]));
-    for (const entry of datasets.data?.sources ?? []) {
-      if (!known.has(entry.name)) {
-        known.set(entry.name, {
-          id: entry.name,
-          kind: "generic",
-          label: `${entry.name} (${entry.kind})`,
-          description: entry.description,
-        });
-      }
-    }
-    return Array.from(known.values());
-  }, [datasets.data]);
+  const options = useMemo(() => mergeSources(datasets.data?.sources ?? []), [datasets.data]);
 
   const kindLabel = source.kind === "xr" ? "XR" : source.kind === "lms" ? "LMS" : "DATA";
 
