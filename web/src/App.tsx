@@ -22,6 +22,7 @@ import { OverviewPanel } from "./components/OverviewPanel";
 import { PredictionForm } from "./components/PredictionForm";
 import { SourceGate } from "./components/SourceGate";
 import { SourceSelector } from "./components/SourceSelector";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { SourceProvider } from "./lib/source-context";
 
 const NAV = [
@@ -49,6 +50,7 @@ export default function App() {
             <div className="flex flex-wrap items-end gap-4">
               <SourceSelector />
               <HealthBadge />
+              <ThemeToggle />
             </div>
           </div>
         </header>
