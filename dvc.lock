@@ -25,8 +25,8 @@ stages:
     deps:
     - path: analytics
       hash: md5
-      md5: 9e81e611a0b19c18cf2bfb4fb7997f63.dir
-      size: 158200
+      md5: cbca03912825f8c3f11cea9619572d35.dir
+      size: 159609
       nfiles: 32
     - path: data/raw/xAPI-Edu-Data.csv
       hash: md5

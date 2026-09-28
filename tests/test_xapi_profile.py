@@ -74,6 +74,18 @@ def test_missing_target_is_rejected(tmp_path):
         XapiProfileAdapter(path).load(get_settings())
 
 
+def test_declared_target_name_is_honoured(tmp_path):
+    statements = _statements_for(load_raw().head(4))
+    path = _write(statements, tmp_path / "renamed.jsonl")
+
+    dataset = XapiProfileAdapter(path, target="outcome").load(get_settings())
+    assert dataset.target == "outcome"
+    assert "outcome" in dataset.frame.columns
+    assert "Class" not in dataset.frame.columns
+    assert dataset.supervised is True
+    assert set(dataset.features) <= set(dataset.frame.columns)
+
+
 # -------------------------------------------------------------- conformance
 def test_check_reports_conformance(tmp_path):
     statements = _statements_for(load_raw().head(4))

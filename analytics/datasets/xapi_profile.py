@@ -55,13 +55,22 @@ class XapiProfileAdapter(DatasetAdapter):
                 f"{source_path} does not contain profiles with demographics and "
                 "behavioural statements."
             )
+        # The profile carries the target in a fixed "Class" column. Rename it to
+        # the declared target so the field a caller sets is the column stored.
+        if target != "Class":
+            if "Class" not in frame.columns or not frame["Class"].notna().any():
+                raise ValueError(
+                    f"{source_path} carries no '{target}' target; the framework "
+                    "profile needs a completed statement with the target."
+                )
+            frame = frame.rename(columns={"Class": target})
         if target not in frame.columns or not frame[target].notna().any():
             raise ValueError(
                 f"{source_path} carries no '{target}' target; the "
                 "framework profile needs a completed statement with the target."
             )
 
-        validated = SCHEMA.validate(frame, lazy=True)
+        validated = _validate_profile(frame, target, features)
         return Dataset(
             name=self._name or self.name,
             description=self._description or self.description,
@@ -73,3 +82,29 @@ class XapiProfileAdapter(DatasetAdapter):
             categorical=[*CATEGORICAL],
             numeric=[*BEHAVIOURAL],
         )
+
+
+def _validate_profile(frame, target: str, features: list[str]):
+    """Validate a profile frame whose target may have been renamed.
+
+    The shared ``SCHEMA`` is strict and expects the target column to be named
+    ``Class``; a source may declare a different target name, so validate the
+    fixed feature columns plus the declared target instead.
+    """
+    if target == "Class":
+        return SCHEMA.validate(frame, lazy=True)
+
+    from pandera.pandas import Check, Column, DataFrameSchema
+
+    from ..schema import CATEGORICAL as _CATEGORICAL
+
+    schema = DataFrameSchema(
+        {
+            **{name: Column(str) for name in _CATEGORICAL},
+            **{name: Column(int, Check.ge(0)) for name in BEHAVIOURAL},
+            target: Column(str),
+        },
+        strict=True,
+        coerce=True,
+    )
+    return schema.validate(frame, lazy=True)
