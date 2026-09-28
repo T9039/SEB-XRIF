@@ -67,6 +67,17 @@ def _table_report(data: bytes, filename: str) -> dict:
         }
 
     columns = [str(column) for column in frame.columns]
+    if len(columns) == 1 and (";" in columns[0] or "\t" in columns[0]):
+        return {
+            "kind": "table",
+            "conformant": False,
+            "adaptable": False,
+            "columns": columns,
+            "reason": (
+                "Parsed as a single column; the delimiter may be ';' or tab. "
+                "Re-export as comma-separated CSV."
+            ),
+        }
     target = next((name for name in _TARGET_GUESSES if name in columns), None)
     actor = next(
         (

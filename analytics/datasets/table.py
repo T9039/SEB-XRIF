@@ -60,7 +60,16 @@ class TableAdapter(DatasetAdapter):
                 f"'{self.target}'."
             )
 
-        labels = sorted(str(value) for value in frame[self.target].unique())
+        # A target that looks numeric but is stored as strings ("0"/"1") breaks
+        # scikit-learn's class_weight handling, so coerce it to numbers. Labels
+        # are then derived from the coerced values and stringified for display.
+        frame = frame.copy()
+        target_values = frame[self.target]
+        if not pd.api.types.is_numeric_dtype(target_values):
+            coerced = pd.to_numeric(target_values, errors="coerce")
+            if coerced.notna().all():
+                frame[self.target] = coerced
+        labels = [str(value) for value in sorted(frame[self.target].unique())]
         return Dataset(
             name=self.name,
             description=self.description,

@@ -218,6 +218,8 @@ export function useDatasets() {
     queryKey: ["datasets"],
     queryFn: async () => (await api.get<DatasetList>("/datasets")).data,
     retry: false,
+    refetchOnMount: "always",
+    staleTime: 0,
   });
 }
 

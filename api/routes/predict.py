@@ -28,6 +28,8 @@ def model_features(
         settings = replace(settings, dataset=source)
     try:
         dataset = load_dataset(settings)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 

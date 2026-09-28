@@ -86,15 +86,22 @@ export interface ApiSource {
   description: string;
 }
 
-/** Merge API-listed sources with the built-ins, marking unknown ones generic. */
+/**
+ * Merge API-listed sources with the built-ins.
+ *
+ * Built-ins are already described by {@link DATA_SOURCES} (the ARETE pilots use
+ * the friendly `pbis` id while the adapter is `arete-pbis`), so only uploaded
+ * sources are added here — otherwise every built-in would appear twice.
+ */
 export function mergeSources(extra: ApiSource[]): DataSource[] {
   const known = new Map<string, DataSource>(DATA_SOURCES.map((source) => [source.id, source]));
   for (const entry of extra) {
+    if (entry.kind !== "upload") continue;
     if (!known.has(entry.name)) {
       known.set(entry.name, {
         id: entry.name,
         kind: "generic",
-        label: `${entry.name} (${entry.kind})`,
+        label: `${entry.name} (upload)`,
         description: entry.description,
       });
     }

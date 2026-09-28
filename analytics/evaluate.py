@@ -31,7 +31,15 @@ def classification_metrics(
     """Return the standard metric set for one fitted model."""
     true: np.ndarray = np.asarray(y_true)
     pred: np.ndarray = np.asarray(y_pred)
-    label_list = list(labels) if labels is not None else sorted(set(true) | set(pred))
+    # Compare on stringified labels so labels supplied as strings (e.g. from the
+    # adapter metadata) match numeric targets when building the confusion matrix
+    # and support counts. sklearn's own metrics below are dtype-agnostic.
+    true_str = np.asarray([str(value) for value in true])
+    pred_str = np.asarray([str(value) for value in pred])
+    if labels is not None:
+        label_list = [str(label) for label in labels]
+    else:
+        label_list = sorted(set(true_str) | set(pred_str))
 
     metrics: dict[str, Any] = {
         "accuracy": float(accuracy_score(true, pred)),
@@ -44,8 +52,10 @@ def classification_metrics(
         "f1_macro": float(f1_score(true, pred, average="macro", zero_division=0)),
         "f1_weighted": float(f1_score(true, pred, average="weighted", zero_division=0)),
         "labels": label_list,
-        "confusion_matrix": confusion_matrix(true, pred, labels=label_list).tolist(),
-        "support": {label: int((true == label).sum()) for label in label_list},
+        "confusion_matrix": confusion_matrix(
+            true_str, pred_str, labels=label_list
+        ).tolist(),
+        "support": {label: int((true_str == label).sum()) for label in label_list},
     }
 
     if y_proba is not None:

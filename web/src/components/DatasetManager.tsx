@@ -27,9 +27,17 @@ import {
 import { PanelSkeleton } from "./panel-states";
 
 function message(error: unknown): string {
-  const detail = (error as { response?: { data?: { error?: { message?: string } } } })?.response
+  const detail = (error as { response?: { data?: { error?: { message?: unknown } } } })?.response
     ?.data?.error?.message;
-  return detail ?? String(error);
+  if (typeof detail === "string") return detail;
+  if (detail && typeof detail === "object") {
+    const obj = detail as { message?: string; missing?: string[]; columns?: string[] };
+    const parts = [obj.message];
+    if (obj.missing?.length) parts.push(`missing: ${obj.missing.join(", ")}`);
+    if (obj.columns?.length) parts.push(`columns: ${obj.columns.join(", ")}`);
+    return parts.filter(Boolean).join(" — ");
+  }
+  return String(error);
 }
 
 /** Check a dataset, adapt it if needed, upload, train, and manage sources. */

@@ -33,16 +33,17 @@ describe("data sources", () => {
 });
 
 describe("mergeSources", () => {
-  it("adds uploaded sources as generic and keeps the built-ins", () => {
+  it("adds uploaded sources and ignores built-ins already listed", () => {
     const merged = mergeSources([
       { name: "kalboard", kind: "builtin", description: "" },
+      { name: "arete-pbis", kind: "builtin", description: "" },
       { name: "my-upload", kind: "upload", description: "demo" },
     ]);
     expect(merged.map((entry) => entry.id)).toContain("my-upload");
-    expect(merged.map((entry) => entry.id)).toContain("kalboard");
+    // Built-ins are never duplicated by their API name.
+    expect(merged.map((entry) => entry.id)).not.toContain("arete-pbis");
     expect(merged.filter((entry) => entry.id === "kalboard")).toHaveLength(1);
     expect(merged.find((entry) => entry.id === "my-upload")?.kind).toBe("generic");
-    expect(merged.find((entry) => entry.id === "my-upload")?.label).toContain("my-upload");
   });
 });
 
