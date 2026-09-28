@@ -15,8 +15,15 @@ import {
   Label,
   NativeSelect,
   NativeSelectOption,
+  Textarea,
 } from "@humanity-erp/ui";
-import { useDatasets, useDeleteDataset, useTrainDataset, useUploadDataset } from "../api/hooks";
+import {
+  useCheckDataset,
+  useDatasets,
+  useDeleteDataset,
+  useTrainDataset,
+  useUploadDataset,
+} from "../api/hooks";
 import { PanelSkeleton } from "./panel-states";
 
 function message(error: unknown): string {
@@ -25,10 +32,11 @@ function message(error: unknown): string {
   return detail ?? String(error);
 }
 
-/** Upload a profile-conformant statements file, train, and manage sources. */
+/** Check a dataset, adapt it if needed, upload, train, and manage sources. */
 export function DatasetManager() {
   const client = useQueryClient();
   const datasets = useDatasets();
+  const check = useCheckDataset();
   const upload = useUploadDataset();
   const remove = useDeleteDataset();
   const train = useTrainDataset();
@@ -38,24 +46,52 @@ export function DatasetManager() {
   const [target, setTarget] = useState("Class");
   const [classLabels, setClassLabels] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [mode, setMode] = useState("best");
+  const [mapping, setMapping] = useState("");
+  const [trainAfter, setTrainAfter] = useState(true);
+  const [mode, setMode] = useState("single");
   const [model, setModel] = useState("random_forest");
   const [error, setError] = useState("");
 
   const refresh = () => client.invalidateQueries({ queryKey: ["datasets"] });
 
+  const onPick = async (picked: File | null) => {
+    setFile(picked);
+    setError("");
+    if (!picked) return;
+    try {
+      const report = await check.mutateAsync(picked);
+      if (report.kind === "table" && report.adaptable && report.suggested_mapping) {
+        if (report.suggested_mapping.target) setTarget(report.suggested_mapping.target);
+        setMapping(JSON.stringify(report.suggested_mapping, null, 2));
+      }
+    } catch (err) {
+      setError(message(err));
+    }
+  };
+
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
     if (!file) {
-      setError("Choose a .json or .jsonl statements file.");
+      setError("Choose a file (.json, .jsonl, .csv or .tsv).");
       return;
     }
     try {
-      await upload.mutateAsync({ name, description, target, classLabels, file });
+      await upload.mutateAsync({
+        name,
+        description,
+        target,
+        classLabels,
+        mapping,
+        train: trainAfter,
+        mode,
+        model,
+        file,
+      });
       setName("");
       setDescription("");
       setFile(null);
+      setMapping("");
       await refresh();
     } catch (err) {
       setError(message(err));
@@ -67,7 +103,7 @@ export function DatasetManager() {
     try {
       await train.mutateAsync({
         name: sourceName,
-        mode,
+        mode: mode === "single" ? "single" : "matrix",
         model: mode === "single" ? model : undefined,
       });
       await refresh();
@@ -86,14 +122,16 @@ export function DatasetManager() {
     }
   };
 
+  const report = check.data;
+
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Upload a dataset</CardTitle>
+          <CardTitle>Add a dataset</CardTitle>
           <CardDescription>
-            A profile-conformant xAPI statements file (registered / progressed / completed) plus its
-            target. Data only — nothing is executed.
+            A profile-conformant xAPI statements file (.json/.jsonl), or a table (.csv/.tsv) adapted
+            with a column mapping. Data only — nothing is executed.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -122,12 +160,12 @@ export function DatasetManager() {
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <Label htmlFor="ds-file">Statements file</Label>
+                <Label htmlFor="ds-file">File (.json/.jsonl/.csv/.tsv)</Label>
                 <Input
                   id="ds-file"
                   type="file"
-                  accept=".json,.jsonl"
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  accept=".json,.jsonl,.csv,.tsv"
+                  onChange={(e) => onPick(e.target.files?.[0] ?? null)}
                 />
               </div>
             </div>
@@ -139,24 +177,51 @@ export function DatasetManager() {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-            <div className="flex items-center gap-3">
+
+            {report ? (
+              <Alert>
+                <AlertDescription>
+                  {report.conformant
+                    ? "Profile-conformant — it will be accepted as-is."
+                    : report.adaptable
+                      ? `Adaptable (${report.kind}) — review the mapping below.`
+                      : `Not adaptable: ${report.reason ?? report.missing?.join("; ")}`}
+                </AlertDescription>
+              </Alert>
+            ) : null}
+
+            {report?.kind === "table" && report.adaptable ? (
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="ds-mapping">Column mapping (JSON)</Label>
+                <Textarea
+                  id="ds-mapping"
+                  rows={6}
+                  value={mapping}
+                  onChange={(e) => setMapping(e.target.value)}
+                  className="font-mono text-xs"
+                />
+              </div>
+            ) : null}
+
+            <div className="flex flex-wrap items-center gap-3">
               <Button type="submit" disabled={upload.isPending}>
                 {upload.isPending ? "Uploading…" : "Upload"}
               </Button>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Train mode</span>
-                <NativeSelect value={mode} onChange={(e) => setMode(e.target.value)}>
-                  <NativeSelectOption value="best">Best of matrix</NativeSelectOption>
-                  <NativeSelectOption value="single">Single model</NativeSelectOption>
-                </NativeSelect>
-                {mode === "single" ? (
-                  <Input
-                    className="w-40"
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                  />
-                ) : null}
-              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={trainAfter}
+                  onChange={(e) => setTrainAfter(e.target.checked)}
+                />
+                Train after upload
+              </label>
+              <NativeSelect value={mode} onChange={(e) => setMode(e.target.value)}>
+                <NativeSelectOption value="single">Single model</NativeSelectOption>
+                <NativeSelectOption value="best">Best of matrix</NativeSelectOption>
+              </NativeSelect>
+              {mode === "single" ? (
+                <Input className="w-40" value={model} onChange={(e) => setModel(e.target.value)} />
+              ) : null}
             </div>
           </form>
         </CardContent>

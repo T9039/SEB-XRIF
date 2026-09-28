@@ -250,6 +250,20 @@ export interface DatasetList {
   sources: DatasetSource[];
 }
 
+export interface DatasetCheck {
+  kind: string;
+  conformant: boolean;
+  adaptable: boolean;
+  missing?: string[];
+  reason?: string;
+  columns?: string[];
+  suggested_mapping?: {
+    target?: string | null;
+    actor?: string | null;
+    features?: string[];
+  };
+}
+
 export interface ModelFeatures {
   source: string;
   target: string | null;

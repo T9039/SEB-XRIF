@@ -230,15 +230,18 @@ def read_statements(path: Path | str) -> list[dict[str, Any]]:
     This is how a profile-conformant source is ingested without code: the
     statements are exported from an LRS and dropped in as a file.
     """
-    text = Path(path).read_text(encoding="utf-8")
-    if text.lstrip().startswith("["):
-        payload = json.loads(text)
-        statements = list(payload) if isinstance(payload, list) else []
-    else:
-        statements = [json.loads(line) for line in text.splitlines() if line.strip()]
+    statements = statements_from_text(Path(path).read_text(encoding="utf-8"))
     if not statements:
         raise ValueError(f"No xAPI statements found in {path}")
     return statements
+
+
+def statements_from_text(text: str) -> list[dict[str, Any]]:
+    """Parse a JSON array or JSON Lines string into a statement list."""
+    if text.lstrip().startswith("["):
+        payload = json.loads(text)
+        return list(payload) if isinstance(payload, list) else []
+    return [json.loads(line) for line in text.splitlines() if line.strip()]
 
 
 def to_learner_dict(row: dict[str, Any], external_id: str) -> dict[str, Any]:

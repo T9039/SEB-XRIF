@@ -136,3 +136,21 @@ the DVC stage. The API serves a source's model with `?source=<name>` on
 `/predict`, `/metrics`, `/importance` and `/model/diagnostics`, and
 `GET /model/features` returns the features and option sets that model expects, so
 the dashboard's Predict form adapts to whichever source is selected.
+
+### Adding a dataset (check, adapt, train)
+
+The **Datasets** tab (or the API) follows the same three steps:
+
+1. **Check** (`POST /datasets/check`, or automatically on upload). A statements
+   file is tested against the profile; a table is inspected for a target column.
+2. **Adapt if needed.** A profile-conformant statements file is accepted as-is.
+   A plain table is adapted to the Dataset contract using a **column mapping**
+   (`{"target": ..., "features": [...], "categorical": [...], "numeric": [...]}`),
+   which the system suggests from the columns and you can edit. Adaptation only
+   *names existing columns* — if a required column is missing, or the table has
+   no target, the upload is refused (`422`) rather than fabricating values.
+3. **Train** (optional, on by default). The source is trained immediately — one
+   model or best-of-matrix — and becomes selectable in the header.
+
+The mapping is stored in the source's sidecar and read by the table adapter, so
+the adaptation is repeatable and inspectable.

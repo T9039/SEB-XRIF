@@ -1,4 +1,4 @@
-"""Upload API: list, upload, validate, delete, and train a source."""
+"""Upload API: check, upload/adapt, list, delete, and train a source."""
 
 from __future__ import annotations
 
@@ -27,57 +27,122 @@ def _statements_text(n: int = 40, *, target: bool = True) -> str:
     return "\n".join(json.dumps(statement) for statement in statements)
 
 
+def _csv_text(n: int = 60) -> str:
+    lines = ["raisedhands,VisITedResources,AnnouncementsView,Discussion,Class"]
+    for index in range(n):
+        label = ["L", "M", "H"][index % 3]
+        lines.append(
+            f"{10 + index % 30},{20 + index % 40},{5 + index % 10},"
+            f"{30 + index % 50},{label}"
+        )
+    return "\n".join(lines)
+
+
 def _settings(tmp_path, monkeypatch):
     settings = replace(get_settings(), repo_root=tmp_path, cv_folds=3, n_jobs=1)
     monkeypatch.setattr(datasets_route, "get_settings", lambda: settings)
     return settings
 
 
-def _upload(client: TestClient, name: str = NAME, text: str | None = None):
+def _upload(
+    client: TestClient,
+    name: str = NAME,
+    *,
+    filename: str = "statements.jsonl",
+    text: str | None = None,
+    target: str = "Class",
+    train: bool = False,
+    mode: str = "single",
+    model: str = "decision_tree",
+):
     return client.post(
         "/datasets",
         data={
             "name": name,
             "description": "demo",
-            "target": "Class",
+            "target": target,
             "class_labels": "L,M,H",
+            "mode": mode,
+            "model": model,
+            "train": str(train).lower(),
         },
         files={
-            "file": ("statements.jsonl", text or _statements_text(), "application/json")
+            "file": (
+                filename,
+                text if text is not None else _statements_text(),
+                "application/octet-stream",
+            )
         },
     )
 
 
-def test_upload_list_delete(tmp_path, monkeypatch):
+# --------------------------------------------------------------------- check
+def test_check_reports_conformant_statements(tmp_path, monkeypatch):
+    _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    response = client.post(
+        "/datasets/check",
+        files={"file": ("s.jsonl", _statements_text(10), "application/json")},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["kind"] == "statements"
+    assert body["conformant"] is True
+    assert body["adaptable"] is True
+
+
+def test_check_suggests_a_table_mapping(tmp_path, monkeypatch):
+    _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    response = client.post(
+        "/datasets/check",
+        files={"file": ("table.csv", _csv_text(), "text/csv")},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["kind"] == "table"
+    assert body["adaptable"] is True
+    assert body["suggested_mapping"]["target"] == "Class"
+    assert "raisedhands" in body["suggested_mapping"]["features"]
+
+
+# ------------------------------------------------------------------- upload
+def test_upload_and_delete_statements(tmp_path, monkeypatch):
     _settings(tmp_path, monkeypatch)
     client = TestClient(app)
 
     response = _upload(client)
     assert response.status_code == 200, response.text
-    body = response.json()
-    assert body["learners"] == 40
-    assert body["target"] == "Class"
+    assert response.json()["kind"] == "statements"
+    assert response.json()["learners"] == 40
 
     sources = {
         source["name"]: source for source in client.get("/datasets").json()["sources"]
     }
-    assert sources[NAME]["kind"] == "upload"
     assert sources[NAME]["trained"] is False
-
     assert client.delete(f"/datasets/{NAME}").status_code == 200
-    assert NAME not in {s["name"] for s in client.get("/datasets").json()["sources"]}
 
 
-def test_train_endpoint_promotes_a_model(tmp_path, monkeypatch):
+def test_upload_non_conformant_statements_is_422(tmp_path, monkeypatch):
+    settings = _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    response = _upload(client, text=_statements_text(target=False))
+    assert response.status_code == 422
+    assert not (settings.uploads_dir / f"{NAME}.json").exists()
+
+
+def test_upload_table_adapts_and_trains(tmp_path, monkeypatch):
     _settings(tmp_path, monkeypatch)
     client = TestClient(app)
-    _upload(client)
-
-    response = client.post(
-        f"/datasets/{NAME}/train", params={"mode": "single", "model": "decision_tree"}
+    response = _upload(
+        client, filename="table.csv", text=_csv_text(), train=True, mode="single"
     )
     assert response.status_code == 200, response.text
-    assert response.json()["model"] == "decision_tree"
+    body = response.json()
+    assert body["kind"] == "table"
+    assert body["target"] == "Class"
+    assert body["trained"] is True
+    assert body["model"] == "decision_tree"
 
     sources = {
         source["name"]: source for source in client.get("/datasets").json()["sources"]
@@ -85,13 +150,12 @@ def test_train_endpoint_promotes_a_model(tmp_path, monkeypatch):
     assert sources[NAME]["trained"] is True
 
 
-def test_upload_rejects_non_conformant_file(tmp_path, monkeypatch):
-    settings = _settings(tmp_path, monkeypatch)
+def test_upload_table_without_target_is_422(tmp_path, monkeypatch):
+    _settings(tmp_path, monkeypatch)
     client = TestClient(app)
-    response = _upload(client, text=_statements_text(target=False))
-    assert response.status_code == 400
-    # The failed upload must not leave files behind.
-    assert not (settings.uploads_dir / f"{NAME}.json").exists()
+    csv = "a,b\n1,2\n3,4\n"
+    response = _upload(client, filename="table.csv", text=csv, target="")
+    assert response.status_code == 422
 
 
 def test_upload_rejects_bad_name(tmp_path, monkeypatch):

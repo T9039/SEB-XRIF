@@ -166,7 +166,8 @@ share one design system. See [`ui/README.md`](ui/README.md) for details.
 | `GET` | `/xr/learners` | Paged per-learner XR engagement features |
 | `GET` | `/evaluation` | Longitudinal SUS + T0/T1/T2 summary from the store |
 | `GET` | `/datasets` | Built-in and uploaded sources with trained status |
-| `POST` | `/datasets` | Upload a profile-conformant statements file (data only) |
+| `POST` | `/datasets` | Upload a statements file, or adapt a table with a mapping |
+| `POST` | `/datasets/check` | Check conformance / adaptability before uploading |
 | `DELETE` | `/datasets/{name}` | Delete an uploaded source |
 | `POST` | `/datasets/{name}/train` | Train a model for a source (one model or best-of-matrix) |
 | `GET` | `/model/features` | Features and option sets a source's model expects |

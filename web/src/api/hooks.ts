@@ -4,6 +4,7 @@ import type {
   AnalyticsQueryResult,
   ColumnsPayload,
   CorrelationPayload,
+  DatasetCheck,
   DatasetList,
   DiagnosticsPayload,
   EmbeddingPayload,
@@ -227,6 +228,10 @@ export function useUploadDataset() {
       description: string;
       target: string;
       classLabels: string;
+      mapping: string;
+      train: boolean;
+      mode: string;
+      model: string;
       file: File;
     }) => {
       const form = new FormData();
@@ -234,8 +239,22 @@ export function useUploadDataset() {
       form.append("description", input.description);
       form.append("target", input.target);
       form.append("class_labels", input.classLabels);
+      form.append("mapping", input.mapping);
+      form.append("train", String(input.train));
+      form.append("mode", input.mode);
+      form.append("model", input.model);
       form.append("file", input.file);
       return (await api.post("/datasets", form)).data;
+    },
+  });
+}
+
+export function useCheckDataset() {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const form = new FormData();
+      form.append("file", file);
+      return (await api.post<DatasetCheck>("/datasets/check", form)).data;
     },
   });
 }

@@ -16,6 +16,7 @@ from .arete import (
 )
 from .base import DatasetAdapter
 from .kalboard import KalboardAdapter
+from .table import TableAdapter
 from .xapi_profile import XapiProfileAdapter
 
 _ADAPTERS: dict[str, type[DatasetAdapter]] = {
@@ -44,8 +45,20 @@ def get_adapter(name: str, settings=None) -> DatasetAdapter:
     from .uploads import read_upload
 
     upload = read_upload(name, settings)
+    if upload.kind == "table":
+        if not upload.target:
+            raise ValueError(f"Table source '{name}' declares no target.")
+        return TableAdapter(
+            name=upload.name,
+            path=upload.path,
+            target=upload.target,
+            features=upload.features,
+            categorical=upload.categorical,
+            numeric=upload.numeric,
+            description=upload.description,
+        )
     return XapiProfileAdapter(
-        path=upload.statements_path,
+        path=upload.path,
         name=upload.name,
         description=upload.description,
         target=upload.target,

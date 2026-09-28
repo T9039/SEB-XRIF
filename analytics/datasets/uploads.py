@@ -1,14 +1,20 @@
-"""Uploaded sources: a profile-conformant statements file plus a sidecar.
+"""Uploaded sources: a data file plus a sidecar describing it.
 
-An upload is two files in the uploads directory: ``<name>.jsonl`` (the xAPI
-statements) and ``<name>.json`` (a sidecar declaring the target, class labels and
-description). Both are data, never code.
+Two kinds:
+
+- **statements** — a profile-conformant xAPI statements file (``<name>.jsonl``),
+  resolved through the generic xAPI-profile adapter.
+- **table** — a plain CSV adapted to the Dataset contract by a column mapping
+  (``<name>.csv``), resolved through the table adapter.
+
+Both are data, never code. The sidecar (``<name>.json``) declares the kind, the
+target, the class labels, and (for tables) the feature columns.
 """
 
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..config import Settings, get_settings
@@ -16,13 +22,17 @@ from ..config import Settings, get_settings
 
 @dataclass(frozen=True)
 class UploadSource:
-    """A source registered from an uploaded statements file."""
+    """A source registered from an uploaded file."""
 
     name: str
+    kind: str
     description: str
-    statements_path: Path
+    path: Path
     target: str | None
-    class_labels: list[str]
+    class_labels: list[str] = field(default_factory=list)
+    features: list[str] = field(default_factory=list)
+    categorical: list[str] = field(default_factory=list)
+    numeric: list[str] = field(default_factory=list)
 
 
 def sidecar_path(name: str, settings: Settings | None = None) -> Path:
@@ -39,18 +49,23 @@ def read_upload(name: str, settings: Settings | None = None) -> UploadSource:
         raise ValueError(f"Unknown source '{name}'. Known sources: {known or 'none'}.")
 
     meta = json.loads(sidecar.read_text(encoding="utf-8"))
-    filename = str(meta.get("statements") or f"{name}.jsonl")
-    statements = settings.uploads_dir / filename
-    if not statements.exists():
-        raise ValueError(
-            f"Upload '{name}' is missing its statements file {statements}."
-        )
+    kind = str(meta.get("kind", "statements"))
+    default = f"{name}.jsonl" if kind == "statements" else f"{name}.csv"
+    filename = str(meta.get("data") or meta.get("statements") or default)
+    data_path = settings.uploads_dir / filename
+    if not data_path.exists():
+        raise ValueError(f"Upload '{name}' is missing its data file {data_path}.")
+
     return UploadSource(
         name=name,
+        kind=kind,
         description=str(meta.get("description", "")),
-        statements_path=statements,
+        path=data_path,
         target=meta.get("target"),
         class_labels=list(meta.get("class_labels", [])),
+        features=list(meta.get("features", [])),
+        categorical=list(meta.get("categorical", [])),
+        numeric=list(meta.get("numeric", [])),
     )
 
 
@@ -69,6 +84,12 @@ def list_uploads(settings: Settings | None = None) -> list[UploadSource]:
     return uploads
 
 
+def _write_sidecar(name: str, meta: dict, settings: Settings) -> None:
+    sidecar_path(name, settings).write_text(
+        json.dumps(meta, indent=2) + "\n", encoding="utf-8"
+    )
+
+
 def write_upload(
     name: str,
     statements: str,
@@ -80,19 +101,54 @@ def write_upload(
 ) -> UploadSource:
     """Persist a statements file and sidecar, returning the registered source."""
     settings = settings or get_settings()
-    directory = settings.uploads_dir
-    directory.mkdir(parents=True, exist_ok=True)
+    settings.uploads_dir.mkdir(parents=True, exist_ok=True)
+    data_file = settings.uploads_dir / f"{name}.jsonl"
+    data_file.write_text(statements, encoding="utf-8")
+    _write_sidecar(
+        name,
+        {
+            "name": name,
+            "kind": "statements",
+            "description": description,
+            "target": target,
+            "class_labels": class_labels or [],
+            "data": data_file.name,
+        },
+        settings,
+    )
+    return read_upload(name, settings)
 
-    statements_file = directory / f"{name}.jsonl"
-    statements_file.write_text(statements, encoding="utf-8")
-    meta = {
-        "name": name,
-        "description": description,
-        "target": target,
-        "class_labels": class_labels or [],
-        "statements": statements_file.name,
-    }
-    sidecar_path(name, settings).write_text(
-        json.dumps(meta, indent=2) + "\n", encoding="utf-8"
+
+def write_table_upload(
+    name: str,
+    data: bytes,
+    *,
+    target: str,
+    features: list[str],
+    categorical: list[str] | None = None,
+    numeric: list[str] | None = None,
+    class_labels: list[str] | None = None,
+    description: str = "",
+    settings: Settings | None = None,
+) -> UploadSource:
+    """Persist an adapted CSV table and sidecar, returning the source."""
+    settings = settings or get_settings()
+    settings.uploads_dir.mkdir(parents=True, exist_ok=True)
+    data_file = settings.uploads_dir / f"{name}.csv"
+    data_file.write_bytes(data)
+    _write_sidecar(
+        name,
+        {
+            "name": name,
+            "kind": "table",
+            "description": description,
+            "target": target,
+            "class_labels": class_labels or [],
+            "features": features,
+            "categorical": categorical or [],
+            "numeric": numeric or features,
+            "data": data_file.name,
+        },
+        settings,
     )
     return read_upload(name, settings)
