@@ -12,7 +12,7 @@ from analytics.data import load_raw
 from analytics.datasets.registry import list_datasets
 from analytics.datasets.xapi_profile import XapiProfileAdapter
 from analytics.schema import SCHEMA
-from analytics.xapi import build_statements, learner_id
+from analytics.xapi import build_statements, check_file, learner_id
 
 
 def _statements_for(frame) -> list[dict]:
@@ -72,3 +72,25 @@ def test_missing_target_is_rejected(tmp_path):
     path = _write(statements, tmp_path / "no_target.jsonl")
     with pytest.raises(ValueError, match="target"):
         XapiProfileAdapter(path).load(get_settings())
+
+
+# -------------------------------------------------------------- conformance
+def test_check_reports_conformance(tmp_path):
+    statements = _statements_for(load_raw().head(4))
+    report = check_file(_write(statements, tmp_path / "ok.jsonl"))
+    assert report["conformant"] is True
+    assert report["missing"] == []
+    assert report["learners"] == 4
+
+
+def test_check_reports_missing_target(tmp_path):
+    completed = "http://adlnet.gov/expapi/verbs/completed"
+    statements = [
+        statement
+        for statement in _statements_for(load_raw().head(2))
+        if statement["verb"]["id"] != completed
+    ]
+    report = check_file(_write(statements, tmp_path / "no_target.jsonl"))
+    assert report["conformant"] is False
+    assert any("target" in reason for reason in report["missing"])
+    assert report["verbs"]

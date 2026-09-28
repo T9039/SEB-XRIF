@@ -283,15 +283,98 @@ def load_rows_into_db(rows: list[dict[str, Any]], url: str | None = None) -> int
     return loaded
 
 
+def inspect_statements(statements: list[dict[str, Any]]) -> dict[str, Any]:
+    """Report whether statements follow the framework's xAPI profile.
+
+    The profile is the framework's own convention (see the module constants):
+    a ``registered`` statement carrying demographics, ``progressed`` statements
+    on ``/activities/behaviour/*`` carrying scores, and a ``completed`` statement
+    carrying the target. Only statements that use exactly these verbs, activity
+    ids and extensions can be ingested without a bespoke adapter.
+    """
+    from collections import Counter
+
+    verbs: Counter[str] = Counter()
+    objects: Counter[str] = Counter()
+    actors: set[str] = set()
+    has_demographics = False
+    has_target = False
+    behaviour_objects = 0
+
+    for statement in statements:
+        actor = statement.get("actor", {}) or {}
+        identifier = actor.get("mbox") or actor.get("name")
+        if identifier:
+            actors.add(str(identifier))
+        verbs[str(statement.get("verb", {}).get("id", ""))] += 1
+        obj = str(statement.get("object", {}).get("id", ""))
+        objects[obj] += 1
+        extensions = (statement.get("context", {}) or {}).get("extensions", {}) or {}
+        if DEMOGRAPHICS_EXT in extensions:
+            has_demographics = True
+        if TARGET_EXT in extensions:
+            has_target = True
+        if "/behaviour/" in obj:
+            behaviour_objects += 1
+
+    missing: list[str] = []
+    if not has_demographics:
+        missing.append(
+            "no registration statement with the demographics extension "
+            f"({DEMOGRAPHICS_EXT})"
+        )
+    if behaviour_objects == 0:
+        missing.append(f"no progressed statements on {BASE}/activities/behaviour/*")
+    if not has_target:
+        missing.append(
+            f"no completion statement with the target extension ({TARGET_EXT})"
+        )
+    if not actors:
+        missing.append("no identifiable actors")
+
+    return {
+        "statements": len(statements),
+        "learners": len(actors),
+        "conformant": not missing,
+        "missing": missing,
+        "verbs": dict(verbs.most_common(20)),
+        "sample_objects": [obj for obj, _ in objects.most_common(10)],
+    }
+
+
+def check_file(path: Path | str) -> dict[str, Any]:
+    """Inspect a statements file and report profile conformance."""
+    report = inspect_statements(read_statements(path))
+    report["path"] = str(path)
+    return report
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="xAPI ingestion utilities.")
-    parser.add_argument("command", choices=["ingest", "read", "load-db"])
+    parser.add_argument("command", choices=["ingest", "read", "load-db", "check"])
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--endpoint", default=None)
     parser.add_argument("--key", default=None)
     parser.add_argument("--secret", default=None)
     parser.add_argument("--url", default=None, help="Database URL for load-db.")
+    parser.add_argument(
+        "--path", default=None, help="Statements file (JSON/JSONL) for check."
+    )
     args = parser.parse_args(argv)
+
+    if args.command == "check":
+        if not args.path:
+            parser.error("check requires --path <statements file>")
+        report = check_file(args.path)
+        print(json.dumps(report, indent=2))
+        if report["conformant"]:
+            print("Conformant: this file can be ingested as an xapi-profile source.")
+        else:
+            print("Not conformant:")
+            for reason in report["missing"]:
+                print(f"  - {reason}")
+            print("A bespoke adapter (and a target) would be needed.")
+        return
 
     client = LrsClient(args.endpoint, args.key, args.secret)
 

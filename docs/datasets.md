@@ -115,6 +115,11 @@ Both are data, never code; the API enforces size, type, and profile checks.
 Manage them with `GET /datasets`, `POST /datasets`, `DELETE /datasets/{name}` and
 `POST /datasets/{name}/train`.
 
+The profile itself is specified in
+[`docs/xapi_profile.md`](xapi_profile.md), including how to check whether a
+dataset you downloaded is conformant (`make check-xapi ARGS=file.jsonl`) and what
+to do if it is not.
+
 ### Per-source training and serving
 
 Every source trains its own model and target:
