@@ -7,7 +7,7 @@ import {
   Sparkles,
   Table2,
 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@humanity-erp/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger, ThemeToggle } from "@humanity-erp/ui";
 import { ChartStudio } from "./components/ChartStudio";
 import { ClassificationQuality } from "./components/ClassificationQuality";
 import { CvSpread } from "./components/CvSpread";
@@ -22,7 +22,6 @@ import { OverviewPanel } from "./components/OverviewPanel";
 import { PredictionForm } from "./components/PredictionForm";
 import { SourceGate } from "./components/SourceGate";
 import { SourceSelector } from "./components/SourceSelector";
-import { ThemeToggle } from "./components/ThemeToggle";
 import { SourceProvider } from "./lib/source-context";
 
 const NAV = [
