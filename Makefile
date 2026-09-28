@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 
 .PHONY: help bootstrap sync lint format type test api web dev train prepare \
-        matrix tune paper mlflow db-upgrade db-init repro-check check-xapi \
+        matrix tune paper mlflow db-upgrade db-init repro-check check-xapi flatten-xapi \
         docker-up docker-down docker-logs figures clean \
         ui-install storybook storybook-build
 
@@ -21,6 +21,7 @@ help:
 > @echo "  tune         tune the top models with Optuna (ARGS='--trials 20')"
 > @echo "  repro-check  reproduce from a clean checkout and verify the DVC graph"
 > @echo "  check-xapi   check a statements file against the xAPI profile (ARGS='file.jsonl')"
+> @echo "  flatten-xapi flatten any statements file to a CSV table (ARGS='file.jsonl')"
 > @echo "  fetch-arete  download the ARETE XR pilots (ARGS='pbis')"
 > @echo "  mlflow       open the MLflow UI on :5000"
 > @echo "  db-upgrade   apply database migrations (alembic upgrade head)"
@@ -64,6 +65,9 @@ repro-check:
 
 check-xapi:
 > uv run python -m analytics.xapi check --path $(ARGS)
+
+flatten-xapi:
+> uv run python -m analytics.xapi flatten --path $(ARGS) --out $(basename $(ARGS)).csv
 
 fetch-arete:
 > uv run python scripts/fetch_arete.py $(ARGS)

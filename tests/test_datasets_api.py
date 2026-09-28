@@ -171,6 +171,45 @@ def test_delete_rejects_builtin(tmp_path, monkeypatch):
     assert client.delete("/datasets/kalboard").status_code == 400
 
 
+# ------------------------------------------------------------------ flatten
+def test_flatten_turns_arbitrary_xapi_into_a_table(tmp_path, monkeypatch):
+    _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    statements = "\n".join(
+        json.dumps(
+            {
+                "actor": {"mbox": f"mailto:l{i}@x"},
+                "verb": {"id": "http://foreign/verb/selected"},
+                "object": {"id": f"http://foreign/obj/{i}"},
+                "timestamp": "2023-01-01T00:00:00Z",
+                "result": {"score": {"raw": i}},
+            }
+        )
+        for i in range(3)
+    )
+    response = client.post(
+        "/datasets/flatten",
+        files={"file": ("foreign.jsonl", statements, "application/json")},
+    )
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"].startswith("text/csv")
+    text = response.text
+    header = text.splitlines()[0]
+    assert header.startswith("id,timestamp,actor,verb,object")
+    assert len(text.strip().splitlines()) == 4  # header + 3 rows
+    assert "http://foreign/verb/selected" in text
+
+
+def test_flatten_rejects_non_statements(tmp_path, monkeypatch):
+    _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    response = client.post(
+        "/datasets/flatten",
+        files={"file": ("x.csv", "a,b\n1,2\n", "text/csv")},
+    )
+    assert response.status_code == 400
+
+
 # --------------------------------------------------------------- delimiters
 def test_check_detects_semicolon_delimiter(tmp_path, monkeypatch):
     _settings(tmp_path, monkeypatch)

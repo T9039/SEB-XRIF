@@ -89,3 +89,25 @@ just means one of:
 
 The one thing that cannot be manufactured is a **target**: if the source carries
 no outcome, a human has to define one (as with ARETE's derived drop-off band).
+
+## Bridging a non-conformant statements file
+
+A foreign statements file (valid xAPI, different vocabulary) can still be used
+without writing an adapter: **flatten it to a tidy table**, then adapt it with a
+column mapping.
+
+```bash
+uv run python -m analytics.xapi flatten --path foreign.jsonl --out foreign.csv
+make flatten-xapi ARGS=foreign.jsonl   # writes foreign.csv alongside it
+```
+
+Or, in the dashboard's **Datasets** tab, choose the file and press
+**"Flatten to CSV"** (it downloads), then re-upload that CSV as a table and pick
+the target/features in the mapping. The API endpoint is `POST /datasets/flatten`.
+
+Flattening makes no assumptions about verbs or activity ids and fabricates no
+target — it reduces every statement to
+`id, timestamp, actor, verb, object, object_name, result_*` (score, success,
+completion, response), `language` and `extensions`. You then choose which of
+those columns are features, and define the target (by mapping a column, or, if
+there is genuinely no outcome, by deriving one as ARETE does).

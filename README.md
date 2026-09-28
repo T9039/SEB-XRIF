@@ -80,6 +80,7 @@ http://localhost:5173.
 | `make prepare` | Validate the raw CSV and write `data/processed/learners.parquet` |
 | `make repro-check` | Reproduce from a clean checkout and verify the DVC graph |
 | `make check-xapi ARGS=file.jsonl` | Check a statements file against the xAPI profile |
+| `make flatten-xapi ARGS=file.jsonl` | Flatten any statements file to a CSV table |
 | `make fetch-arete` | Download the ARETE XR xAPI pilots (checksum-verified) |
 | `make train` | Train the Random Forest and export artifact + metadata + SHAP |
 | `make train SOURCE=<name>` | Train a specific source (uploaded or built-in) |
@@ -168,6 +169,7 @@ share one design system. See [`ui/README.md`](ui/README.md) for details.
 | `GET` | `/datasets` | Built-in and uploaded sources with trained status |
 | `POST` | `/datasets` | Upload a statements file, or adapt a table with a mapping |
 | `POST` | `/datasets/check` | Check conformance / adaptability before uploading |
+| `POST` | `/datasets/flatten` | Flatten any xAPI statements file to a CSV table |
 | `DELETE` | `/datasets/{name}` | Delete an uploaded source |
 | `POST` | `/datasets/{name}/train` | Train a model for a source (one model or best-of-matrix) |
 | `GET` | `/model/features` | Features and option sets a source's model expects |

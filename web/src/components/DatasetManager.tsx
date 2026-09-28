@@ -21,6 +21,7 @@ import {
   useCheckDataset,
   useDatasets,
   useDeleteDataset,
+  useFlattenStatements,
   useTrainDataset,
   useUploadDataset,
 } from "../api/hooks";
@@ -45,6 +46,7 @@ export function DatasetManager() {
   const client = useQueryClient();
   const datasets = useDatasets();
   const check = useCheckDataset();
+  const flatten = useFlattenStatements();
   const upload = useUploadDataset();
   const remove = useDeleteDataset();
   const train = useTrainDataset();
@@ -257,6 +259,18 @@ export function DatasetManager() {
             <div className="flex flex-wrap items-center gap-3">
               <Button type="submit" disabled={upload.isPending}>
                 {upload.isPending ? "Uploading…" : "Upload"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!file || flatten.isPending}
+                onClick={() => {
+                  if (!file) return;
+                  setError("");
+                  flatten.mutateAsync(file).catch((err) => setError(message(err)));
+                }}
+              >
+                {flatten.isPending ? "Flattening…" : "Flatten to CSV"}
               </Button>
               <label className="flex items-center gap-2 text-sm">
                 <input

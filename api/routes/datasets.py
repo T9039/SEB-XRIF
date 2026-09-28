@@ -16,6 +16,7 @@ from typing import Annotated
 
 import pandas as pd
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi.responses import PlainTextResponse
 
 from analytics.config import get_settings
 from analytics.datasets.registry import get_adapter, list_datasets, list_sources
@@ -26,7 +27,11 @@ from analytics.datasets.uploads import (
     write_upload,
 )
 from analytics.train import train_source
-from analytics.xapi import inspect_statements, statements_from_text
+from analytics.xapi import (
+    inspect_statements,
+    statements_from_text,
+    statements_to_csv,
+)
 
 router = APIRouter(tags=["datasets"])
 
@@ -166,6 +171,35 @@ async def check(
         return _check_upload(data, filename, delimiter or None)
     except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/datasets/flatten", response_class=PlainTextResponse)
+async def flatten(file: Annotated[UploadFile, File()]) -> PlainTextResponse:
+    """Flatten any xAPI statements file into a tidy CSV for table adaptation.
+
+    This is the bridge for non-conformant sources: it makes no assumptions about
+    verbs or activity ids and fabricates no target, so a foreign xAPI export can
+    be turned into columns and then adapted with a mapping.
+    """
+    filename = file.filename or ""
+    if not filename.endswith(_STATEMENT_SUFFIXES):
+        raise HTTPException(status_code=400, detail="Only .json or .jsonl files.")
+    data = await file.read()
+    if not data:
+        raise HTTPException(status_code=400, detail="Empty upload.")
+    if len(data) > MAX_BYTES:
+        raise HTTPException(status_code=413, detail="Upload exceeds the size limit.")
+    try:
+        statements = statements_from_text(data.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if not statements:
+        raise HTTPException(status_code=400, detail="No xAPI statements found.")
+    return PlainTextResponse(
+        statements_to_csv(statements),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="statements-flat.csv"'},
+    )
 
 
 @router.get("/datasets")

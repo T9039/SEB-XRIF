@@ -253,6 +253,83 @@ def to_learner_dict(row: dict[str, Any], external_id: str) -> dict[str, Any]:
     return data
 
 
+#: JSON-path-ish helper keys for the flattened statement table.
+STATEMENT_COLUMNS = [
+    "id",
+    "timestamp",
+    "actor",
+    "verb",
+    "object",
+    "object_name",
+    "result_score",
+    "result_success",
+    "result_completion",
+    "result_response",
+    "language",
+    "extensions",
+]
+
+
+def _first_value(mapping: Any) -> Any:
+    """Return the first value of a ``{"en-US": ...}`` display mapping."""
+    if isinstance(mapping, dict) and mapping:
+        return next(iter(mapping.values()))
+    return mapping
+
+
+def flatten_statements(statements: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Flatten arbitrary xAPI statements into tidy rows.
+
+    This is the bridge for non-conformant sources: whatever their vocabulary,
+    every statement is reduced to identifiable columns (actor, verb, object,
+    result fields, language, extensions) that can be exported as a CSV and then
+    adapted to features with a column mapping. It makes no assumptions about
+    verbs or activity ids, and it never fabricates a target.
+    """
+    rows: list[dict[str, Any]] = []
+    for statement in statements:
+        actor = statement.get("actor", {}) or {}
+        verb = statement.get("verb", {}) or {}
+        obj = statement.get("object", {}) or {}
+        result = statement.get("result", {}) or {}
+        score = result.get("score", {}) or {}
+        definition = obj.get("definition", {}) or {}
+        context = statement.get("context", {}) or {}
+        extensions = context.get("extensions", {}) or {}
+
+        rows.append(
+            {
+                "id": statement.get("id"),
+                "timestamp": statement.get("timestamp"),
+                "actor": actor.get("mbox")
+                or actor.get("account", {}).get("name")
+                or actor.get("name"),
+                "verb": verb.get("id"),
+                "object": obj.get("id"),
+                "object_name": _first_value(definition.get("name")),
+                "result_score": score.get("raw", score.get("scaled")),
+                "result_success": result.get("success"),
+                "result_completion": result.get("completion"),
+                "result_response": result.get("response"),
+                "language": context.get("language"),
+                "extensions": json.dumps(extensions) if extensions else None,
+            }
+        )
+    return rows
+
+
+def statements_to_csv(statements: list[dict[str, Any]]) -> str:
+    """Return the flattened statement table as CSV text."""
+    import csv
+    import io
+
+    buffer = io.StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=STATEMENT_COLUMNS)
+    writer.writeheader()
+    writer.writerows(flatten_statements(statements))
+    return buffer.getvalue()
+
+
 def ingest_csv(client: LrsClient, limit: int | None = None) -> int:
     """Read the source CSV and post statements for each learner row."""
     from .data import load_raw
@@ -354,15 +431,19 @@ def check_file(path: Path | str) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="xAPI ingestion utilities.")
-    parser.add_argument("command", choices=["ingest", "read", "load-db", "check"])
+    parser.add_argument(
+        "command",
+        choices=["ingest", "read", "load-db", "check", "flatten"],
+    )
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--endpoint", default=None)
     parser.add_argument("--key", default=None)
     parser.add_argument("--secret", default=None)
     parser.add_argument("--url", default=None, help="Database URL for load-db.")
     parser.add_argument(
-        "--path", default=None, help="Statements file (JSON/JSONL) for check."
+        "--path", default=None, help="Statements file (JSON/JSONL) for check/flatten."
     )
+    parser.add_argument("--out", default=None, help="Output CSV path for flatten.")
     args = parser.parse_args(argv)
 
     if args.command == "check":
@@ -377,6 +458,18 @@ def main(argv: list[str] | None = None) -> None:
             for reason in report["missing"]:
                 print(f"  - {reason}")
             print("A bespoke adapter (and a target) would be needed.")
+        return
+
+    if args.command == "flatten":
+        if not args.path:
+            parser.error("flatten requires --path <statements file>")
+        statements = read_statements(args.path)
+        csv_text = statements_to_csv(statements)
+        if args.out:
+            Path(args.out).write_text(csv_text, encoding="utf-8")
+            print(f"Wrote {len(statements)} statements -> {args.out}")
+        else:
+            print(csv_text)
         return
 
     client = LrsClient(args.endpoint, args.key, args.secret)

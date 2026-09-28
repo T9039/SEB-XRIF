@@ -268,6 +268,27 @@ export function useDeleteDataset() {
   });
 }
 
+export function useFlattenStatements() {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const form = new FormData();
+      form.append("file", file);
+      const response = await api.post("/datasets/flatten", form, {
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(response.data as Blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "statements-flat.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      return true;
+    },
+  });
+}
+
 export function useTrainDataset() {
   return useMutation({
     mutationFn: async (input: { name: string; mode: string; model?: string }) =>
