@@ -42,12 +42,19 @@ configure_logging()
 logger = get_logger("api")
 
 
-def _error_response(status_code: int, message: str) -> JSONResponse:
+def _error_response(status_code: int, detail: object) -> JSONResponse:
     request_id = structlog.contextvars.get_contextvars().get("request_id")
-    return JSONResponse(
-        status_code=status_code,
-        content={"error": {"message": str(message), "request_id": request_id}},
-    )
+    if isinstance(detail, dict):
+        # Keep structured details (message, missing, columns, ...) as fields
+        # instead of collapsing them to a Python dict string.
+        message = str(detail.get("message", detail))
+        error: dict = {"message": message, "request_id": request_id}
+        for key, value in detail.items():
+            if key != "message":
+                error[key] = value
+    else:
+        error = {"message": str(detail), "request_id": request_id}
+    return JSONResponse(status_code=status_code, content={"error": error})
 
 
 @asynccontextmanager

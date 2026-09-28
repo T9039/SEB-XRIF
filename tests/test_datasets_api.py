@@ -171,6 +171,63 @@ def test_delete_rejects_builtin(tmp_path, monkeypatch):
     assert client.delete("/datasets/kalboard").status_code == 400
 
 
+# ------------------------------------------------------------ robust errors
+def test_invalid_mapping_json_is_clean_422(tmp_path, monkeypatch):
+    _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    response = client.post(
+        "/datasets",
+        data={"name": "badmap", "target": "Class", "mapping": "not json"},
+        files={"file": ("t.csv", _csv_text(), "text/csv")},
+    )
+    assert response.status_code == 422
+    body = response.json()["error"]
+    assert "valid JSON" in body["message"]
+    assert isinstance(body["message"], str)
+
+
+def test_missing_target_returns_structured_error(tmp_path, monkeypatch):
+    _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    response = client.post(
+        "/datasets",
+        data={"name": "notarget", "target": "", "mapping": ""},
+        files={"file": ("t.csv", "a,b\n1,2\n3,4\n", "text/csv")},
+    )
+    assert response.status_code == 422
+    body = response.json()["error"]
+    # Structured fields, not a Python dict repr.
+    assert isinstance(body["message"], str)
+    assert "No usable target column" in body["message"]
+    assert body["columns"] == ["a", "b"]
+
+
+def test_failed_training_removes_the_uploaded_source(tmp_path, monkeypatch):
+    settings = _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    # Three rows cannot support training (too few per class).
+    tiny = "\n".join(["raisedhands;Class", "1;L", "2;M", "3;L"])
+    response = client.post(
+        "/datasets",
+        data={
+            "name": "tiny-fail",
+            "target": "Class",
+            "mapping": json.dumps({"delimiter": ";"}),
+            "train": "true",
+            "mode": "single",
+            "model": "decision_tree",
+        },
+        files={"file": ("tiny.csv", tiny, "text/csv")},
+    )
+    assert response.status_code == 400
+    assert "training failed" in response.json()["error"]["message"]
+    # No phantom source or files left behind.
+    assert not (settings.uploads_dir / "tiny-fail.json").exists()
+    assert "tiny-fail" not in {
+        source["name"] for source in client.get("/datasets").json()["sources"]
+    }
+
+
 # ------------------------------------------------------------------ flatten
 def test_flatten_turns_arbitrary_xapi_into_a_table(tmp_path, monkeypatch):
     _settings(tmp_path, monkeypatch)

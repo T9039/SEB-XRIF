@@ -278,7 +278,17 @@ async def upload(
             result["trained"] = True
             result["model"] = promoted["model"]
         except (ValueError, KeyError) as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            # Do not leave a half-created source behind when training fails.
+            _remove(name, settings)
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "message": (
+                        "The source was adapted but training failed, so it was "
+                        f"removed again: {exc}"
+                    )
+                },
+            ) from exc
     return result
 
 
@@ -310,10 +320,33 @@ def _upload_statements(
     return {"target": dataset.target, "learners": int(len(dataset.frame))}
 
 
+def _parse_mapping(mapping: str) -> dict:
+    """Parse a mapping JSON string, raising a clean HTTP 422 when invalid."""
+    if not mapping.strip():
+        return {}
+    try:
+        spec = json.loads(mapping)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "message": (
+                    f"The mapping is not valid JSON ({exc.msg} at position {exc.pos})."
+                )
+            },
+        ) from exc
+    if not isinstance(spec, dict):
+        raise HTTPException(
+            status_code=422,
+            detail={"message": "The mapping must be a JSON object."},
+        )
+    return spec
+
+
 def _upload_table(
     name, payload, filename, target, mapping, description, settings
 ) -> dict:
-    spec = json.loads(mapping) if mapping else {}
+    spec = _parse_mapping(mapping)
     frame = _read_table(payload, filename, spec.get("delimiter"))
     columns = [str(column) for column in frame.columns]
 
