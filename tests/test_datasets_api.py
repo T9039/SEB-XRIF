@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 
 from analytics.config import get_settings
 from analytics.data import load_raw
+from analytics.datasets.registry import get_adapter
 from analytics.xapi import build_statements, learner_id
 from api.main import app
 from api.routes import datasets as datasets_route
@@ -168,3 +169,48 @@ def test_delete_rejects_builtin(tmp_path, monkeypatch):
     _settings(tmp_path, monkeypatch)
     client = TestClient(app)
     assert client.delete("/datasets/kalboard").status_code == 400
+
+
+# --------------------------------------------------------------- delimiters
+def test_check_detects_semicolon_delimiter(tmp_path, monkeypatch):
+    _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    csv = "raisedhands;VisITedResources;Class\n5;6;L\n7;8;H\n"
+    response = client.post(
+        "/datasets/check",
+        files={"file": ("semi.csv", csv, "text/csv")},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["kind"] == "table"
+    assert body["detected_delimiter"] == ";"
+    assert body["adaptable"] is True
+    assert body["suggested_mapping"]["target"] == "Class"
+
+
+def test_semicolon_table_trains_with_stored_delimiter(tmp_path, monkeypatch):
+    settings = _settings(tmp_path, monkeypatch)
+    client = TestClient(app)
+    csv = "raisedhands;VisITedResources;Class\n" + "\n".join(
+        f"{i};{i + 1};{['L', 'M', 'H'][i % 3]}" for i in range(40)
+    )
+    response = client.post(
+        "/datasets",
+        data={
+            "name": "semi-src",
+            "target": "Class",
+            "mapping": json.dumps({"delimiter": ";"}),
+            "mode": "single",
+            "model": "decision_tree",
+            "train": "false",
+        },
+        files={"file": ("semi.csv", csv, "text/csv")},
+    )
+    assert response.status_code == 200, response.text
+
+    # The sidecar remembers the delimiter and the adapter reads it back.
+    sidecar = json.loads((settings.uploads_dir / "semi-src.json").read_text())
+    assert sidecar["delimiter"] == ";"
+    dataset = get_adapter("semi-src", settings).load(settings)
+    assert len(dataset.frame) == 40
+    assert "raisedhands" in dataset.frame.columns

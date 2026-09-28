@@ -55,6 +55,7 @@ export function DatasetManager() {
   const [classLabels, setClassLabels] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [mapping, setMapping] = useState("");
+  const [delimiter, setDelimiter] = useState("");
   const [trainAfter, setTrainAfter] = useState(true);
   const [mode, setMode] = useState("single");
   const [model, setModel] = useState("random_forest");
@@ -62,19 +63,44 @@ export function DatasetManager() {
 
   const refresh = () => client.invalidateQueries({ queryKey: ["datasets"] });
 
-  const onPick = async (picked: File | null) => {
-    setFile(picked);
-    setError("");
-    if (!picked) return;
+  const checkedWith = (override: string) => (override ? override : undefined);
+
+  const runCheck = async (picked: File, override: string) => {
     try {
-      const report = await check.mutateAsync(picked);
+      const report = await check.mutateAsync({
+        file: picked,
+        delimiter: checkedWith(override),
+      });
       if (report.kind === "table" && report.adaptable && report.suggested_mapping) {
         if (report.suggested_mapping.target) setTarget(report.suggested_mapping.target);
-        setMapping(JSON.stringify(report.suggested_mapping, null, 2));
+        setMapping(
+          JSON.stringify(
+            {
+              ...report.suggested_mapping,
+              ...(override ? { delimiter: override } : {}),
+            },
+            null,
+            2,
+          ),
+        );
+      } else if (report.detected_delimiter && !override) {
+        setDelimiter(report.detected_delimiter);
       }
     } catch (err) {
       setError(message(err));
     }
+  };
+
+  const onPick = async (picked: File | null) => {
+    setFile(picked);
+    setError("");
+    if (!picked) return;
+    await runCheck(picked, delimiter);
+  };
+
+  const onDelimiterChange = async (value: string) => {
+    setDelimiter(value);
+    if (file) await runCheck(file, value);
   };
 
   const onSubmit = async (event: FormEvent) => {
@@ -184,6 +210,23 @@ export function DatasetManager() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="ds-delimiter">Delimiter</Label>
+                <NativeSelect
+                  id="ds-delimiter"
+                  value={delimiter}
+                  onChange={(e) => onDelimiterChange(e.target.value)}
+                  className="w-40"
+                >
+                  <NativeSelectOption value="">Detect automatically</NativeSelectOption>
+                  <NativeSelectOption value=",">Comma</NativeSelectOption>
+                  <NativeSelectOption value=";">Semicolon</NativeSelectOption>
+                  <NativeSelectOption value={"\t"}>Tab</NativeSelectOption>
+                </NativeSelect>
+              </div>
             </div>
 
             {report ? (

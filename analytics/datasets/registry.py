@@ -55,6 +55,7 @@ def get_adapter(name: str, settings=None) -> DatasetAdapter:
             features=upload.features,
             categorical=upload.categorical,
             numeric=upload.numeric,
+            delimiter=upload.delimiter,
             description=upload.description,
         )
     return XapiProfileAdapter(

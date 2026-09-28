@@ -33,6 +33,7 @@ class UploadSource:
     features: list[str] = field(default_factory=list)
     categorical: list[str] = field(default_factory=list)
     numeric: list[str] = field(default_factory=list)
+    delimiter: str | None = None
 
 
 def sidecar_path(name: str, settings: Settings | None = None) -> Path:
@@ -66,6 +67,7 @@ def read_upload(name: str, settings: Settings | None = None) -> UploadSource:
         features=list(meta.get("features", [])),
         categorical=list(meta.get("categorical", [])),
         numeric=list(meta.get("numeric", [])),
+        delimiter=meta.get("delimiter"),
     )
 
 
@@ -128,6 +130,7 @@ def write_table_upload(
     categorical: list[str] | None = None,
     numeric: list[str] | None = None,
     class_labels: list[str] | None = None,
+    delimiter: str | None = None,
     description: str = "",
     settings: Settings | None = None,
 ) -> UploadSource:
@@ -147,6 +150,7 @@ def write_table_upload(
             "features": features,
             "categorical": categorical or [],
             "numeric": numeric or features,
+            "delimiter": delimiter,
             "data": data_file.name,
         },
         settings,

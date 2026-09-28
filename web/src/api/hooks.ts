@@ -253,9 +253,10 @@ export function useUploadDataset() {
 
 export function useCheckDataset() {
   return useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async (input: { file: File; delimiter?: string }) => {
       const form = new FormData();
-      form.append("file", file);
+      form.append("file", input.file);
+      if (input.delimiter) form.append("delimiter", input.delimiter);
       return (await api.post<DatasetCheck>("/datasets/check", form)).data;
     },
   });

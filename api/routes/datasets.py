@@ -50,14 +50,30 @@ def _remove(name: str, settings) -> None:
     sidecar_path(name, settings).unlink(missing_ok=True)
 
 
-def _read_table(data: bytes, filename: str) -> pd.DataFrame:
-    sep = "\t" if filename.endswith(".tsv") else ","
+def _read_table(
+    data: bytes, filename: str, delimiter: str | None = None
+) -> pd.DataFrame:
+    """Read a delimited table, honouring an explicit delimiter when given.
+
+    Without one, sniff the first line among comma, semicolon and tab (xAPI CSV
+    exports in the wild use all three); fall back to the extension.
+    """
+    sep = delimiter or _detect_sep(data, filename)
     return pd.read_csv(io.BytesIO(data), sep=sep)
 
 
-def _table_report(data: bytes, filename: str) -> dict:
+def _detect_sep(data: bytes, filename: str) -> str:
+    if filename.endswith(".tsv"):
+        return "\t"
+    first = data.split(b"\n", 1)[0].decode("utf-8", errors="replace")
+    counts = {",": first.count(","), ";": first.count(";"), "\t": first.count("\t")}
+    best = max(counts, key=lambda sep: counts[sep])
+    return best if counts[best] > 0 else ","
+
+
+def _table_report(data: bytes, filename: str, delimiter: str | None = None) -> dict:
     try:
-        frame = _read_table(data, filename)
+        frame = _read_table(data, filename, delimiter)
     except (pd.errors.ParserError, UnicodeDecodeError, ValueError) as exc:
         return {
             "kind": "table",
@@ -67,15 +83,16 @@ def _table_report(data: bytes, filename: str) -> dict:
         }
 
     columns = [str(column) for column in frame.columns]
-    if len(columns) == 1 and (";" in columns[0] or "\t" in columns[0]):
+    if len(columns) == 1 and any(sep in columns[0] for sep in (";", "\t", "|")):
         return {
             "kind": "table",
             "conformant": False,
             "adaptable": False,
             "columns": columns,
+            "detected_delimiter": _detect_sep(data, filename),
             "reason": (
-                "Parsed as a single column; the delimiter may be ';' or tab. "
-                "Re-export as comma-separated CSV."
+                "Parsed as a single column; pass an explicit delimiter in the "
+                'mapping (e.g. {"delimiter": ";"}).'
             ),
         }
     target = next((name for name in _TARGET_GUESSES if name in columns), None)
@@ -102,6 +119,7 @@ def _table_report(data: bytes, filename: str) -> dict:
         "adaptable": bool(target) and bool(features),
         "missing": missing,
         "columns": columns,
+        "detected_delimiter": _detect_sep(data, filename),
         "suggested_mapping": {
             "target": target,
             "actor": actor,
@@ -112,9 +130,9 @@ def _table_report(data: bytes, filename: str) -> dict:
     }
 
 
-def _check_upload(data: bytes, filename: str) -> dict:
+def _check_upload(data: bytes, filename: str, delimiter: str | None = None) -> dict:
     if filename.endswith(_TABLE_SUFFIXES):
-        return _table_report(data, filename)
+        return _table_report(data, filename, delimiter)
     text = data.decode("utf-8")
     report = inspect_statements(statements_from_text(text))
     report["kind"] = "statements"
@@ -129,7 +147,10 @@ def _check_upload(data: bytes, filename: str) -> dict:
 
 
 @router.post("/datasets/check")
-async def check(file: Annotated[UploadFile, File()]) -> dict:
+async def check(
+    file: Annotated[UploadFile, File()],
+    delimiter: Annotated[str, Form()] = "",
+) -> dict:
     """Inspect an upload and report conformance / adaptability without storing it."""
     filename = file.filename or ""
     if not filename.endswith((*_STATEMENT_SUFFIXES, *_TABLE_SUFFIXES)):
@@ -142,7 +163,7 @@ async def check(file: Annotated[UploadFile, File()]) -> dict:
     if len(data) > MAX_BYTES:
         raise HTTPException(status_code=413, detail="Upload exceeds the size limit.")
     try:
-        return _check_upload(data, filename)
+        return _check_upload(data, filename, delimiter or None)
     except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -258,9 +279,9 @@ def _upload_statements(
 def _upload_table(
     name, payload, filename, target, mapping, description, settings
 ) -> dict:
-    frame = _read_table(payload, filename)
-    columns = [str(column) for column in frame.columns]
     spec = json.loads(mapping) if mapping else {}
+    frame = _read_table(payload, filename, spec.get("delimiter"))
+    columns = [str(column) for column in frame.columns]
 
     target_column = (
         target
@@ -309,6 +330,7 @@ def _upload_table(
         categorical=categorical,
         numeric=numeric,
         class_labels=labels,
+        delimiter=spec.get("delimiter"),
         description=description,
         settings=settings,
     )

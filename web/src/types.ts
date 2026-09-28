@@ -257,6 +257,7 @@ export interface DatasetCheck {
   missing?: string[];
   reason?: string;
   columns?: string[];
+  detected_delimiter?: string;
   suggested_mapping?: {
     target?: string | null;
     actor?: string | null;

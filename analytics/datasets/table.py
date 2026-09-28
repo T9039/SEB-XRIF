@@ -30,6 +30,7 @@ class TableAdapter(DatasetAdapter):
         features: list[str],
         categorical: list[str] | None = None,
         numeric: list[str] | None = None,
+        delimiter: str | None = None,
         description: str = "",
     ) -> None:
         self.name = name
@@ -40,6 +41,7 @@ class TableAdapter(DatasetAdapter):
         self.numeric = list(
             numeric or [f for f in self.features if f not in self.categorical]
         )
+        self.delimiter = delimiter
         self.description = description
 
     def load(self, settings: Settings | None = None) -> Dataset:
@@ -47,7 +49,7 @@ class TableAdapter(DatasetAdapter):
         if not self.path.exists():
             raise ValueError(f"Table source '{self.name}' is missing {self.path}.")
 
-        frame = pd.read_csv(self.path)
+        frame = pd.read_csv(self.path, sep=self.delimiter or ",")
         required = [*self.features, self.target]
         missing = [column for column in required if column not in frame.columns]
         if missing:
