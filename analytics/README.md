@@ -29,6 +29,20 @@ make train ARGS='--tune'                      # tune before fitting
 uv run python -m analytics.train --list       # list models
 ```
 
+### Training a specific source
+
+Any registered source (a built-in adapter, an ARETE pilot, or an uploaded
+dataset) can be trained on its own target:
+
+```bash
+make train SOURCE=kalboard                        # one model (default)
+make train SOURCE=kalboard ARGS='--models svc'    # a chosen algorithm
+make train SOURCE=arete-pbis ARGS='--matrix'      # best of matrix
+```
+
+Artifacts are written as `models/<source>.joblib|.meta.json|.run.json` (+ SHAP);
+Kalboard keeps the historical `model.*` names so the DVC stage is unchanged.
+
 ## Model catalog
 
 `uv run python -m analytics.train --list` prints the live catalog. Current

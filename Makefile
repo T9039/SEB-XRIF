@@ -2,13 +2,14 @@
 .RECIPEPREFIX = >
 SHELL := /bin/bash
 
-.PHONY: help bootstrap sync lint format type test api web dev train prepare \
+.PHONY: help bootstrap sync lint format type test api web dev up train prepare \
         matrix tune paper mlflow db-upgrade db-init repro-check check-xapi flatten-xapi \
         docker-up docker-down docker-logs figures clean \
         ui-install storybook storybook-build
 
 help:
 > @echo "SEB-XRIF targets:"
+> @echo "  up           ONE COMMAND: install if needed, train if needed, run api + dashboard"
 > @echo "  bootstrap    install Python + web dependencies, hooks, and .env"
 > @echo "  sync         refresh the uv-managed Python environment"
 > @echo "  lint         ruff + mypy (+ web typecheck)"
@@ -105,6 +106,9 @@ web:
 
 dev:
 > @./scripts/dev.sh
+
+up:
+> @./scripts/run.sh $(ARGS)
 
 ui-install:
 > pnpm install

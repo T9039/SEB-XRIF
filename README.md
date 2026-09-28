@@ -30,34 +30,118 @@ instantiation of the framework, not the framework itself.
 The full design, rationale, alternatives, and phased build plan are in the
 [technical specification](docs/SEB-XRIF_Technical_Specification.pdf).
 
-## Prerequisites
-
-- [`uv`](https://docs.astral.sh/uv/) (manages Python 3.12 automatically)
-- Node.js 20+ and npm (the web dashboard uses **Vite+**; it installs locally
-  via npm, no global CLI needed)
-- pnpm (the `web/` + `ui/` JavaScript workspace uses pnpm catalogs; `corepack enable`)
-- Docker + Docker Compose (for the containerized stack)
-- `make` (optional, for the shortcut targets)
-
 ## Quickstart
 
+One command: it installs what is missing, trains the default model if none
+exists, and starts the dashboard and API together.
+
 ```bash
-# 1. Install Python deps, web deps, git hooks, and .env
-./scripts/bootstrap.sh
-# or: make bootstrap
-
-# 2. Validate the dataset and snapshot it to parquet
-make prepare
-
-# 3. Train the proposed Random Forest (writes models/model.joblib)
-make train
-
-# 4. Run the API and the dashboard
-make dev            # api on :8000, web on :5173
+git clone https://github.com/T9039/SEB-XRIF.git
+cd SEB-XRIF
+make up            # or: ./scripts/run.sh
 ```
 
-Open the API docs at http://localhost:8000/docs and the dashboard at
-http://localhost:5173.
+Then open:
+
+- **Dashboard:** http://localhost:5173
+- **API docs:** http://localhost:8000/docs
+
+Press `Ctrl+C` to stop. It is idempotent — re-running it is safe.
+
+> Windows: use the provided launcher instead (details in
+> [Windows setup](#windows-setup)): `scripts\run.cmd`.
+
+### Doing it by hand
+
+```bash
+./scripts/bootstrap.sh   # install Python + web deps, hooks, and .env
+make train               # train the default Random Forest (writes models/model.joblib)
+make dev                 # api on :8000, web on :5173 (no training step)
+```
+
+`make prepare` (validate the CSV to parquet) is optional and not needed to run
+the dashboard.
+
+## Prerequisites
+
+Everything below is required unless marked optional.
+
+- [`uv`](https://docs.astral.sh/uv/) — installs and manages Python 3.12 for you.
+- **Node.js 20+** — includes `npm` and `corepack`.
+- **pnpm** — enable with `corepack enable`, or `npm install -g pnpm`.
+- **Git** — to clone the repository.
+- `make` — recommended (the shortcut targets). Optional on Windows.
+- Docker + Docker Compose — only for the containerized stack (`make docker-up`).
+
+### Windows setup
+
+The project's automation is POSIX shell, so on Windows use **Git Bash** (bundled
+with Git for Windows) and the `.cmd` launchers, which find Git Bash for you.
+
+1. **Install Git for Windows** — https://git-scm.com/download/win (includes Git Bash).
+2. **Install `uv`** — in PowerShell:
+   ```powershell
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
+3. **Install Node.js 20+** — https://nodejs.org (LTS installer).
+4. **Enable pnpm** — in PowerShell or Git Bash:
+   ```bash
+   corepack enable
+   ```
+5. **Clone and run** — in `cmd.exe` or PowerShell:
+   ```bat
+   git clone https://github.com/T9039/SEB-XRIF.git
+   cd SEB-XRIF
+   scripts\run.cmd
+   ```
+
+`scripts\run.cmd` locates Git Bash and runs `scripts/run.sh`. If you prefer Git
+Bash directly, open it and run `./scripts/run.sh`.
+
+> Docker on Windows uses Docker Desktop with the WSL 2 backend; it is only needed
+> for `make docker-up`, not for the single-command path above.
+
+### Linux / macOS
+
+Install `uv`, Node, and pnpm by any means, then run `make up` (or
+`./scripts/run.sh`). `make` is available by default on macOS and most Linux
+distributions.
+
+
+## For beta testers
+
+Thanks for trying SEB-XRIF. The goal is to find faults and annoyances, so please
+be blunt. Set it up with `make up` (or `scripts\run.cmd` on Windows), then work
+through the dashboard tabs.
+
+**What to try**
+
+1. **Overview / Data / Diagnostics** — the seeded Kalboard (LMS) data and model.
+   Check the numbers look sane and the tables sort/search.
+2. **Predict** — fill the form and predict a support band. Try leaving fields at
+   their defaults and changing a few.
+3. **Explore** — switch the header **Data source** to an ARETE XR pilot and see
+   the engagement trends, the early-warning risk panel, and the LMS→XR mapping.
+4. **Datasets** — register your own data:
+   - a **profile-conformant xAPI statements** file (`.jsonl`) — accepted and trainable;
+   - a **table** (`.csv`) — pick the target column and adapt it;
+   - a **foreign xAPI** file — use **Flatten to CSV**, then upload the result.
+   Use **Check** on any file first; it tells you what the system sees.
+5. **Theme** — toggle light/dark in the header (light is the default).
+
+**Things that should fail gracefully (please check they do)**
+
+- Uploading something that is not a dataset (empty file, random bytes, a `.csv`
+  with no target column).
+- A table whose target has one value per class (too small to train).
+- Picking an XR pilot that has not been downloaded (`make fetch-arete`).
+- Selecting a source with no trained model in **Predict**.
+
+**Reporting an issue**
+
+Please include: what you did, what you expected, what happened, and any browser
+console errors (F12 → Console), plus your OS. If a panel shows an error message,
+copy it verbatim.
 
 ## Command reference
 
@@ -100,9 +184,10 @@ http://localhost:5173.
 
 | Command | What it does |
 | --- | --- |
+| `make up` | **One command:** install if needed, train if needed, run api + dashboard (`ARGS='--no-train'` to skip training) |
 | `make api` | FastAPI with autoreload on http://localhost:8000 |
 | `make web` | Vite+ dev server (`vp dev`) on http://localhost:5173 |
-| `make dev` | Both at once |
+| `make dev` | Both at once (no training step) |
 | `make ui-install` | Install the JS workspace dependencies (web + ui) with pnpm |
 | `make storybook` | Storybook for the component library on http://localhost:6006 |
 | `make storybook-build` | Build the static Storybook |

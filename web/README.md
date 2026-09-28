@@ -6,6 +6,9 @@ It is a workspace package inside the pnpm workspace at the repository root.
 
 ## Run
 
+The simplest path from the repository root is `make up` (installs if needed,
+trains if needed, starts API + dashboard). To run the web app on its own:
+
 ```bash
 # from the repository root
 pnpm install             # once, installs web + ui

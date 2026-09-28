@@ -6,6 +6,9 @@ prediction and metrics routes return HTTP 503 until one exists.
 
 ## Run
 
+The simplest path is `make up` (installs if needed, trains if needed, starts the
+API and dashboard). To run just the API:
+
 ```bash
 make api                 # http://localhost:8000
 make dev                 # api + dashboard together
