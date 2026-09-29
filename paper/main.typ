@@ -15,7 +15,13 @@
   numbering: "1",
 )
 #set text(font: "New Computer Modern", size: 9.5pt)
-#set par(justify: true, leading: 0.55em)
+#set par(justify: true, leading: 0.55em, first-line-indent: 1.2em, spacing: 0.72em)
+// Template style: the opening paragraph after a heading is flush, subsequent
+// paragraphs are indented ("use the tab for the first sentence").
+#show heading: it => {
+  it
+  block(height: 0pt, sticky: true)
+}
 #show heading.where(level: 1): set text(size: 14pt, weight: "bold")
 #show heading.where(level: 2): set text(size: 12pt, weight: "bold")
 #show heading.where(level: 3): set text(size: 11pt, weight: "bold", style: "italic")
@@ -26,8 +32,16 @@
 
 #align(center)[
   #text(size: 16pt, weight: "bold")[Enhancing Digital Education Using VR Technology]
-  #v(0.5em)
-  #text(size: 9pt)[Team 3 — PRJT302 — Information Technology, Durban University of Technology]
+  #v(0.4em)
+  #text(size: 9.5pt)[
+    Thuto LEPHEANA, Slindokuhle NYAWUZA, Sithabile MALEVU, Olwethu THABETHE,
+    Amukelani SITHOLE, Phelokazi SIWELA, Devonne METH, S'nokuhle BHENGU,
+    Thandolwethu ZULU, Aphiwe MTAMBO, Asande CIBANE, Lindelweyizizwe MANQELE
+  ]
+  #v(0.2em)
+  #text(size: 8.5pt, style: "italic")[
+    Information Technology, Durban University of Technology, Durban, 4001, South Africa
+  ]
 ]
 #v(0.3em)
 #line(length: 100%, stroke: 0.5pt + luma(180))

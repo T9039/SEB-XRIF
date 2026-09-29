@@ -3,11 +3,12 @@
 This study adopts the Design Science Research Methodology (DSRM) to guide the
 development and evaluation of the Scalable, Evidence-Based XR Integration Framework
 (SEB-XRIF). DSRM originates in information systems design research and was formalised by
-Peffers et al., and is applied here in five steps. It links each design decision to a
-documented problem, as in comparable immersive education work. The problem phase uses the
-group systematic literature review of 28 studies, which found retention rarely measured and
-a median sample of 30, alongside passive two-dimensional instruction at the Durban
-University of Technology.
+Peffers et al., and is applied here across its six phases — problem identification,
+objectives, design and development, demonstration, evaluation, and communication. It
+links each design decision to a documented problem, as in comparable immersive education
+work. The problem phase uses the group systematic literature review of 28 studies, which
+found retention rarely measured and a median sample of 30, alongside passive
+two-dimensional instruction at the Durban University of Technology.
 
 ## 3.1 Proposed Solution
 
