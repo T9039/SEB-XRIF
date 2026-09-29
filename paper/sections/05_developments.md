@@ -39,35 +39,52 @@ The class labels are reported as support bands, and a cost-sensitive rule can
 flag the priority band below the argmax. The comparison matrix reports 95 percent
 confidence intervals, diagnostics report calibration (reliability, Brier, and
 expected calibration error), and a second model predicts XR engagement drop-off
-from early-session behaviour with cross-validated ROC-AUC.
+from early-session behaviour with cross-validated ROC-AUC. Training is
+dataset-driven: any registered source — the LMS seed, an ARETE pilot, or an
+uploaded dataset — declares its own features and target, and is trained and
+promoted either with a chosen algorithm or by running the matrix and promoting
+the best model for that data.
 
 ## 5.3 Service layer
 
 A FastAPI service exposes single and batch prediction, model metrics, feature
-importance, behavioural trends, a paged learner table, categorical option sets,
-the model comparison matrix, diagnostics, Chart Studio queries, the individual
-ARETE pilots, XR engagement trends, XR early-warning risk, and a longitudinal
-evaluation summary. It loads the model once at startup, from a local artifact or
-the MLflow model registry, validates every request, emits structured logs with
-request identifiers, and returns a consistent error envelope.
+importance, behavioural trends, the learner table, the comparison matrix,
+diagnostics, Chart Studio queries, the ARETE pilots, XR trends and risk, and a
+longitudinal evaluation summary. It loads the model once at startup, from a local
+artifact or the MLflow model registry, validates every request, emits structured
+logs with request identifiers, and returns a consistent error envelope.
 
 ## 5.4 Visualization layer
 
 The dashboard is a React application built with Vite+ on a shared shadcn/ui
-component library that also drives its own Storybook. It has six tabs — Overview,
-Predict, Data, Diagnostics, Explore, and Studio — and a persistent header
-selector that switches the active data source between the LMS seed and the five
-ARETE XR pilots. Predict returns the support band with per-class probabilities;
-Diagnostics reports the confusion matrix, calibration, and cross-validation
-spread; Explore shows the ARETE engagement trends, XR early-warning risk, and the
-LMS-to-XR feature mapping; Overview shows the longitudinal impact panel, empty
-until pilot data is imported.
+component library that also drives its own Storybook. It has seven tabs —
+Overview, Predict, Data, Diagnostics, Explore, Studio, and Datasets — and a
+persistent header selector that switches the active data source between the LMS
+seed and the five ARETE XR pilots, with a light/dark theme toggle. Predict returns
+the support band with per-class probabilities; Diagnostics reports the confusion
+matrix, calibration, and cross-validation spread; Explore shows the ARETE
+engagement trends, XR early-warning risk, and the LMS-to-XR feature mapping;
+Overview shows the longitudinal impact panel, empty until pilot data is imported.
+The Datasets tab checks an upload against the profile, lets a plain table be
+adapted with a column mapping, flattens a foreign xAPI file to a mappable table,
+and trains the resulting source.
 
 ## 5.5 Reproducibility and tooling
 
 Data, models, and metrics are reproducible: DVC pins the data and pipeline,
 MLflow records every run and registers the model, and seeds are fixed
-throughout. The project ships as a pnpm workspace for the web and UI packages,
+throughout. A clean-checkout check re-runs the pipeline and fails if the recorded
+graph drifts, and the generated model metadata is deterministic so it can be
+verified. The project ships as a pnpm workspace for the web and UI packages,
 uses `uv` for Python, and brings the database, LRS, MLflow, service, and
-dashboard up together with Docker Compose. GitHub Actions runs the full test
-suite, type and lint checks, image builds, and the paper build on every change.
+dashboard up together with Docker Compose; a single command installs what is
+missing, trains the default model if absent, and starts the service and
+dashboard. GitHub Actions runs the full test suite, type and lint checks, image
+builds, the reproduction check, and the paper build on every change.
+
+The service was exercised end-to-end as a user would, through the browser, with
+both conformant and malformed inputs: missing or extra prediction features,
+unknown sources, oversized uploads, non-UTF-8 files, tables with no target, and
+foreign xAPI vocabularies. Failures are reported as structured, actionable
+errors, and a source whose training fails is rolled back rather than left
+half-registered.

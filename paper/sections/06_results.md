@@ -19,16 +19,32 @@ Interpretability is consistent across folds: the most stable drivers are
 `StudentAbsenceDays` (permutation importance 0.194 ± 0.020), `Relation`,
 `VisITedResources`, and `raisedhands`. These are plausible, actionable signals —
 attendance and resource engagement — which supports the framework's use of the
-model for early support rather than for gatekeeping.
+model for early support rather than for gatekeeping. Probabilities are calibrated
+before they are thresholded: out-of-fold diagnostics give a macro one-vs-rest
+ROC-AUC of 0.923 and a mean expected calibration error of 0.065, so a reported
+confidence is close to the observed frequency.
 
 The XR transfer is demonstrated on the five ARETE augmented-reality exports. The
 same pipeline parses each, normalises delimiter, columns, encodings, and result
 shape, reconstructs per-learner engagement, plots engagement over time, and
-predicts a later drop-off from early-session behaviour. Cross-validated ROC-AUC
-is 0.69 for PBIS, 0.88 for English Literacy and STEM Geometry, and 0.73 for STEM
-Geography; the LXD pilot is a single-outcome cohort and is reported as not
-modelled. These early-warning results on real XR xAPI data show the schema
-transfer works; they are not a claim about XR learning outcomes.
+predicts a later drop-off from early-session behaviour. Across the pilots the
+pipeline reconstructs 3,944 learners from 340,138 statements: PBIS 81 learners /
+12,385 statements, English Literacy 37 / 33,628, STEM Geometry 694 / 142,567,
+STEM Geography 739 / 136,416, and LXD 141 / 5,142. The early-warning model's
+cross-validated ROC-AUC is 0.69 for PBIS, 0.88 for English Literacy, 0.88 for STEM
+Geometry, and 0.73 for STEM Geography; the LXD authoring pilot forms a
+single-outcome cohort and is reported as not modelled rather than scored. These
+early-warning results on real XR xAPI data show the schema transfer works; they
+are not a claim about XR learning outcomes.
+
+The framework also trains models for newly registered sources, not only the two
+seeded ones. Two public tables were adapted through a column mapping and trained
+on the fly: Iris (three species, 150 rows) reached a cross-validated macro F1 of
+0.960 with a support-vector classifier, and Titanic (binary survival, 891 rows)
+0.814 with a Random Forest. These are ordinary tabular datasets with no XR
+content, which is the point: the same pipeline, promotion, and serving path used
+for the XR pilots accepts a source that follows the framework's schema, or an
+adapted table, and produces a usable, calibrated model.
 
 The evaluation protocol is fixed and reported with the same instruments for
 every adopter: System Usability Scale for the dashboard and Cohen's d for the

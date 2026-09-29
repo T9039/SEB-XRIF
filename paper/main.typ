@@ -42,7 +42,7 @@
 #md("sections/results_table.md")
 
 #figure(
-  image("../reports/figures/model_comparison.png", width: 88%),
+  image("../reports/figures/model_comparison.png", width: 80%),
   caption: [Model comparison matrix across the 16 estimators (CV macro F1 ± std).],
 )
 
