@@ -7,7 +7,14 @@ import {
   Sparkles,
   Table2,
 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger, ThemeToggle } from "@humanity-erp/ui";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  ThemeToggle,
+  buttonVariants,
+} from "@humanity-erp/ui";
 import { ChartStudio } from "./components/ChartStudio";
 import { ClassificationQuality } from "./components/ClassificationQuality";
 import { CvSpread } from "./components/CvSpread";
@@ -47,6 +54,14 @@ export default function App() {
               </p>
             </div>
             <div className="flex flex-wrap items-end gap-4">
+              <a
+                className={buttonVariants({ variant: "outline", size: "default" })}
+                href="https://github.com/T9039/SEB-XRIF/blob/main/docs/instructions.md"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Guide
+              </a>
               <SourceSelector />
               <HealthBadge />
               <ThemeToggle />

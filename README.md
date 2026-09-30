@@ -111,8 +111,10 @@ distributions.
 ## For beta testers
 
 Thanks for trying SEB-XRIF. The goal is to find faults and annoyances, so please
-be blunt. Set it up with `make up` (or `scripts\run.cmd` on Windows), then work
-through the dashboard tabs.
+be blunt. **Read [`docs/instructions.md`](docs/instructions.md) first** — it is the
+operating manual: what each tab is for, the data schema, the evaluation protocol,
+and the limits. Then set it up with `make up` (or `scripts\run.cmd` on Windows)
+and work through the dashboard tabs.
 
 **What to try**
 
@@ -336,6 +338,7 @@ Developer tools run behind a Compose profile: `docker compose --profile tools up
 
 | Document | Description |
 | --- | --- |
+| [`docs/instructions.md`](docs/instructions.md) | **How to use it:** tabs, data schema, evaluation protocol, and limits |
 | `docs/SEB-XRIF_Technical_Specification.pdf` | Stack, rationale, alternatives, build plan |
 | `docs/reproducibility.md` | What is pinned and how to reproduce from a clean checkout |
 | `docs/datasets.md` | Bundled seed, ARETE XR pilots, and the LMS-to-XR feature mapping |
