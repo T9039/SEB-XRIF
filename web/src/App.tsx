@@ -1,26 +1,21 @@
 import {
   Activity,
   BarChart3,
+  BookOpen,
   Compass,
   Database,
   LayoutDashboard,
   Sparkles,
   Table2,
 } from "lucide-react";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  ThemeToggle,
-  buttonVariants,
-} from "@humanity-erp/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger, ThemeToggle } from "@humanity-erp/ui";
 import { ChartStudio } from "./components/ChartStudio";
 import { ClassificationQuality } from "./components/ClassificationQuality";
 import { CvSpread } from "./components/CvSpread";
 import { DataPanel } from "./components/DataPanel";
 import { DatasetManager } from "./components/DatasetManager";
 import { ExplorePanel } from "./components/ExplorePanel";
+import { GuidePanel } from "./components/GuidePanel";
 import { HealthBadge } from "./components/HealthBadge";
 import { ImportancePanel } from "./components/ImportancePanel";
 import { ModelDiagnostics } from "./components/ModelDiagnostics";
@@ -39,6 +34,7 @@ const NAV = [
   { value: "explore", label: "Explore", icon: Compass },
   { value: "studio", label: "Studio", icon: BarChart3 },
   { value: "datasets", label: "Datasets", icon: Database },
+  { value: "guide", label: "Guide", icon: BookOpen },
 ] as const;
 
 export default function App() {
@@ -54,14 +50,6 @@ export default function App() {
               </p>
             </div>
             <div className="flex flex-wrap items-end gap-4">
-              <a
-                className={buttonVariants({ variant: "outline", size: "default" })}
-                href="https://github.com/T9039/SEB-XRIF/blob/main/docs/instructions.md"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Guide
-              </a>
               <SourceSelector />
               <HealthBadge />
               <ThemeToggle />
@@ -123,6 +111,10 @@ export default function App() {
 
           <TabsContent value="datasets" className="min-w-0 flex-1">
             <DatasetManager />
+          </TabsContent>
+
+          <TabsContent value="guide" className="min-w-0 flex-1">
+            <GuidePanel />
           </TabsContent>
         </Tabs>
       </div>

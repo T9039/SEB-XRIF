@@ -111,10 +111,11 @@ distributions.
 ## For beta testers
 
 Thanks for trying SEB-XRIF. The goal is to find faults and annoyances, so please
-be blunt. **Read [`docs/instructions.md`](docs/instructions.md) first** — it is the
-operating manual: what each tab is for, the data schema, the evaluation protocol,
-and the limits. Then set it up with `make up` (or `scripts\run.cmd` on Windows)
-and work through the dashboard tabs.
+be blunt. New to the system? Open the **Guide** tab in the dashboard — it is a
+plain-language walkthrough (what each tab is for, the data it accepts, the
+measures it enforces, and the limits). For the developer reference see
+[`docs/instructions.md`](docs/instructions.md). Then set it up with `make up` (or
+`scripts\run.cmd` on Windows) and work through the dashboard tabs.
 
 **What to try**
 
