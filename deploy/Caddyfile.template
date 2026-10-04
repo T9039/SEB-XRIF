@@ -1,0 +1,12 @@
+{
+	admin off
+}
+
+# Internal listener; Tailscale Funnel terminates TLS and proxies here.
+# The only host binding is 127.0.0.1:<CADDY_PORT> (see docker-compose.yml).
+:80 {
+	basic_auth {
+		__BASIC_AUTH__
+	}
+	reverse_proxy web:80
+}

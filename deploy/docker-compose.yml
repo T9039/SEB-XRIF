@@ -1,0 +1,99 @@
+# Serving stack for the beta: api + web + postgres, fronted by Caddy
+# (basic auth) and exposed to the internet only via Tailscale Funnel.
+#
+# Nothing is published to the host except Caddy, bound to 127.0.0.1.
+# MLflow and lrsql are intentionally omitted: they are training / test-only.
+#
+#   docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d --build
+name: seb-xrif-deploy
+
+x-api-env: &api-env
+  DATABASE_URL: postgresql+psycopg://sebxrif:${POSTGRES_PASSWORD}@db:5432/sebxrif
+  MLFLOW_TRACKING_URI: sqlite:///mlflow.db
+
+services:
+  api:
+    image: seb-xrif-api:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    environment:
+      <<: *api-env
+    volumes:
+      # Trained artifacts and tester uploads live on the host.
+      - ../models:/app/models
+      - ../data/raw/uploads:/app/data/raw/uploads
+      - ../data/raw/arete:/app/data/raw/arete
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  migrate:
+    image: seb-xrif-api:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    environment:
+      <<: *api-env
+    # Postgres can report healthy mid-init then restart; retry until it sticks.
+    command:
+      - sh
+      - -c
+      - |
+        for i in $$(seq 1 30); do
+          alembic upgrade head && exit 0
+          echo "migrate: database not ready (attempt $$i)"; sleep 2
+        done
+        exit 1
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  web:
+    image: seb-xrif-web:local
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+      args:
+        VITE_API_URL: /api
+    expose:
+      - "80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: sebxrif
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: sebxrif
+    volumes:
+      # Postgres 18 stores data under /var/lib/postgresql/<major>/docker.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sebxrif"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      # The only host binding. Funnel proxies to 127.0.0.1:${CADDY_PORT}.
+      - "127.0.0.1:${CADDY_PORT:-9080}:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  pgdata:

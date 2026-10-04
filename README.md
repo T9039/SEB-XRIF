@@ -146,6 +146,33 @@ Please include: what you did, what you expected, what happened, and any browser
 console errors (F12 → Console), plus your OS. If a panel shows an error message,
 copy it verbatim.
 
+## Hosted beta (deployment)
+
+A hosted instance can be stood up on any machine with Docker, `tailscale`, and
+`openssl`. One idempotent command builds the serving stack and exposes it to the
+internet through **Tailscale Funnel**:
+
+```bash
+./deploy/deploy.sh          # override the public port with FUNNEL_PORT=...
+```
+
+On first run it generates `deploy/.env` (Postgres and beta basic-auth password)
+and `deploy/Caddyfile` (the bcrypt hash of that password) — both **gitignored**;
+delete them to rotate the credentials. It then builds and starts
+`deploy/docker-compose.yml` (`api` + `web` + `postgres`, fronted by `caddy` with
+HTTP basic auth), waits until the API reports a loaded model, and prints the
+live URL, username, and password. MLflow and `lrsql` are deliberately omitted
+from this stack (they are training / test-only).
+
+Nothing is published to the host except Caddy, bound to `127.0.0.1`; Funnel is
+the only path from the public internet and it reaches exactly one port.
+
+```bash
+# stop the public listener, then the stack (FUNNEL_PORT defaults to 8443)
+tailscale funnel --https=8443 off
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env down
+```
+
 ## Command reference
 
 ### Environment and quality
@@ -279,6 +306,7 @@ ui/         shadcn/ui component library + Storybook (design system)
 web/        React dashboard built on the ui library (Vite+)
 data/       raw and processed datasets (DVC-tracked)
 models/     serialized pipelines and metadata sidecars
+deploy/     Tailscale Funnel + Caddy serving stack for the hosted beta
 docs/       technical specification, paper tooling, generated figures
 scripts/    bootstrap and run helpers
 tests/      Python test suite
