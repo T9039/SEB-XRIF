@@ -36,7 +36,8 @@ One command: it installs what is missing, trains the default model if none
 exists, and starts the dashboard and API together.
 
 ```bash
-git clone https://github.com/T9039/SEB-XRIF.git
+git clone https://github.com/T9039/SEB-XRIF.git    # HTTPS
+# or, with SSH: git clone git@github.com:T9039/SEB-XRIF.git
 cd SEB-XRIF
 make up            # or: python3 scripts/run.py
 ```
@@ -101,6 +102,7 @@ for those.
 5. **Clone and run** — in `cmd.exe` or PowerShell:
    ```bat
    git clone https://github.com/T9039/SEB-XRIF.git
+   REM or, with SSH: git clone git@github.com:T9039/SEB-XRIF.git
    cd SEB-XRIF
    python scripts\run.py
    ```
@@ -266,7 +268,8 @@ To reset a machine to a clean clone:
 
 ```bash
 python3 scripts/teardown.py -y      # removes everything, including this repo
-git clone https://github.com/T9039/SEB-XRIF.git
+git clone https://github.com/T9039/SEB-XRIF.git    # HTTPS
+# or, with SSH: git clone git@github.com:T9039/SEB-XRIF.git
 cd SEB-XRIF
 make up
 ```
@@ -276,8 +279,17 @@ On Windows:
 ```bat
 python scripts\teardown.py -y
 git clone https://github.com/T9039/SEB-XRIF.git
+REM or, with SSH: git clone git@github.com:T9039/SEB-XRIF.git
 cd SEB-XRIF
 python scripts\run.py
+```
+
+HTTPS is fine for cloning (the repository is public), but pushing over HTTPS
+needs a personal access token. If you push, use the SSH URL, or switch an
+existing clone with:
+
+```bash
+git remote set-url origin git@github.com:T9039/SEB-XRIF.git
 ```
 
 ## Component library and Storybook
