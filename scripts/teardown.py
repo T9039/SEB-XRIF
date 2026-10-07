@@ -13,7 +13,7 @@ Typical full reset::
 
     python scripts/teardown.py -y      # removes everything, including this repo
     git clone <origin-url> && cd SEB-XRIF
-    make up                            # or: scripts\\run.cmd on Windows
+    make up                            # or: python scripts\\run.py on Windows
 
 Runs on Windows and POSIX with a plain Python 3 interpreter (standard library
 only), so it can be shared between machines::
@@ -477,7 +477,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"    The repository {verb}. Restore with:")
         print(f"      git clone {url or '<origin-url>'} {repo_name}")
         print(f"      cd {repo_name}")
-        print("      make up            # or: scripts\\run.cmd on Windows")
+        print("      make up            # or: python scripts\\run.py on Windows")
     return 0
 
 

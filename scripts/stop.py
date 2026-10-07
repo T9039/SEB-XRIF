@@ -38,7 +38,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Local dev servers started by scripts/run.sh, scripts/dev.sh, make mlflow,
+# Local dev servers started by scripts/run.py, scripts/dev.sh, make mlflow,
 # make storybook.  Docker publishes other ports (8000/8080/5000/...); those are
 # handled by the Compose stack, which is stopped first so it cannot be
 # mistaken for a dev process.

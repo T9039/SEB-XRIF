@@ -38,7 +38,7 @@ exists, and starts the dashboard and API together.
 ```bash
 git clone https://github.com/T9039/SEB-XRIF.git
 cd SEB-XRIF
-make up            # or: ./scripts/run.sh
+make up            # or: python3 scripts/run.py
 ```
 
 Then open:
@@ -48,8 +48,8 @@ Then open:
 
 Press `Ctrl+C` to stop. It is idempotent — re-running it is safe.
 
-> Windows: use the provided launcher instead (details in
-> [Windows setup](#windows-setup)): `scripts\run.cmd`.
+> Windows: run `python scripts\run.py` instead (details in
+> [Windows setup](#windows-setup)).
 
 ### Doing it by hand
 
@@ -75,8 +75,9 @@ Everything below is required unless marked optional.
 
 ### Windows setup
 
-The project's automation is POSIX shell, so on Windows use **Git Bash** (bundled
-with Git for Windows) and the `.cmd` launchers, which find Git Bash for you.
+The single-command startup is Python, so it runs natively on Windows. The other
+`make` targets are POSIX shell; use **Git Bash** (bundled with Git for Windows)
+for those.
 
 1. **Install Git for Windows** — https://git-scm.com/download/win (includes Git Bash).
 2. **Install `uv`** — in PowerShell:
@@ -92,11 +93,12 @@ with Git for Windows) and the `.cmd` launchers, which find Git Bash for you.
    ```bat
    git clone https://github.com/T9039/SEB-XRIF.git
    cd SEB-XRIF
-   scripts\run.cmd
+   python scripts\run.py
    ```
 
-`scripts\run.cmd` locates Git Bash and runs `scripts/run.sh`. If you prefer Git
-Bash directly, open it and run `./scripts/run.sh`.
+`scripts\run.py` installs what is missing, trains the default model if needed,
+and starts the API and dashboard. For the other `make` targets, open Git Bash
+and run them there.
 
 > Docker on Windows uses Docker Desktop with the WSL 2 backend; it is only needed
 > for `make docker-up`, not for the single-command path above.
@@ -104,8 +106,8 @@ Bash directly, open it and run `./scripts/run.sh`.
 ### Linux / macOS
 
 Install `uv`, Node, and pnpm by any means, then run `make up` (or
-`./scripts/run.sh`). `make` is available by default on macOS and most Linux
-distributions.
+`python3 scripts/run.py`). `make` is available by default on macOS and most
+Linux distributions.
 
 
 ## For beta testers
@@ -115,7 +117,7 @@ be blunt. New to the system? Open the **Guide** tab in the dashboard — it is a
 plain-language walkthrough (what each tab is for, the data it accepts, the
 measures it enforces, and the limits). For the developer reference see
 [`docs/instructions.md`](docs/instructions.md). Then set it up with `make up` (or
-`scripts\run.cmd` on Windows) and work through the dashboard tabs.
+`python scripts\run.py` on Windows) and work through the dashboard tabs.
 
 **What to try**
 
@@ -266,7 +268,7 @@ On Windows:
 python scripts\teardown.py -y
 git clone https://github.com/T9039/SEB-XRIF.git
 cd SEB-XRIF
-scripts\run.cmd
+python scripts\run.py
 ```
 
 ## Component library and Storybook

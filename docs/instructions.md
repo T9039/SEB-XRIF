@@ -5,7 +5,7 @@ explains what the system is for, the data it accepts, what each screen does, the
 evaluation it enforces, and the limits you should know before trusting a result.
 
 - New here? Start with **Quickstart** in the [README](../README.md): `make up`.
-- Windows? Use `scripts\run.cmd` and the README's **Windows setup** section.
+- Windows? Use `python scripts\run.py` and the README's **Windows setup** section.
 
 ---
 

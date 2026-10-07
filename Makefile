@@ -110,7 +110,7 @@ dev:
 > @./scripts/dev.sh
 
 up:
-> @./scripts/run.sh $(ARGS)
+> @python3 scripts/run.py $(ARGS)
 
 stop:
 > @python3 scripts/stop.py $(ARGS)
