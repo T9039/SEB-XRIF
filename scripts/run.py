@@ -3,25 +3,33 @@
 
 Installs dependencies if they are missing, creates ``.env`` from
 ``.env.example``, trains the default model if no artifact exists, then runs the
-API (:8000) and the dashboard (:5173) together until you press Ctrl+C.
+API (:8000) and the dashboard (:5173) together.
 
-This is the single implementation behind ``make up`` and the Windows
-double-click path, so there is no separate shell/``.cmd`` script per platform::
+By default it stays in the foreground and serves until you press Ctrl+C (the
+API is waited on before the dashboard starts, so the first page load does not
+fail). Pass ``--detach`` (``-d``) to start both in the background and get your
+shell back; stop them with ``scripts/stop.py`` (``make stop``).
+
+This is the single implementation behind ``make up``, so there is no separate
+shell/``.cmd`` script per platform::
 
     python scripts/run.py            # Windows
     python3 scripts/run.py           # Linux / macOS
     make up                          # shortcut
     make up ARGS='--no-train'        # skip training
+    make up ARGS='--detach'          # background
 
 Options:
-    --no-train   skip training the default model
-    PORT=9000    environment variable: API port (dashboard stays on 5173)
+    -d, --detach  start in the background and return (logs: .sebxrif-*.log)
+    --no-train    skip training the default model
+    PORT=9000     environment variable: API port (dashboard stays on 5173)
 """
 
 from __future__ import annotations
 
 import argparse
 import contextlib
+import json
 import os
 import shutil
 import signal
@@ -29,13 +37,17 @@ import socket
 import subprocess
 import sys
 import time
+import urllib.request
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 IS_WINDOWS = os.name == "nt"
 API_PORT = int(os.environ.get("PORT", "8000"))
 WEB_PORT = 5173
 MODEL = ROOT / "models" / "model.joblib"
+API_LOG = ROOT / ".sebxrif-api.log"
+WEB_LOG = ROOT / ".sebxrif-web.log"
 
 
 def need(name: str) -> None:
@@ -50,6 +62,25 @@ def port_busy(port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(0.5)
         return sock.connect_ex(("127.0.0.1", port)) == 0
+
+
+def api_ready(port: int) -> bool:
+    try:
+        with urllib.request.urlopen(
+            f"http://127.0.0.1:{port}/health", timeout=2
+        ) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+
+def wait_for_api(port: int, timeout: float = 90.0) -> bool:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if api_ready(port):
+            return True
+        time.sleep(0.5)
+    return False
 
 
 def wrap(cmd: list[str]) -> list[str]:
@@ -90,13 +121,40 @@ def create_env() -> None:
         print("==> Created .env from .env.example")
 
 
-def spawn(cmd: list[str], cwd: Path) -> subprocess.Popen:
+def web_cmd() -> list[str]:
+    """Mirror web/package.json's "dev" script through `pnpm exec`.
+
+    `pnpm exec` runs the binary directly instead of through pnpm's lifecycle
+    wrapper, which avoids the "[ELIFECYCLE] Command failed." noise pnpm prints
+    when the dev server is stopped by a signal.
+    """
+    script = "vp dev"
+    try:
+        pkg = json.loads((ROOT / "web" / "package.json").read_text(encoding="utf-8"))
+        script = pkg.get("scripts", {}).get("dev", script)
+    except Exception:
+        pass
+    return ["pnpm", "exec", *script.split()]
+
+
+def spawn(
+    cmd: list[str],
+    cwd: Path,
+    stdout: Any = None,
+    stderr: Any = None,
+    detach: bool = False,
+) -> subprocess.Popen:
     kwargs: dict = {}
     if IS_WINDOWS:
-        kwargs["creationflags"] = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+        flags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+        if detach:
+            flags |= getattr(subprocess, "DETACHED_PROCESS", 0)
+        kwargs["creationflags"] = flags
     else:
         kwargs["start_new_session"] = True
-    return subprocess.Popen(wrap(cmd), cwd=str(cwd), **kwargs)
+    return subprocess.Popen(
+        wrap(cmd), cwd=str(cwd), stdout=stdout, stderr=stderr, **kwargs
+    )
 
 
 def _on_signal(signum: int, frame: object) -> None:
@@ -123,8 +181,91 @@ def terminate(proc: subprocess.Popen | None) -> None:
             os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
 
 
+def api_command() -> list[str]:
+    return [
+        "uv",
+        "run",
+        "uvicorn",
+        "api.main:app",
+        "--reload",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        str(API_PORT),
+    ]
+
+
+def banner(running: bool) -> None:
+    print()
+    print("=" * 62)
+    print(" SEB-XRIF is running" if running else " SEB-XRIF is up")
+    print(f"   Dashboard : http://localhost:{WEB_PORT}")
+    print(f"   API docs  : http://localhost:{API_PORT}/docs")
+    if running:
+        print(f"   Logs      : {API_LOG.name}, {WEB_LOG.name}")
+        print("   Stop      : python scripts/stop.py   (or: make stop)")
+    else:
+        print("   Stop      : Ctrl+C")
+    print("=" * 62)
+    print()
+
+
+def run_detached() -> int:
+    with open(API_LOG, "ab") as api_log, open(WEB_LOG, "ab") as web_log:
+        api = spawn(
+            api_command(), ROOT, stdout=api_log, stderr=subprocess.STDOUT, detach=True
+        )
+        if not wait_for_api(API_PORT):
+            print(
+                f"!! The API did not become ready. See {API_LOG.name}.", file=sys.stderr
+            )
+            terminate(api)
+            return 1
+        spawn(
+            web_cmd(),
+            ROOT / "web",
+            stdout=web_log,
+            stderr=subprocess.STDOUT,
+            detach=True,
+        )
+        time.sleep(1.5)
+    banner(running=True)
+    return 0
+
+
+def run_foreground() -> int:
+    if not IS_WINDOWS:
+        signal.signal(signal.SIGTERM, _on_signal)
+    api: subprocess.Popen | None = None
+    web: subprocess.Popen | None = None
+    try:
+        print(f"==> Starting the API on :{API_PORT}")
+        api = spawn(api_command(), ROOT)
+        if not wait_for_api(API_PORT):
+            print("!! The API did not become ready in time.", file=sys.stderr)
+            return 1
+        print(f"==> Starting the dashboard on :{WEB_PORT}")
+        web = spawn(web_cmd(), ROOT / "web")
+        banner(running=False)
+        while api.poll() is None and web.poll() is None:
+            time.sleep(0.5)
+        print("!! A server exited; shutting the other one down.")
+    except KeyboardInterrupt:
+        print("\n==> Stopping")
+    finally:
+        terminate(web)
+        terminate(api)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run SEB-XRIF (API + dashboard).")
+    parser.add_argument(
+        "-d",
+        "--detach",
+        action="store_true",
+        help="start in the background and return (logs: .sebxrif-*.log)",
+    )
     parser.add_argument(
         "--no-train", action="store_true", help="skip training the default model"
     )
@@ -156,45 +297,9 @@ def main(argv: list[str] | None = None) -> int:
         print("==> No model found; training the default Random Forest")
         run(["uv", "run", "python", "-m", "analytics.train", "--no-mlflow"])
 
-    print()
-    print("=" * 62)
-    print(" SEB-XRIF is starting")
-    print(f"   Dashboard : http://localhost:{WEB_PORT}")
-    print(f"   API docs  : http://localhost:{API_PORT}/docs")
-    print("   Stop      : Ctrl+C")
-    print("=" * 62)
-    print()
-
-    if not IS_WINDOWS:
-        signal.signal(signal.SIGTERM, _on_signal)
-
-    api: subprocess.Popen | None = None
-    web: subprocess.Popen | None = None
-    try:
-        api = spawn(
-            [
-                "uv",
-                "run",
-                "uvicorn",
-                "api.main:app",
-                "--reload",
-                "--host",
-                "0.0.0.0",
-                "--port",
-                str(API_PORT),
-            ],
-            ROOT,
-        )
-        web = spawn(["pnpm", "run", "dev"], ROOT / "web")
-        while api.poll() is None and web.poll() is None:
-            time.sleep(0.5)
-        print("!! A server exited; shutting the other one down.")
-    except KeyboardInterrupt:
-        print("\n==> Stopping")
-    finally:
-        terminate(api)
-        terminate(web)
-    return 0
+    if args.detach:
+        return run_detached()
+    return run_foreground()
 
 
 if __name__ == "__main__":

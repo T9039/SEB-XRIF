@@ -105,6 +105,7 @@ GENERATED_GLOBS = [
     "web/*.tsbuildinfo",
     "ui/*.tsbuildinfo",
     "docs/paper/*.docx",
+    ".sebxrif-*.log",
 ]
 
 # Locally built images to remove after `compose down`.

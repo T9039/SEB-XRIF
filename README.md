@@ -46,7 +46,16 @@ Then open:
 - **Dashboard:** http://localhost:5173
 - **API docs:** http://localhost:8000/docs
 
-Press `Ctrl+C` to stop. It is idempotent — re-running it is safe.
+It runs in the foreground and keeps serving until you press `Ctrl+C` (it waits
+for the API to be ready before opening the dashboard, so the first page load
+does not fail). Add `--detach` to start it in the background and return to your
+shell, then stop it with `make stop`:
+
+```bash
+make up ARGS='--detach'   # or: python3 scripts/run.py --detach
+```
+
+It is idempotent — re-running it is safe.
 
 > Windows: run `python scripts\run.py` instead (details in
 > [Windows setup](#windows-setup)).

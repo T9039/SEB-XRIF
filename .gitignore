@@ -61,3 +61,6 @@ Thumbs.db
 # Local database
 sebxrif.db
 sebxrif.db-journal
+
+# Detached dev server logs (scripts/run.py --detach)
+.sebxrif-*.log
