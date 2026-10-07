@@ -39,7 +39,7 @@ exists, and starts the dashboard and API together.
 git clone https://github.com/T9039/SEB-XRIF.git    # HTTPS
 # or, with SSH: git clone git@github.com:T9039/SEB-XRIF.git
 cd SEB-XRIF
-make up            # or: python3 scripts/run.py
+make up            # shortcut for the launcher: python3 scripts/run.py
 ```
 
 Then open:
@@ -58,8 +58,9 @@ make up ARGS='--detach'   # or: python3 scripts/run.py --detach
 
 It is idempotent — re-running it is safe.
 
-> Windows: run `python scripts\run.py` instead (details in
-> [Windows setup](#windows-setup)).
+`make up` is a shortcut for the cross-platform launcher `scripts/run.py`. On
+Windows, where `make` is usually not installed, run that same launcher directly:
+`python scripts\run.py` (details in [Windows setup](#windows-setup)).
 
 ### Doing it by hand
 
