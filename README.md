@@ -235,6 +235,40 @@ The containerized stack exposes the API on `:8000`, the dashboard on `:8080`,
 PostgreSQL on `:5432`, the Learning Record Store on `:8081`, and MLflow on
 `:5000`.
 
+### Stop and teardown
+
+Two Python scripts shut the project down. They are standard-library only, so
+they run with a plain `python`/`python3` on Windows, Linux, and macOS (no Git
+Bash required).
+
+| Command | What it does |
+| --- | --- |
+| `python3 scripts/stop.py` | **Stop** the dev servers (API, dashboard, Storybook, MLflow), both Docker stacks, and the Tailscale Funnel. Keeps containers, volumes, and data. |
+| `python3 scripts/teardown.py` | **Total teardown:** stop everything, remove the Docker stacks (containers, volumes, images), the Funnel, and every generated artifact (models, processed/uploaded/ARETE data, MLflow runs, caches, the local database, generated `.env` files and deploy secrets, `.venv`/`node_modules`), then delete the repository directory itself. |
+
+`make stop` and `make teardown` are shortcuts. Both accept `--dry-run` to show
+what would happen first. `teardown` asks for confirmation unless you pass `-y`;
+`--keep-repo` deletes only the generated files and keeps the repository, and
+`--keep-deps` leaves `.venv`/`node_modules` in place.
+
+To reset a machine to a clean clone:
+
+```bash
+python3 scripts/teardown.py -y      # removes everything, including this repo
+git clone https://github.com/T9039/SEB-XRIF.git
+cd SEB-XRIF
+make up
+```
+
+On Windows:
+
+```bat
+python scripts\teardown.py -y
+git clone https://github.com/T9039/SEB-XRIF.git
+cd SEB-XRIF
+scripts\run.cmd
+```
+
 ## Component library and Storybook
 
 `ui/` is a shadcn/ui design system (Base UI + Tailwind v4) with a Storybook

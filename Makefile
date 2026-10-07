@@ -2,9 +2,9 @@
 .RECIPEPREFIX = >
 SHELL := /bin/bash
 
-.PHONY: help bootstrap sync lint format type test api web dev up train prepare \
-        matrix tune paper mlflow db-upgrade db-init repro-check check-xapi flatten-xapi \
-        docker-up docker-down docker-logs figures clean \
+.PHONY: help bootstrap sync lint format type test api web dev up stop teardown \
+        train prepare matrix tune paper mlflow db-upgrade db-init repro-check \
+        check-xapi flatten-xapi docker-up docker-down docker-logs figures clean \
         ui-install storybook storybook-build
 
 help:
@@ -35,6 +35,8 @@ help:
 > @echo "  ui-install   install the JS workspace deps (web + ui) with pnpm"
 > @echo "  storybook    run Storybook for the ui library on :6006"
 > @echo "  storybook-build  build the static Storybook"
+> @echo "  stop         stop dev servers, Docker stacks and the Funnel (keeps data)"
+> @echo "  teardown     remove all services, volumes, generated files AND the repo"
 > @echo "  docker-up    build and start the full stack"
 > @echo "  docker-down  stop the stack"
 > @echo "  figures      regenerate the paper figures"
@@ -109,6 +111,12 @@ dev:
 
 up:
 > @./scripts/run.sh $(ARGS)
+
+stop:
+> @python3 scripts/stop.py $(ARGS)
+
+teardown:
+> @python3 scripts/teardown.py $(ARGS)
 
 ui-install:
 > pnpm install
