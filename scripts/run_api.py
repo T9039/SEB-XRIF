@@ -17,6 +17,8 @@ from _common import run
 
 def main() -> int:
     port = os.environ.get("PORT", "8000")
+    # Watch only the application packages; the default watches the whole tree,
+    # including .venv and node_modules, which causes reload loops.
     return run(
         [
             "uv",
@@ -24,6 +26,12 @@ def main() -> int:
             "uvicorn",
             "api.main:app",
             "--reload",
+            "--reload-dir",
+            "api",
+            "--reload-dir",
+            "analytics",
+            "--reload-dir",
+            "eval",
             "--host",
             "0.0.0.0",
             "--port",

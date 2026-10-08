@@ -182,12 +182,21 @@ def terminate(proc: subprocess.Popen | None) -> None:
 
 
 def api_command() -> list[str]:
+    # Watch only the application packages. Without this, uvicorn's reloader
+    # watches the whole tree -- including .venv and node_modules -- so package
+    # or editor churn triggers reload loops (especially on Windows).
     return [
         "uv",
         "run",
         "uvicorn",
         "api.main:app",
         "--reload",
+        "--reload-dir",
+        "api",
+        "--reload-dir",
+        "analytics",
+        "--reload-dir",
+        "eval",
         "--host",
         "0.0.0.0",
         "--port",
