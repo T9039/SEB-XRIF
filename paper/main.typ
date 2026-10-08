@@ -3,9 +3,9 @@
 // The paper's prose lives as Markdown in paper/sections/*.md (source of truth)
 // and is rendered here with the `cmarker` package. Build with:
 //
-//   ./paper/build.sh          (or: make paper)
+//   uv run python paper/build.py          (or: make paper)
 //
-// `build.sh` refreshes paper/sections/results_table.md and paper/assets/ from
+// `build.py` refreshes paper/sections/results_table.md and paper/assets/ from
 // reports/ so the paper's numbers always match the model matrix.
 #import "@preview/cmarker:0.1.10" as cmarker
 

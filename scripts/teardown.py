@@ -472,7 +472,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print("==> Teardown complete.")
     if args.keep_repo:
-        print("    Rebuild with:  uv sync && pnpm install   (or scripts/bootstrap.sh)")
+        print("    Rebuild with:  uv sync && pnpm install   (or make bootstrap)")
     else:
         verb = "would be removed" if dry else "was removed"
         print(f"    The repository {verb}. Restore with:")

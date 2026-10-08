@@ -44,7 +44,7 @@ jobs:
           uv run python -m analytics.data --out data/processed/learners.parquet
       - run: uv run pytest -q
       - name: Reproduce from a clean checkout
-        run: ./scripts/repro-check.sh
+        run: uv run python scripts/repro_check.py
 
   web:
     runs-on: ubuntu-latest
@@ -99,7 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: typst-community/setup-typst@v4
-      - run: ./paper/build.sh
+      - run: uv run python paper/build.py
       - uses: actions/upload-artifact@v4
         with:
           name: paper

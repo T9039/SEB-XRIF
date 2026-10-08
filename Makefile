@@ -1,11 +1,14 @@
 # SEB-XRIF developer commands.
+#
+# Requires GNU make (on Windows: `choco install make`, `scoop install make`, or
+# MSYS2's `make`). Every recipe is a Python or pnpm/docker command, so the same
+# targets run on Windows, Linux, and macOS with no Git Bash required.
 .RECIPEPREFIX = >
-SHELL := /bin/bash
 
 .PHONY: help bootstrap sync lint format type test api web dev up stop teardown \
-        train prepare matrix tune paper mlflow db-upgrade db-init repro-check \
-        check-xapi flatten-xapi docker-up docker-down docker-logs figures clean \
-        ui-install storybook storybook-build
+        train prepare matrix tune paper eval-report mlflow db-upgrade db-init \
+        repro-check check-xapi flatten-xapi fetch-arete docker-up docker-down \
+        docker-logs figures clean ui-install storybook storybook-build
 
 help:
 > @echo "SEB-XRIF targets:"
@@ -43,13 +46,13 @@ help:
 > @echo "  clean        remove caches and build artifacts"
 
 bootstrap:
-> @./scripts/bootstrap.sh
+> @uv run python scripts/bootstrap.py
 
 sync:
 > uv sync
 
 lint:
-> @./scripts/lint.sh
+> @uv run python scripts/lint.py
 
 format:
 > uv run ruff format .
@@ -58,13 +61,13 @@ type:
 > uv run mypy analytics api eval
 
 test:
-> @./scripts/test.sh
+> @uv run python scripts/test.py $(ARGS)
 
 prepare:
 > uv run python -m analytics.data
 
 repro-check:
-> @./scripts/repro-check.sh
+> @uv run python scripts/repro_check.py
 
 check-xapi:
 > uv run python -m analytics.xapi check --path $(ARGS)
@@ -76,14 +79,13 @@ fetch-arete:
 > uv run python scripts/fetch_arete.py $(ARGS)
 
 train:
-> @./scripts/train.sh $(if $(SOURCE),--source $(SOURCE),) $(ARGS)
+> @uv run python scripts/train.py $(if $(SOURCE),--source $(SOURCE),) $(ARGS)
 
 matrix:
-> @./scripts/matrix.sh $(ARGS)
+> @uv run python scripts/matrix.py $(ARGS)
 
 tune:
-> OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
->   uv run python -m analytics.tune $(ARGS)
+> @uv run python scripts/tune.py $(ARGS)
 
 mlflow:
 > uv run mlflow ui --host 0.0.0.0 --port 5000
@@ -95,52 +97,49 @@ db-init:
 > uv run python -m analytics.db init
 
 paper:
-> @./paper/build.sh
+> @uv run python paper/build.py
 
 eval-report:
 > uv run python -m eval.report $(ARGS)
 
 api:
-> @./scripts/run-api.sh
+> @uv run python scripts/run_api.py
 
 web:
-> @./scripts/run-web.sh
+> @uv run python scripts/run_web.py
 
 dev:
-> @./scripts/dev.sh
+> @uv run python scripts/run.py --no-train
 
 up:
-> @python3 scripts/run.py $(ARGS)
+> @uv run python scripts/run.py $(ARGS)
 
 stop:
-> @python3 scripts/stop.py $(ARGS)
+> @uv run python scripts/stop.py $(ARGS)
 
 teardown:
-> @python3 scripts/teardown.py $(ARGS)
+> @uv run python scripts/teardown.py $(ARGS)
 
 ui-install:
 > pnpm install
 
 storybook:
-> @./scripts/storybook.sh $(ARGS)
+> @uv run python scripts/storybook.py $(ARGS)
 
 storybook-build:
-> cd ui && pnpm build-storybook
+> pnpm --dir ui run build-storybook
 
 docker-up:
-> @./scripts/docker-up.sh
+> docker compose up --build $(ARGS)
 
 docker-down:
-> @./scripts/docker-down.sh
+> docker compose down
 
 docker-logs:
 > docker compose logs -f
 
 figures:
-> cd docs/figures && uv run python src/make_fig1_methods.py \
->   && uv run python src/make_fig_lit_methods.py \
->   && uv run python src/sebxrif_figs.py
+> @uv run python scripts/figures.py
 
 clean:
-> find . -type d -name __pycache__ -prune -exec rm -rf {} +
-> rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage
+> @uv run python scripts/clean.py

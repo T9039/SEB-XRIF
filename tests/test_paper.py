@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -50,7 +51,7 @@ def test_sections_referenced_by_main_exist():
 @pytest.mark.skipif(shutil.which("typst") is None, reason="typst not installed")
 def test_paper_builds_to_pdf():
     completed = subprocess.run(
-        [str(PAPER / "build.sh")],
+        [sys.executable, str(PAPER / "build.py")],
         cwd=PAPER,
         capture_output=True,
         text=True,

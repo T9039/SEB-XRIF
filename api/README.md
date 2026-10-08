@@ -12,7 +12,7 @@ API and dashboard). To run just the API:
 ```bash
 make api                 # http://localhost:8000
 make dev                 # api + dashboard together
-PORT=9000 ./scripts/run-api.sh
+PORT=9000 uv run python scripts/run_api.py
 ```
 
 Interactive docs are served at `/docs`.

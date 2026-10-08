@@ -58,14 +58,15 @@ make up ARGS='--detach'   # or: python3 scripts/run.py --detach
 
 It is idempotent — re-running it is safe.
 
-`make up` is a shortcut for the cross-platform launcher `scripts/run.py`. On
-Windows, where `make` is usually not installed, run that same launcher directly:
-`python scripts\run.py` (details in [Windows setup](#windows-setup)).
+`make up` is a shortcut for the cross-platform launcher `scripts/run.py`. You
+can also run that launcher directly: `python scripts\run.py` on Windows or
+`python3 scripts/run.py` on Linux/macOS (details in
+[Windows setup](#windows-setup)).
 
 ### Doing it by hand
 
 ```bash
-./scripts/bootstrap.sh   # install Python + web deps, hooks, and .env
+make bootstrap           # install Python + web deps, hooks, and .env
 make train               # train the default Random Forest (writes models/model.joblib)
 make dev                 # api on :8000, web on :5173 (no training step)
 ```
@@ -81,36 +82,41 @@ Everything below is required unless marked optional.
 - **Node.js 20+** — includes `npm` and `corepack`.
 - **pnpm** — enable with `corepack enable`, or `npm install -g pnpm`.
 - **Git** — to clone the repository.
-- `make` — recommended (the shortcut targets). Optional on Windows.
+- **GNU make** — required for the shortcut targets. Windows users: the `make`
+  from some toolchains (Borland/CodeGear) will *not* work; install GNU make (see
+  [Windows setup](#windows-setup)).
 - Docker + Docker Compose — only for the containerized stack (`make docker-up`).
 
 ### Windows setup
 
-The single-command startup is Python, so it runs natively on Windows. The other
-`make` targets are POSIX shell; use **Git Bash** (bundled with Git for Windows)
-for those.
+Every `make` target is a Python, pnpm, or Docker command, so the same targets run
+natively on Windows — no Git Bash required. You only need **GNU make** on your
+`PATH`.
 
-1. **Install Git for Windows** — https://git-scm.com/download/win (includes Git Bash).
-2. **Install `uv`** — in PowerShell:
+1. **Install Git for Windows** — https://git-scm.com/download/win (to clone the repo).
+2. **Install GNU make** — e.g. `winget install GnuWin32.Make`, `choco install make`,
+   `scoop install make`, or MSYS2's `pacman -S make`. Confirm with
+   `make --version`: it must say **GNU Make** (not "CodeGear"/"Borland").
+3. **Install `uv`** — in PowerShell:
    ```powershell
    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
    ```
-3. **Install Node.js 20+** — https://nodejs.org (LTS installer).
-4. **Enable pnpm** — in PowerShell or Git Bash:
+4. **Install Node.js 20+** — https://nodejs.org (LTS installer).
+5. **Enable pnpm** — in PowerShell or Git Bash:
    ```bash
    corepack enable
    ```
-5. **Clone and run** — in `cmd.exe` or PowerShell:
+6. **Clone and run** — in `cmd.exe` or PowerShell:
    ```bat
    git clone https://github.com/T9039/SEB-XRIF.git
    REM or, with SSH: git clone git@github.com:T9039/SEB-XRIF.git
    cd SEB-XRIF
-   python scripts\run.py
+   make up
    ```
 
-`scripts\run.py` installs what is missing, trains the default model if needed,
-and starts the API and dashboard. For the other `make` targets, open Git Bash
-and run them there.
+`make up` installs what is missing, trains the default model if needed, and starts
+the API and dashboard. It is a shortcut for `python scripts\run.py`, which you can
+also run directly. Every other `make` target works the same way on Windows.
 
 > Docker on Windows uses Docker Desktop with the WSL 2 backend; it is only needed
 > for `make docker-up`, not for the single-command path above.
@@ -235,7 +241,7 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env down
 | `make ui-install` | Install the JS workspace dependencies (web + ui) with pnpm |
 | `make storybook` | Storybook for the component library on http://localhost:6006 |
 | `make storybook-build` | Build the static Storybook |
-| `./scripts/run-api.sh` | Same as `make api` (respects `PORT`) |
+| `uv run python scripts/run_api.py` | Same as `make api` (respects `PORT`) |
 
 ### Docker
 
